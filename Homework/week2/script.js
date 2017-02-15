@@ -13,42 +13,74 @@ Renske Talsma
 10896503
 		
 */                                                             
-                      
+
+/* Initialize canvas */
+const GRAPH_PADDING = 70;
+const DAY_IN_MILLISECONDS = 86400000;
+
+var graphCanvas = {};
+initCanvas();
+
+/* Get data and make points */
 var dataArray = getData();
-var transformData = getDomainRange(dataArray);
+var dataPoints = generateDataPoints(dataArray);
 
-
-// Voor elk datapunt, vraag de bijbehorende y op?
-// Dit deel is nog niet echt duidelijk voor me
-var y = transformData(40);
-console.log("y test" + y);
-			  
-canvasTest();
+/* Draw graph */
+canvasTest(dataPoints);
 
 
 
+
+
+/* Function that initalizes the canvas and creates an object that holds the properties of the canvas, 
+so that they will be globally accessible by other functions as well. */
+function initCanvas(){
+    
+    var canvas = document.getElementById('mycanvas');
+    graphCanvas.context = canvas.getContext('2d');
+    graphCanvas.width  = canvas.width;
+    graphCanvas.height = canvas.height;
+    graphCanvas.padding = GRAPH_PADDING;
+    graphCanvas.domain = undefined;
+    graphCanvas.range = undefined;
+    graphCanvas.zeroY = undefined;
+    graphCanvas.intervals = [];
+    graphCanvas.intervalsY = [];
+    
+}
 
 
 function getDomainRange(dataArray){
     
-    // Minimum and maximum value of x-axis (time in days)
+    // Minimum and maximum value of x-axis (time in days) // TODO
     var domain = [];
-    domain[0] = dataArray[0][3];
-    domain[1] = dataArray[dataArray.length-1][3];
-  
-    console.log(domain);
-  
-    var range = [];
-    range[0] = -100;
-    range[1] = 100;
     
-    console.log(range);
+    var max = 0;
+    var min = 0;
+    
+    for(var i = 0; i < dataArray.length; i++){
+        
+        if(dataArray[i][1] < min)
+            min = dataArray[i][1];
+        if(dataArray[i][1] > max)
+            max = dataArray[i][1];
+    }
+    
+    domain[0] = min;
+    domain[1] = max;
+
+    // TODO MAGIC NUMBERS
+    var range = [];
+    range[0] = 600 - graphCanvas.padding;
+    range[1] = 0 + graphCanvas.padding;
+    
+    graphCanvas.range = range;
+    graphCanvas.domain = domain;
     
     // Create transform function with these values
     return createTransform(domain, range);
     
 }
-
 
 
 /* Retrieves data from the HTML element */
@@ -91,13 +123,10 @@ function getData(){
 
 /* Function that creates day offset for every data point, taking the first point as day 1. */
 function getDay(minimumTime, dataPointTime){
-    
-   var DAY_IN_MILLISECONDS = 86400000;
    var timeOffset = dataPointTime - minimumTime;
    return (timeOffset / DAY_IN_MILLISECONDS) + 1;
     
 }
-
 
 
 /* A small function that takes the date from the raw data and makes it suitable for the JS Date object. */
@@ -112,16 +141,86 @@ function makeDate(dateString){
 }
 
 
-function canvasTest(){
+/* Function that generates the datapoints using the provided transform function. */
+function generateDataPoints(dataArray){
     
-    var canvas = document.getElementById('mycanvas');
-    var context = canvas.getContext('2d');
+    // Generate transform function
+    var transformData = getDomainRange(dataArray);
+    
+    // Add Y value for intervals degrees to canvas object to display on Y-axis
+    graphCanvas.zeroY = transformData(0);
+    
+    var temperatureIntervals = [-15, -10, -5, 0, 5, 10, 15, 20, 25, 30];
+    graphCanvas.intervals = temperatureIntervals;
+    
+    for(var i = 0; i < temperatureIntervals.length; i++)
+        graphCanvas.intervalsY[i] = transformData(temperatureIntervals[i] * 10);
+   
+    // Store transformed data points in array
+    dataPoints = [];
+    for(var i = 0; i < dataArray.length; i++){
+        
+        var xyArray = [];
+        xyArray[0] = Math.ceil(dataArray[i][3]);
+        xyArray[1] = transformData(dataArray[i][1]);
+        
+        dataPoints[i]= xyArray;
+        //console.log(dataPoints[i][0]);
+        //console.log(dataPoints[i][1]);
+        //console.log("---------------");
+    }
+     
+    return dataPoints;
+    
+}
 
-    context.beginPath();
-    context.moveTo(100, 150);
-    context.lineTo(450, 50);
-    context.stroke();
-      
+
+
+
+/* bullshit */
+function canvasTest(dataPoints){
+    
+    // Steps on X axis
+    var stepsX = dataPoints.length;
+    var stepSizeX = graphCanvas.width / stepsX;
+    
+    // Draw zero line
+    graphCanvas.context.beginPath();
+    graphCanvas.context.moveTo(0, graphCanvas.zeroY);
+    graphCanvas.context.lineTo(graphCanvas.width, graphCanvas.zeroY);
+    graphCanvas.context.stroke();
+    
+    // Draw the graph
+    graphCanvas.context.beginPath();
+	graphCanvas.context.moveTo((dataPoints[0][0] * stepSizeX), dataPoints[0][1]);
+    for (var i = 1; i < stepsX ; i++)
+		graphCanvas.context.lineTo((dataPoints[i][0] * stepSizeX),  dataPoints[i][1]);
+
+	graphCanvas.context.stroke();
+
+    
+   // Add text to X axis
+    var daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    var monthNames = ["1 Jan", "1 Feb", "1 Mar", "1 Apr", "1 May", "1 Jun", "1 Jul", "1 Aug", "1 Sept", "1 Oct", "1 Nov", "1 Dec"];
+    
+    for (var i = 0, offset = 0; i <= daysInMonth.length; i++) {
+        
+        // If it's not the first month
+        if(i > 0)
+            offset = daysInMonth[i-1] * stepSizeX * i;
+
+		graphCanvas.context.fillText(monthNames[i], offset, graphCanvas.height-10);
+    }
+     
+     // Calculate distance between each interval on Y axis
+     var stepSizeY = graphCanvas.intervalsY[0] - graphCanvas.intervalsY[1];
+     console.log("size" + stepSizeY);
+     
+     for(var i = 0; i < graphCanvas.intervals.length; i++){
+         graphCanvas.context.fillText(graphCanvas.intervals[i], 5, graphCanvas.intervalsY[i]);
+         
+     }
+     
 }
 
 
@@ -142,8 +241,8 @@ function createTransform(domain, range){
    	var alpha = (range_max - range_min) / (domain_max - domain_min);
     var beta = range_max - alpha * domain_max;
 
-    console.log(alpha);
-    console.log(beta);
+    console.log("A" + alpha);
+    console.log("B" + beta);
     
     // returns the function for the linear transformation (y= a * x + b)
     return function(x){
