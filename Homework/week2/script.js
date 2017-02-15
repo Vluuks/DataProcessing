@@ -27,12 +27,14 @@ canvasTest();
 
 
 
+
+
 function getDomainRange(dataArray){
     
-    // Minimum and maximum value of x-axis (time)
+    // Minimum and maximum value of x-axis (time in days)
     var domain = [];
-    domain[0] = dataArray[0][2];
-    domain[1] = dataArray[dataArray.length-1][2];
+    domain[0] = dataArray[0][3];
+    domain[1] = dataArray[dataArray.length-1][3];
   
     console.log(domain);
   
