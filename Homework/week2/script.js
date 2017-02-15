@@ -184,13 +184,13 @@ function canvasTest(dataPoints){
     
     // Steps on X axis
     var stepsX = dataPoints.length;
-    var stepSizeX = graphCanvas.width / stepsX;
+    var stepSizeX = (graphCanvas.width - (HORIZONTAL_PADDING * 2)) / stepsX;
         
     // Draw the graph
     graphCanvas.context.beginPath();
-	graphCanvas.context.moveTo((dataPoints[0][0] * stepSizeX), dataPoints[0][1]);
-    for (var i = 1; i < stepsX ; i++)
-		graphCanvas.context.lineTo((dataPoints[i][0] * stepSizeX),  dataPoints[i][1]);
+	graphCanvas.context.moveTo((dataPoints[0][0]), dataPoints[0][1]);
+    for (var i = 1; i < dataPoints.length ; i++)
+		graphCanvas.context.lineTo((dataPoints[i][0]),  dataPoints[i][1]);
 
 	graphCanvas.context.stroke();
 
@@ -199,11 +199,18 @@ function canvasTest(dataPoints){
     var daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     var monthNames = ["1 Jan", "1 Feb", "1 Mar", "1 Apr", "1 May", "1 Jun", "1 Jul", "1 Aug", "1 Sept", "1 Oct", "1 Nov", "1 Dec"];
     
-    for (var i = 0, offset = HORIZONTAL_PADDING; i <= daysInMonth.length; i++) {
-        
+	// TODO magic numbers
+	var transformDataMonth = createTransform([0,365], [0 + HORIZONTAL_PADDING, graphCanvas.width - HORIZONTAL_PADDING]);
+	
+    for (var i = 0, offset = HORIZONTAL_PADDING; i < daysInMonth.length; i++) {
+		
         // If it's not the first month
         if(i > 0)
-            offset = daysInMonth[i-1] * stepSizeX * i;
+            offset += (transformDataMonth(daysInMonth[i]) - HORIZONTAL_PADDING);
+		
+		console.log("OS" + offset);
+		// voor elke maand moet de bijbehorende transformcoordinaat van het aantal dagen opgehoogd worden met het aantal van de huidige maand
+		// jan = padding, feb = padding + transform 
 
 		graphCanvas.context.fillText(monthNames[i], offset, graphCanvas.height-10);
     }
