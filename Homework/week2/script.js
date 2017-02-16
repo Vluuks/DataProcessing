@@ -25,6 +25,33 @@ var graphCanvas = {};
 initCanvas();
 getRawData(afterCB);
 
+
+/***lelijk interactivity deel test zone ********************************************************
+Tutorial code grotendeels gebruikt: http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/*/
+
+// get mouse position
+
+// if it matches a data point draw a line to bottom?
+// then remove this line again when the mouse is not hovering over it
+
+//
+
+function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+          x: evt.clientX - rect.left,
+          y: evt.clientY - rect.top
+        };
+}
+
+graphCanvas.addEventListener('mousemove', function(event) {
+var mousePos = getMousePos(graphCanvas, event);
+console.log(mousePos.x + ',' + mousePos.y);
+}, false);
+
+
+/************************************************************/
+
 /* Requests raw data file. */
 function getRawData(callback){
 	
