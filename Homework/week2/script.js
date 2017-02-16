@@ -78,6 +78,17 @@ function compareMouseXYAgainstData(mouseX, mouseY){
 }
 
 
+function calculateMonthlyAverage(){
+
+	for(var i = 0; i < graphCanvas.avgMonth.length; i++){
+	
+		
+		
+	}
+
+}
+
+
 /************************************************************/
 
 /* Requests raw data file. */
@@ -134,6 +145,8 @@ function initCanvas(){
     graphCanvas.intervalsY = [];
 	graphCanvas.dataPoints = [];
 	graphCanvas.dataLength = 0;
+	graphCanvas.avgMonth = new Array(12);
+	graphCanvas.avgYear = 0;
 	
 	
 	// Properties of the interactive overlay canvas
@@ -146,7 +159,8 @@ function initCanvas(){
     
 }
 
-
+/* Function that determines domain and range for the given data set. Also calculates
+the total average since it's looping anyway. */
 function getDomainRange(dataArray){
     
     // Determine domain. Minimum and maximum value of temperature
@@ -156,6 +170,7 @@ function getDomainRange(dataArray){
     
     var max = 0;
     var min = 0;
+	var total = 0;
     
     for(var i = 0; i < dataArray.length; i++){
         
@@ -163,8 +178,12 @@ function getDomainRange(dataArray){
             min = dataArray[i][1];
         if(dataArray[i][1] > max)
             max = dataArray[i][1];
+		
+		total += dataArray[i][1];
     }
     
+	graphCanvas.avgYear = ((total/dataArray.length)/10).toFixed(1);
+	
     domain[0] = min;
     domain[1] = max;
 
@@ -277,37 +296,24 @@ function generateDataPoints(dataArray){
 /* bullshit */
 function canvasTest(dataPoints){
 	
-	// Graph title
+	// Graph title and global information
 	graphCanvas.context.font="12px Arial";
 	graphCanvas.context.fillText("Temperature per day in De Bilt, 2016", 20, 20);
+	graphCanvas.context.fillText("Average temperature over 366 days:" + graphCanvas.avgYear+ "\u2103" , 20, 40);
     
-    // Steps on X axis
-    var stepsX = graphCanvas.dataLength;
-    var stepSizeX = (graphCanvas.width - (HORIZONTAL_PADDING * 2)) / stepsX;
-        
-   // Add text to X axis
+	// Add text to X axis
     var daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     var monthNames = ["1 Jan", "1 Feb", "1 Mar", "1 Apr", "1 May", "1 Jun", "1 Jul", "1 Aug", "1 Sept", "1 Oct", "1 Nov", "1 Dec"];
-    
-	// TODO magic numbers
 	var transformDataMonth = createTransform([0,graphCanvas.dataLength], [0 + HORIZONTAL_PADDING, graphCanvas.width - HORIZONTAL_PADDING]);
 	
+	// Write every month on the X axis, taking in account padding
     for (var i = 0, offset = HORIZONTAL_PADDING; i < daysInMonth.length; i++) {
 		
         // If it's not the first month
         if(i > 0)
             offset += (transformDataMonth(daysInMonth[i]) - HORIZONTAL_PADDING);
-		
-		console.log("OS" + offset);
-		// voor elke maand moet de bijbehorende transformcoordinaat van het aantal dagen opgehoogd worden met het aantal van de huidige maand
-		// jan = padding, feb = padding + transform 
-
 		graphCanvas.context.fillText(monthNames[i], offset, graphCanvas.height-10);
     }
-     
-     // Calculate distance between each interval on Y axis
-     var stepSizeY = graphCanvas.intervalsY[0] - graphCanvas.intervalsY[1];
-     console.log("size" + stepSizeY);
      
 	 // Add temperature intervals to y axis
      for(var i = 0; i < graphCanvas.intervals.length; i++){
