@@ -20,17 +20,41 @@ const HORIZONTAL_PADDING =20;
 const DAY_IN_MILLISECONDS = 86400000;
 
 var graphCanvas = {};
+
+/* Get data and initialize canvas. */
 initCanvas();
+getRawData(afterCB);
 
-/* Get data and make points */
-var dataArray = getData();
-var dataPoints = generateDataPoints(dataArray);
+/* Requests raw data file. */
+function getRawData(callback){
+	
+	$.ajax({
+	type: "GET",
+	async: true,
+	url: "./data.txt",
+	cache: true,
+	dataType: 'text',
+	
+		success: function (rawData){
+			console.log("success");
+			callback(rawData);
+		},
+		error: function(){
+			alert("Could not retrieve the data.");
+		},
+		complete: function(rawData){
+			
+		}    
+	});		
+}
 
-/* Draw graph */
-canvasTest(dataPoints);
-
-
-
+/* After the data has been retrieved. */
+function afterCB(rawData){
+	
+	var dataArray = splitData(rawData);
+	var dataPoints = generateDataPoints(dataArray);
+	canvasTest(dataPoints);
+}
 
 
 /* Function that initalizes the canvas and creates an object that holds the properties of the canvas, 
@@ -86,10 +110,10 @@ function getDomainRange(dataArray){
 
 
 /* Retrieves data from the HTML element */
-function getData(){
+function splitData(rawData){
 
 	// Get data from element
-	var rawData = document.getElementById("rawdata").value;	
+	//var rawData = document.getElementById("rawdata").value;	
 	var dataArray = rawData.split(/\n/);
 	
 	// Separate date from temperature
