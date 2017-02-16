@@ -44,10 +44,38 @@ function getMousePos(canvas, evt) {
         };
 }
 
-graphCanvas.addEventListener('mousemove', function(event) {
-var mousePos = getMousePos(graphCanvas, event);
-console.log(mousePos.x + ',' + mousePos.y);
+graphCanvas.canvas.addEventListener('mousemove', function(event) {
+	
+	var mousePos = getMousePos(graphCanvas.canvas, event);
+	compareMouseXYAgainstData(mousePos.x, mousePos.y);
+	
 }, false);
+
+
+/* Called when the mouse position changes to check if the user is pointing at a data point */
+function compareMouseXYAgainstData(mouseX, mouseY){
+	
+	for(var i = 0; i < graphCanvas.dataLength; i++){
+		if((graphCanvas.dataPoints[i][0] - mouseX) < 1 && (graphCanvas.dataPoints[i][1] - mouseY) < 1){
+			
+			// Erase old line
+			graphCanvas.contextInteraction.clearRect(0, 0, graphCanvas.widthInteraction, graphCanvas.heightInteraction);
+			
+			// Draw a line to better show where the point is located
+			graphCanvas.contextInteraction.beginPath();
+			graphCanvas.contextInteraction.moveTo(graphCanvas.dataPoints[i][0], graphCanvas.dataPoints[i][1]);
+			graphCanvas.contextInteraction.lineTo(graphCanvas.dataPoints[i][0], graphCanvas.heightInteraction - 20);
+			graphCanvas.contextInteraction.stroke();
+			
+			// Write information about the data point at the top of the graph
+			graphCanvas.contextInteraction.fillText("Date: " + graphCanvas.dataArray[i][0].toString().substr(0,15), graphCanvas.widthInteraction - 200, 20);
+			graphCanvas.contextInteraction.fillText("Temperature: " + (graphCanvas.dataArray[i][1] / 10) + "\u2103", graphCanvas.widthInteraction - 200, 30);
+			
+		}
+			
+	}
+	
+}
 
 
 /************************************************************/
@@ -75,12 +103,14 @@ function getRawData(callback){
 	});		
 }
 
-/* After the data has been retrieved. */
+/* After the data has been retrieved, store it in the global object and pass it on
+to other functions as necessary. */
 function afterCB(rawData){
 	
 	var dataArray = splitData(rawData);
-	var dataPoints = generateDataPoints(dataArray);
-	canvasTest(dataPoints);
+	graphCanvas.dataArray = dataArray;
+	graphCanvas.dataPoints = generateDataPoints(dataArray);
+	canvasTest(graphCanvas.dataPoints);
 }
 
 
@@ -88,15 +118,31 @@ function afterCB(rawData){
 so that they will be globally accessible by other functions as well. */
 function initCanvas(){
     
+	// Properties of the main canvas
     var canvas = document.getElementById('mycanvas');
+	graphCanvas.canvas = canvas;
     graphCanvas.context = canvas.getContext('2d');
     graphCanvas.width  = canvas.width;
     graphCanvas.height = canvas.height;
     graphCanvas.domain = undefined;
     graphCanvas.range = undefined;
     graphCanvas.zeroY = undefined;
-    graphCanvas.intervals = [];
+    
+	// Properties of the data
+	graphCanvas.dataArray = [];
+	graphCanvas.intervals = [];
     graphCanvas.intervalsY = [];
+	graphCanvas.dataPoints = [];
+	graphCanvas.dataLength = 0;
+	
+	
+	// Properties of the interactive overlay canvas
+	var canvasInteraction = document.getElementById('interactioncanvas');
+	graphCanvas.canvasInteraction = canvasInteraction;
+    graphCanvas.contextInteraction = canvasInteraction.getContext('2d');
+    graphCanvas.widthInteraction  = canvasInteraction.width;
+    graphCanvas.heightInteraction = canvasInteraction.height;
+	
     
 }
 
@@ -214,15 +260,13 @@ function generateDataPoints(dataArray){
         
         var xyArray = [];
         xyArray[0] = transformDataX(Math.ceil(dataArray[i][3]));
-        xyArray[1] = transformDataY(dataArray[i][1]);
-        
-		console.log(xyArray[0]);
-		console.log(xyArray[1]);
-		
+        xyArray[1] = transformDataY(dataArray[i][1]);		
         dataPoints[i]= xyArray;
 		
     }
-     
+    
+	// Store length so we do not have to ask for it every time and return data
+	graphCanvas.dataLength = dataPoints.length;
     return dataPoints;
     
 }
@@ -232,26 +276,21 @@ function generateDataPoints(dataArray){
 
 /* bullshit */
 function canvasTest(dataPoints){
+	
+	// Graph title
+	graphCanvas.context.font="12px Arial";
+	graphCanvas.context.fillText("Temperature per day in De Bilt, 2016", 20, 20);
     
     // Steps on X axis
-    var stepsX = dataPoints.length;
+    var stepsX = graphCanvas.dataLength;
     var stepSizeX = (graphCanvas.width - (HORIZONTAL_PADDING * 2)) / stepsX;
         
-    // Draw the graph
-    graphCanvas.context.beginPath();
-	graphCanvas.context.moveTo((dataPoints[0][0]), dataPoints[0][1]);
-    for (var i = 1; i < dataPoints.length ; i++)
-		graphCanvas.context.lineTo((dataPoints[i][0]),  dataPoints[i][1]);
-
-	graphCanvas.context.stroke();
-
-    
    // Add text to X axis
     var daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     var monthNames = ["1 Jan", "1 Feb", "1 Mar", "1 Apr", "1 May", "1 Jun", "1 Jul", "1 Aug", "1 Sept", "1 Oct", "1 Nov", "1 Dec"];
     
 	// TODO magic numbers
-	var transformDataMonth = createTransform([0,365], [0 + HORIZONTAL_PADDING, graphCanvas.width - HORIZONTAL_PADDING]);
+	var transformDataMonth = createTransform([0,graphCanvas.dataLength], [0 + HORIZONTAL_PADDING, graphCanvas.width - HORIZONTAL_PADDING]);
 	
     for (var i = 0, offset = HORIZONTAL_PADDING; i < daysInMonth.length; i++) {
 		
@@ -276,10 +315,20 @@ function canvasTest(dataPoints){
          
 		 // Add horizontal lines
 		graphCanvas.context.beginPath();
+		graphCanvas.context.strokeStyle = 'rgba(0, 0, 0, 0.5)'; 
 		graphCanvas.context.moveTo(HORIZONTAL_PADDING, graphCanvas.intervalsY[i]);
 		graphCanvas.context.lineTo(graphCanvas.width, graphCanvas.intervalsY[i]);
 		graphCanvas.context.stroke();
      }
+	 
+	 // Draw the graph
+    graphCanvas.context.beginPath();
+	graphCanvas.context.strokeStyle = 'rgba(66, 134, 244, 1)'; 
+	graphCanvas.context.lineWidth = 1.5;
+	graphCanvas.context.moveTo((dataPoints[0][0]), dataPoints[0][1]);
+    for (var i = 1; i < graphCanvas.dataLength ; i++)
+		graphCanvas.context.lineTo((dataPoints[i][0]),  dataPoints[i][1]);
+	graphCanvas.context.stroke();
 	 
 }
 
