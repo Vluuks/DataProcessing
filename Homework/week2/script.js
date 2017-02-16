@@ -321,10 +321,16 @@ function canvasTest(dataPoints){
 		graphCanvas.context.stroke();
      }
 	 
-	 // Draw the graph
-    graphCanvas.context.beginPath();
-	graphCanvas.context.strokeStyle = 'rgba(66, 134, 244, 1)'; 
+	// Create styles for graph lines
+	var gradient = graphCanvas.context.createLinearGradient(0,0,graphCanvas.width,0);
+	gradient.addColorStop("0","blue");
+	gradient.addColorStop("0.5","red");
+	gradient.addColorStop("1.0","blue");
+	graphCanvas.context.strokeStyle = gradient;
 	graphCanvas.context.lineWidth = 1.5;
+	
+	// Draw the graph
+    graphCanvas.context.beginPath();
 	graphCanvas.context.moveTo((dataPoints[0][0]), dataPoints[0][1]);
     for (var i = 1; i < graphCanvas.dataLength ; i++)
 		graphCanvas.context.lineTo((dataPoints[i][0]),  dataPoints[i][1]);
