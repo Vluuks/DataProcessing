@@ -49,7 +49,7 @@ function initCanvas(){
 	graphCanvas.avgMonth = new Array(12);
 	graphCanvas.avgYear = 0;
 	graphCanvas.minMaxYear = [];
-	graphCanvas.daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	graphCanvas.daysInMonth = [32, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 	
 	// Properties of the interactive overlay canvas
 	var canvasInteraction = document.getElementById('interactioncanvas');
@@ -94,7 +94,7 @@ function processData(rawData){
 	calculateMonthlyAverage();
 	
 	// Handle visual elements of the graph
-	canvasTest(graphCanvas.dataPoints);
+	drawOnCanvas(graphCanvas.dataPoints);
 }
 
 
@@ -137,7 +137,8 @@ function splitData(rawData){
 	
 }
 
-/* Function that creates day offset for every data point, taking the first point as day 1. */
+
+/* Creates day offset for every data point, taking the first point as day 1. */
 function getDay(minimumTime, dataPointTime){
    var timeOffset = dataPointTime - minimumTime;
    return (timeOffset / DAY_IN_MILLISECONDS) + 1;
@@ -145,33 +146,30 @@ function getDay(minimumTime, dataPointTime){
 }
 
 
-/* A small function that takes the date from the raw data and makes it suitable for the JS Date object. */
+/* Takes the date from the raw data and makes it suitable for the JS Date object. */
 function makeDate(dateString){
 
-	// Trim whitespace
 	dateString = dateString.trim();
-		
-	// 20160101, year is 0 to 3, month is 4 and 5, day is 6 and 7
 	return (dateString.substr(0,4) + "," + dateString.substr(4,2) + "," + dateString.substr(6,2));
 
 }
 
 
-/* Function that generates the datapoints using the provided transform function. */
+/* Generates the datapoints using the provided transform function. */
 function generateDataPoints(dataArray){
     
-    // Generate transform function
+    // Generate transform function.
     var transformDataY = getDomainRange(dataArray);
     var transformDataX = createTransform([0,365], [0 + HORIZONTAL_PADDING, 800 - HORIZONTAL_PADDING]);
 	
-    // Add Y value for intervals degrees to canvas object to display on Y-axis
+    // Add y value for intervals degrees to canvas object to display on y-axis.
     var temperatureIntervals = [-15, -10, -5, 0, 5, 10, 15, 20, 25, 30];
     graphCanvas.intervals = temperatureIntervals;
     
     for(var i = 0; i < temperatureIntervals.length; i++)
         graphCanvas.intervalsY[i] = transformDataY(temperatureIntervals[i] * 10);
    
-    // Store transformed data points in array
+    // Store transformed data points in array.
     dataPoints = [];
     for(var i = 0; i < dataArray.length; i++){
         
@@ -182,7 +180,7 @@ function generateDataPoints(dataArray){
 		
     }
     
-	// Store length so we do not have to ask for it every time and return data
+	// Store length so we do not have to ask for it every time and return data.
 	graphCanvas.dataLength = dataPoints.length;
     return dataPoints;
     
@@ -194,29 +192,32 @@ The average temperature will be displayed on the x-axis and used to calculate
 the standard deviation of the temperatures per day in relation to their month. */
 function calculateMonthlyAverage(){
 
+    var offset = 0;
 	for(var i = 0; i < graphCanvas.avgMonth.length; i++){
 
 		var monthlyTotal = 0;
-		var offsetRight = 0;
 		var offsetLeft = 0;
 
-		// Loop over all the data and add to total to calculate average // TODO optimize
-		for(var j = 0; j < graphCanvas.dataLength; j++){
+		// Loop over all the data and add to total to calculate average.
+		for(var j = 0 + offset; j < graphCanvas.dataLength; j++){
 			
-			// If the data point matches the month that is being calculated
-			if(graphCanvas.dataArray[j][4] == i)
+			// If the data point matches the month that is being calculated.
+			if(graphCanvas.dataArray[j][4] == i + 1)
 				monthlyTotal += graphCanvas.dataArray[j][1];
 		}
 
-		// Calculate and store average
+        // Calculate offset to not loop over beginning again.
+        offset += graphCanvas.daysInMonth[i];
+        
+		// Calculate and store average.
 		graphCanvas.avgMonth[i] = ((monthlyTotal/graphCanvas.daysInMonth[i])/10).toFixed(1);
 	}
 }
 
 
-/* CANVAS TRANSFORMATION */
+/* DATA TRANSFORMATION */
 
-/* Function that determines domain and range for the given data set. Also calculates
+/* Determines domain and range for the given data set. Also calculates
 the total average since it's looping over all the data anyway. Math.max/min is not used 
 because the data is in an associative array so we cannot directly ask for the max or min. */
 function getDomainRange(dataArray){
@@ -259,7 +260,7 @@ function getDomainRange(dataArray){
     
 }
 
-/* Function that takes a given domain and ranges and prepares another function
+/* Takes a given domain and ranges and prepares another function
 to determine the relative x or y spot on the canvas for that value. */
 function createTransform(domain, range){
 
@@ -281,12 +282,12 @@ function createTransform(domain, range){
 
 /* VISUAL ASPECTS */
 
-/* function that draws on the canvas using the retrieved data, adding information to the
-x and y axis as well. */
-function canvasTest(dataPoints){
+/* Draws on the canvas using the retrieved data, adding information to the x and y axis as well. 
+Finally, apply the listener to listen for user actions and allow interactivity. */
+function drawOnCanvas(dataPoints){
 	
 	// Graph title and global information.
-	graphCanvas.context.font="12px Arial";
+	graphCanvas.context.font="11px Arial";
 	graphCanvas.context.fillText("Average temperature over 366 days: " + graphCanvas.avgYear+ "\u2103" , 20, 20);
 	graphCanvas.context.fillText("Min: " + graphCanvas.minMaxYear[0] + "\u2103" + " Max: " + graphCanvas.minMaxYear[1] + "\u2103", 20, 30);
 	graphCanvas.context.fillText("Hover over a data point for details." , 20, 40);
@@ -324,7 +325,7 @@ function canvasTest(dataPoints){
 		graphCanvas.context.lineTo(graphCanvas.width, graphCanvas.intervalsY[i]);
 		graphCanvas.context.stroke();
 		
-     }
+    }
 	 
 	// Create styles for graph lines.
 	var gradient = graphCanvas.context.createLinearGradient(0,0,graphCanvas.width,0);
@@ -344,8 +345,8 @@ function canvasTest(dataPoints){
 	// Only when all of this is done, set listener.
 	graphCanvas.canvasInteraction.addEventListener('mousemove', function(event) {
 	
-	var mousePos = getMousePos(graphCanvas.canvasInteraction, event);
-	compareMouseXYAgainstData(mousePos.x, mousePos.y);
+        var mousePos = getMousePos(graphCanvas.canvasInteraction, event);
+        compareMouseXYAgainstData(mousePos.x, mousePos.y);
 	
 	}, false);
 	 
