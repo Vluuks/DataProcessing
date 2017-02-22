@@ -3,7 +3,11 @@ import sys
 import json
 
 # Tutorial/example from : https://jaranto.blogspot.nl/2012/12/transform-csv-file-to-json-file-with.html
-fieldNames=["country","thousandmetrictons","year"]
+fieldNames=["Regio","Jaar","Totaal",
+					"Infrastructuur","Bebouwing",
+					"Semibebouwing", "Recreatie",
+					"Agrarisch","Natuur",
+					"Binnenwater","Buitenwater"]
 
 def convert(fileName):
      
