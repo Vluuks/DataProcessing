@@ -1,0 +1,84 @@
+getJSONfile(setUpBarChart);
+
+function getJSONfile(callback){
+    d3.json("./banaan_20.json", function(rawData) {
+        callback(rawData);
+    });
+}
+
+function logDataDebug(data){
+    
+    console.log(data);
+    
+    
+    for(var i = 0; i < data.length; i ++){
+        console.log(data[i].thousandmetrictons);
+    }
+}
+
+function setUpBarChart(data){
+    
+    logDataDebug(data);
+    
+    // Define width and height of the SVG and margins
+    var margin = {top: 20, right: 40, bottom: 60, left: 40},
+        width = 1000 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+ 
+ 
+    // Create a scaling function for X and Y
+    var scalingFunctionY = d3.scale.linear()
+        .range([height, 0])
+        .domain([0, d3.max(data, function(d) { return +d.thousandmetrictons; })]);
+    var scalingFunctionX = d3.scale.ordinal()
+        .rangeRoundBands([0, width], .1)
+        .domain(data.map(function(d) { return d.country; }));
+    
+    // Find chart and set properties
+    var svg = d3.select(".chart")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+    var barWidth = width / data.length;
+    
+    // Create X axis
+    var xAxis = d3.svg.axis()
+        .scale(scalingFunctionX)
+        .orient("bottom");
+        
+    svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+    // Add the actual bars
+    var barGroups = svg.selectAll("g")
+    .data(data)
+        .enter()
+            .append("g")
+                .attr("transform", function(d, i) { return "translate(" + i * barWidth + ",0)"; });
+                
+    barGroups.append("rect") // add the bar for every data entry
+        .attr("class", "bar")
+        .attr("x", function(d) { return scalingFunctionX(d.country); })
+        .attr("y", function(d) { return scalingFunctionY(+d.thousandmetrictons); })
+        .attr("height", function(d) { return height - scalingFunctionY(+d.thousandmetrictons); })
+        .attr("width", scalingFunctionX.rangeBand())
+        .style("fill", "steelblue");
+
+    barGroups.append("text")
+        .attr("x", function(d) { return scalingFunctionX(d.country); })
+        .attr("y", function(d) { return scalingFunctionY(+d.thousandmetrictons); })
+        .attr("dy", ".75em")
+        .text(function(d) { return +d.thousandmetrictons; });
+
+    svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+    
+
+}
