@@ -44,3 +44,39 @@ d3.tsv("data.tsv", type, function(error, data) {
       .attr("height", function(d) { return height - y(d.value); })
       .attr("width", x.rangeBand());
 });
+
+
+d3.select(this).attr({
+              fill: "orange",
+              r: radius * 2
+            });
+
+
+var yTextPadding = 20;
+svg.selectAll(".bartext")
+.data(data)
+.enter()
+.append("text")
+.attr("class", "bartext")
+.attr("text-anchor", "middle")
+.attr("fill", "white")
+.attr("x", function(d,i) {
+    return x(i)+x.rangeBand()/2;
+})
+.attr("y", function(d,i) {
+    return height-y(d)+yTextPadding;
+})
+.text(function(d){
+     return d;
+});
+
+
+
+
+
+
+
+
+
+
+
