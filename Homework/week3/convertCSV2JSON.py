@@ -1,32 +1,37 @@
+# Renske Talsma
+# 10896503
+
+# This is a small program that takes a CSV file and transforms it into a JSON file. 
+# Make sure the CSV file had the headers on the first line as these are kept. The
+# name of the JSON file will automatically be generated from the CSV file.
+
+from collections import OrderedDict
 import csv
-import sys
 import json
+import sys
 
-# Tutorial/example from : https://jaranto.blogspot.nl/2012/12/transform-csv-file-to-json-file-with.html
-fieldNames=["Regio","Jaar","Totaal",
-					"Infrastructuur","Bebouwing",
-					"Semibebouwing", "Recreatie",
-					"Agrarisch","Natuur",
-					"Binnenwater","Buitenwater"]
-
+# Get source file from command line.
 def convert(fileName):
      
-    # Open files.
-    csvFilename = fileName[0]
-    jsonFilename = csvFilename.split(".")[0]+".json"
-    csvFile = open(csvFilename, 'r')
-    jsonFile = open(jsonFilename, 'w') 
+    # Prepare files.
+    csvFileName = fileName[0]
+    jsonFileName = csvFileName.split(".")[0]+".json"
     
-    # Make CSVreader.
-    csvReader = csv.DictReader(csvFile, fieldNames)
-         
+    # Open the CSV file and read row by row.
+    with open(csvFileName,'r') as f:
+        reader = csv.reader(f)
+        headerlist = next(reader)
+        csvlist = []
+        for row in reader:
+                d = OrderedDict()
+                for i, x in enumerate(row):
+                        d[headerlist[i]] = x
+                csvlist.append(d)
+
     # Write to JSON file.
-    data = json.dumps([r for r in csvReader])
-    jsonFile.write(data) 
- 
-    # Close files.
-    csvFile.close()
-    jsonFile.close()
- 
+    with open(jsonFileName,'w') as f:
+        json.dump(csvlist,f)
+
+
 if __name__=="__main__":
  convert(sys.argv[1:])
