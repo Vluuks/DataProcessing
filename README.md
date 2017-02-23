@@ -1,4 +1,5 @@
 # DataProcessing
 2017
+Renske Talsma (10896503)
 
-[https://vluuks.github.io/DataProcessing/](Pages URL)
+[Pages](https://vluuks.github.io/DataProcessing/)
