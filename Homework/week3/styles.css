@@ -1,5 +1,5 @@
 body{
-    padding-top:50px;
+    padding-top:10px;
     padding-left:20px;
 }
 h2{
@@ -12,9 +12,6 @@ h2{
   font: 11px sans-serif;
 }
 
-.axis{
-    color: #55555;
-}
 
 .axis path,
 .axis line {
