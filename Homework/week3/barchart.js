@@ -54,6 +54,7 @@ function constructChart(data){
     // Colors to use and labels.
     var labels = ["Infrastructuur", "Bebouwing", "Semibebouwing", "Recreatie", "Agrarisch", "Natuur", "Binnenwater", "Buitenwater"]; //TODO
     var colors = ["#747d8c", "#993710", "#cae216", "#a35b99", "#f4bc77", "#4c7a3a", "#77e1f4", "#372f8e"];
+    var totalsProv = [295964,574876,268043,342074,241231,513630,144913,409191,341880,293344,508206,220950];
     const NL_SIZE = 4154302;
 
     
@@ -121,7 +122,7 @@ function constructChart(data){
             var xPosition = d3.mouse(this)[0] - 15;
             var yPosition = d3.mouse(this)[1] - 25;
             tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-        tooltip.select("text").html(d.y + " ha    </br>" + (d.y / NL_SIZE * 100).toFixed(2)  +  "% van Nederland"); // wtf
+        tooltip.select("text").html(d.y + " ha    </br>" + (d.y / NL_SIZE * 100).toFixed(2)  +  "% van Nederland" + (d.y / totalsProv[i] * 100 ).toFixed(2) + "van de pronvincie"); // wtf klopt nog niet, wat is i daar? type en niet provincie i guess??
         
         });
 
