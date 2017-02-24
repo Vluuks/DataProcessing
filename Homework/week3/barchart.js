@@ -1,3 +1,8 @@
+/* Renske Talsma
+	10896503
+	SORRY TIM IK WAS HET WEER VERGETEN VERGEEF DEZE COMMIT
+*/
+
 /* Wait until page is ready. */
 $('document').ready(function(){
 	getJSONfile(constructChart);
