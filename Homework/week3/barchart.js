@@ -1,19 +1,16 @@
-getJSONfile(constructChart);
+/* Wait until page is ready. */
+$('document').ready(function(){
+	getJSONfile(constructChart);
+});
 
+/* Retrieves data from a given JSON file. */
 function getJSONfile(callback){
     d3.json("./data.json", function(rawData) {
         callback(rawData);
     });
 }
 
-// TODO
-// onpageload
-// totalen per provincie
-// totalen per type
-// totalen nederland
-// mooiere kleuren
-
-/* Makes a stacked bar chart with the data. Different tutorials  and examples used:
+/* Makes a stacked bar chart with the data. Different tutorials and examples used:
 http://stackoverflow.com/questions/31981299/d3-stacked-chart-with-array-or-json-data
 http://jsfiddle.net/xavipolo/q5q6331p/
 https://bl.ocks.org/mbostock/3886208
@@ -51,15 +48,56 @@ function constructChart(data){
       .domain([0, d3.max(dataset, function(d) {  return d3.max(d, function(d) { return d.y0 + d.y; });  })])
       .range([height, 0]);
 
-    // Colors to use and labels.
-    var labels = ["Infrastructuur", "Bebouwing", "Semibebouwing", "Recreatie", "Agrarisch", "Natuur", "Binnenwater", "Buitenwater"]; //TODO
-    var colors = ["#747d8c", "#993710", "#cae216", "#a35b99", "#f4bc77", "#4c7a3a", "#77e1f4", "#372f8e"];
-    var totalsProv = [295964,574876,268043,342074,241231,513630,144913,409191,341880,293344,508206,220950];
+	  
+    /* TOOLTIPS, COLORS AND LABELS*/		
+	
+	// Colors to use and labels.
+    var labels = ["Infrastructuur", "Bebouwing", "Semibebouwing", "Recreatie", "Agrarisch", "Natuur", "Binnenwater", "Buitenwater"]; 
+    var colors = ["#8c510a", "#bf812d", "#dfc27d", "#f6e8c3", "#c7eae5", "#80cdc1", "#35978f", "#01665e"];
+    var totalsProv = [295964, 574876, 268043, 342074, 241231, 513630, 144913, 409191, 341880, 293344, 508206, 220950];
+	var totalsType = [116123, 355986, 51002, 102561, 2252233, 490088, 367982, 418325];
     const NL_SIZE = 4154302;
+	
+	// For the bar chart, displays total ha, percentage of Netherlands and percentage of provincie.
+	var tip = d3.tip()
+		.attr('class', 'd3-tip')
+		.offset([-20, 0])
+		.html(function(d, i) {
+			return d.y + " hectare </br>" + (d.y / NL_SIZE * 100).toFixed(2)  +  "% van Nederland</br>"
+			+ (d.y / totalsProv[i] * 100 ).toFixed(2) + "% van de provincie";
+	});
+	svg.call(tip);
 
-    
-    /* AXES AND AXIS LABELS */
-    
+	// For the legend, displays total ha of this type, and the percentage of the Netherlands composed of this type.
+	var tipLegend = d3.tip()
+		.attr('class', 'd3-tip')
+		.offset([-20, 0])
+		.html(function(d, i) {
+			var total = totalsType.slice().reverse()[i];
+			return  total + " hectare </br>" + (total / NL_SIZE * 100).toFixed(2)  +  "% van Nederland</br>";
+	});
+	svg.call(tipLegend);
+
+	
+    /* AXES AND TITLE */
+
+	svg.append("text")
+		.attr("x", (width / 2))             
+		.attr("y", 0 - (margin.top / 2))
+		.attr("text-anchor", "middle")  
+		.style("font-size", "36px") 
+		.style("text-decoration", "bold")
+		.style("font-family", "arial")
+		.text("Bodemgebruik per provincie in hectare");
+		
+	svg.append("text")
+		.attr("x", (width / 2))             
+		.attr("y", 0 - 20)
+		.attr("text-anchor", "middle")  
+		.style("font-size", "15px") 
+		.style("font-family", "arial")
+		.text("Bron: CBS, cijfers bodemgebruik Nederland 2012");
+
     var yAxis = d3.svg.axis()
       .scale(y)
       .orient("left")
@@ -99,7 +137,7 @@ function constructChart(data){
     var groups = svg.selectAll("g.rectgroups")
         .data(dataset)
         .enter().append("g")
-    // Give each rect a class with the color so we can later reference them from the legend.
+		// Give each rect a class with the color so we can later reference them from the legend.
         .attr("class", function(d, i){ return "C" + colors[i].substr(1); })
         .style("fill", function(d, i) { return colors[i]; })
 
@@ -114,21 +152,20 @@ function constructChart(data){
         .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
         .attr("width", x.rangeBand())
         .attr("opacity", "0.9")
-        
+		
         // Handle mouseovers of the graph, display the tooltip but adjust opacity as well. 
-        .on("mouseover", function() { tooltip.style("display", null); d3.select(this).style("opacity", "1"); })
-        .on("mouseout", function(d, i) { d3.select(this).style("opacity", "0.9"); tooltip.style("display", "none"); })
-        .on("mousemove", function(d, i) {
-            var xPosition = d3.mouse(this)[0] - 15;
-            var yPosition = d3.mouse(this)[1] - 25;
-            tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-        tooltip.select("text").html(d.y + " ha    </br>" + (d.y / NL_SIZE * 100).toFixed(2)  +  "% van Nederland" + (d.y / totalsProv[i] * 100 ).toFixed(2) + "van de pronvincie"); // wtf klopt nog niet, wat is i daar? type en niet provincie i guess??
-        
-        });
+        .on("mouseover", function(d, i) { 
+			tip.show(d, i)
+			d3.select(this).style("opacity", "1"); 
+		})
+        .on("mouseout", function(d, i) { 
+			tip.hide(d, i)
+			d3.select(this).style("opacity", "0.9"); 
+		})
 
         
-    /* LEGEND, TOOLTIPS AND TITLE */    
-        
+    /* LEGEND */    
+   
     // Draw legend with colors.
     var legend = svg.selectAll(".legend")
         .data(colors)
@@ -145,16 +182,16 @@ function constructChart(data){
         .style("fill", function(d, i) {return colors.slice().reverse()[i];})
         .attr("class", function(d, i) {return "C" + colors.slice().reverse()[i].substr(1);})
       
-        // When hovering over the legend, highlight the corresponding parts of the bar graph.
+        // When hovering over the legend, highlight the corresponding parts of the bar graph and show tooltip.
         .on("mouseover", function(d, i){ 
-
-             // Adjust the opacity on mouseover.
+			tipLegend.show(d, i);
             var colorClass = "." + d3.select(this).attr("class")
             d3.selectAll(colorClass).selectAll(".barrect").style("opacity", "1");
-           
+
         })    
-        // Reset the opacity when the mouse moves out of the legend.
+        // Reset the opacity when the mouse moves out of the legend and remove tooltip.
         .on("mouseout", function(d, i){
+			tipLegend.hide(d, i);
             var colorClass = "." + d3.select(this).attr("class");
             d3.selectAll(colorClass).selectAll(".barrect").style("opacity", "0.9"); 
         });
@@ -168,48 +205,15 @@ function constructChart(data){
         .style("font-size", 12)
         .style("text-anchor", "start")
         .text(function(d, i) { 
-        switch (i) {
-          case 0: return "Buitenwater";
-          case 1: return "Binnenwater";
-          case 2: return "Natuur";
-          case 3: return "Agrarisch";
-          case 4: return "Recreatie";
-          case 5: return "Semi-bebouwing";
-          case 6: return "Bebouwing";
-          case 7: return "Infrastructuur";
-        }
-        });
-              
-    // Add tooltips to graph.
-    var tooltip = svg.append("g")
-      .attr("class", "tooltip")
-      .style("display", "none");
-    
-    // Create a label to show tooltip.
-    tooltip.append("rect")
-      .attr("x", 15)
-      .attr("dy", "1.2em")
-      .style("text-anchor", "middle")
-      .attr("width", 70)
-      .attr("height", 16)
-      .attr("fill", "white")
-      .style("opacity", 0.5);
-
-    // Add text to the label.
-    tooltip.append("text")
-      .attr("x", 16)
-      .attr("height", 20)
-      .attr("dy", "1.2em")
-      .attr("font-size", "10px")
-      .attr("font-family", "Arial");
-      
-      // Add the title to the graph.
-      svg.append("text")
-        .attr("x", (width / 2))             
-        .attr("y", 0 - (margin.top / 2))
-        .attr("text-anchor", "middle")  
-        .style("font-size", "36px") 
-        .style("text-decoration", "bold")
-        .style("font-family", "arial")
-        .text("Bodemgebruik per provincie in hectare");
+			switch (i) {
+			  case 0: return "Buitenwater";
+			  case 1: return "Binnenwater";
+			  case 2: return "Natuur";
+			  case 3: return "Agrarisch";
+			  case 4: return "Recreatie";
+			  case 5: return "Semi-bebouwing";
+			  case 6: return "Bebouwing";
+			  case 7: return "Infrastructuur";
+			}
+		});
 }

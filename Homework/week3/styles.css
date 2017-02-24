@@ -11,7 +11,14 @@ h2{
 .axis text {
   font: 11px sans-serif;
 }
-
+.d3-tip {
+  line-height: 1;
+  font-family: "Arial";
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #ffffff;
+  border-radius: 2px;
+}
 
 .axis path,
 .axis line {
@@ -21,6 +28,6 @@ h2{
 }
 .legend{
     font-family: "Arial";
-    font-size:11px;
+    font-size: 11px;
 }
 
