@@ -20,7 +20,7 @@ https://bl.ocks.org/mbostock/3886208
 */ 
 function constructChart(data){
 
-    // Set SVG size and margins.
+    /* CHART INITIALIZATION */
     var margin = {top: 100, right: 180, bottom: 100, left: 100};
     var width = 1200 - margin.left - margin.right,
         height = 840 - margin.top - margin.bottom;
@@ -32,15 +32,17 @@ function constructChart(data){
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+      
+    /* DATA TRANSFORMATION */
+    
     // Transpose the data into the blocks of the stacked chart.
-    var labels = ["Infrastructuur", "Bebouwing", "Semibebouwing", "Recreatie", "Agrarisch", "Natuur", "Binnenwater", "Buitenwater"]; //TODO
     var dataset = d3.layout.stack()(["Infrastructuur", "Bebouwing", "Semibebouwing", "Recreatie", "Agrarisch", "Natuur", "Binnenwater", "Buitenwater"].map(function(type) {
       return data.map(function(d) {
         return {x: (d.Regio), y: +d[type]};
       });
     }));
 
-    // Set x, y and colors.
+    // Create transform function for X and Y.
     var x = d3.scale.ordinal()
       .domain(dataset[0].map(function(d) { return d.x; }))
       .rangeRoundBands([10, width-10], 0.02);
@@ -48,10 +50,15 @@ function constructChart(data){
     var y = d3.scale.linear()
       .domain([0, d3.max(dataset, function(d) {  return d3.max(d, function(d) { return d.y0 + d.y; });  })])
       .range([height, 0]);
-      
-    var colors = ["#747d8c", "#993710", "#cae216", "#a35b99", "#f4bc77", "#4c7a3a", "#77e1f4", "#372f8e"];
 
-    // Define and draw axes.
+    // Colors to use and labels.
+    var labels = ["Infrastructuur", "Bebouwing", "Semibebouwing", "Recreatie", "Agrarisch", "Natuur", "Binnenwater", "Buitenwater"]; //TODO
+    var colors = ["#747d8c", "#993710", "#cae216", "#a35b99", "#f4bc77", "#4c7a3a", "#77e1f4", "#372f8e"];
+    const NL_SIZE = 4154302;
+
+    
+    /* AXES AND AXIS LABELS */
+    
     var yAxis = d3.svg.axis()
       .scale(y)
       .orient("left")
@@ -84,6 +91,9 @@ function constructChart(data){
             .attr("dy", ".15em")
             .attr("transform", "rotate(-65)");
 
+            
+    /* ACTUAL BARS OF THE CHART */        
+            
     //  Make groups of the rectangles.
     var groups = svg.selectAll("g.rectgroups")
         .data(dataset)
@@ -97,6 +107,7 @@ function constructChart(data){
         .data(function(d) { return d; })
         .enter()
         .append("rect")
+        .attr("class", "barrect")
         .attr("x", function(d) { return x(d.x); })
         .attr("y", function(d) { return y(d.y0 + d.y); })
         .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
@@ -110,46 +121,52 @@ function constructChart(data){
             var xPosition = d3.mouse(this)[0] - 15;
             var yPosition = d3.mouse(this)[1] - 25;
             tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-        tooltip.select("text").text(d.y + " ha");  // would like to add the type?
+        tooltip.select("text").html(d.y + " ha    </br>" + (d.y / NL_SIZE * 100).toFixed(2)  +  "% van Nederland"); // wtf
+        
         });
 
+        
+    /* LEGEND, TOOLTIPS AND TITLE */    
+        
     // Draw legend with colors.
     var legend = svg.selectAll(".legend")
         .data(colors)
         .enter().append("g")
             .attr("transform", function(d, i) { return "translate(30," + i * 19 + ")"; });
     
+    // Add color icons to the legend. The array is reversed so they line up with the graph. 
     legend.append("rect")
-      .attr("x", width - 18)
-      .attr("y", function(d, i){return i * 20})
-      .attr("width", 25)
-      .attr("height", 25)
-      .style("opacity", "1")
-      .style("fill", function(d, i) {return colors.slice().reverse()[i];})
-      .attr("class", function(d, i) {return "C" + colors.slice().reverse()[i].substr(1);})
-            // When hovering over the legend, highlight the corresponding parts of the bar graph.
-            .on("mouseover", function(d, i){ 
+        .attr("x", width - 18)
+        .attr("y", function(d, i){return i * 20})
+        .attr("width", 25)
+        .attr("height", 25)
+        .style("opacity", "1")
+        .style("fill", function(d, i) {return colors.slice().reverse()[i];})
+        .attr("class", function(d, i) {return "C" + colors.slice().reverse()[i].substr(1);})
+      
+        // When hovering over the legend, highlight the corresponding parts of the bar graph.
+        .on("mouseover", function(d, i){ 
 
-                 // get the color of this rectangle
-                var colorClass = "." + d3.select(this).attr("class")
-                d3.selectAll(colorClass).style("opacity", "1")
-        
-               
-            })    
-            // Reset color when moving out again
-            .on("mouseout", function(d, i){
-                var colorClass = "." + d3.select(this).attr("class");
-                d3.selectAll(colorClass).style("opacity", "0.9"); 
-            });
+             // Adjust the opacity on mouseover.
+            var colorClass = "." + d3.select(this).attr("class")
+            d3.selectAll(colorClass).selectAll(".barrect").style("opacity", "1");
+           
+        })    
+        // Reset the opacity when the mouse moves out of the legend.
+        .on("mouseout", function(d, i){
+            var colorClass = "." + d3.select(this).attr("class");
+            d3.selectAll(colorClass).selectAll(".barrect").style("opacity", "0.9"); 
+        });
      
+    // Add text to the legend.
     legend.append("text")
-      .attr("x", width + 15)
-      .attr("y", function(d, i){return i * 20})
-      .attr("dy", "1.40em")
-      .style("font-family", "Arial")
-      .style("font-size", 12)
-      .style("text-anchor", "start")
-      .text(function(d, i) { 
+        .attr("x", width + 15)
+        .attr("y", function(d, i){return i * 20})
+        .attr("dy", "1.40em")
+        .style("font-family", "Arial")
+        .style("font-size", 12)
+        .style("text-anchor", "start")
+        .text(function(d, i) { 
         switch (i) {
           case 0: return "Buitenwater";
           case 1: return "Binnenwater";
@@ -161,16 +178,13 @@ function constructChart(data){
           case 7: return "Infrastructuur";
         }
         });
-       
-
-
-
-    // Prep the tooltip bits, initial display is hidden
+              
+    // Add tooltips to graph.
     var tooltip = svg.append("g")
       .attr("class", "tooltip")
       .style("display", "none");
     
-    // Add the tootltip label
+    // Create a label to show tooltip.
     tooltip.append("rect")
       .attr("x", 15)
       .attr("dy", "1.2em")
@@ -180,15 +194,15 @@ function constructChart(data){
       .attr("fill", "white")
       .style("opacity", 0.5);
 
-    // Add text to the label
+    // Add text to the label.
     tooltip.append("text")
       .attr("x", 16)
+      .attr("height", 20)
       .attr("dy", "1.2em")
-      //.style("text-anchor", "middle")
       .attr("font-size", "10px")
       .attr("font-family", "Arial");
       
-      // Add the title
+      // Add the title to the graph.
       svg.append("text")
         .attr("x", (width / 2))             
         .attr("y", 0 - (margin.top / 2))
