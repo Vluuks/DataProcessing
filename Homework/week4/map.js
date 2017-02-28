@@ -1,5 +1,6 @@
 /* Renske Talsma
 	10896503
+	
 */
 
 /* Wait until page is ready. */
@@ -14,39 +15,41 @@ function getJSONfile(callback){
     });
 }
 
-
-
-
 function doSomething(data){
 	console.log(data);
-
-	
-	
-	
-	
 	mapDataToCountryCode(data);
 }
 
+function theFantasticBeautifulAmazingMap(dataDictionary){
 
-// function theMap(){
+	console.log(document.getElementById('container'));
 
-		// var map = new Datamap({
+	var map = new Datamap({
 		
-		// element: document.getElementById('container'),
-		// defaultFill: 'rgba(23,48,210,0.9)',
-		// geographyConfig: {
-            // highlightOnHover: true,
-            // popupOnHover: true
-        // }
-		// data:{
-			
-		// }
+		element: document.getElementById('container'),
 		
-	// });
-	
-	
+		geographyConfig: {
+            highlightOnHover: true,
+            popupOnHover: true
+        },
+		
+		fills:{
+			TEST: 'red',
+			defaultFill: '#00446A' 
+		},
+		
+		data: dataDictionary
+		
+	});
+		
+}
+
+
+/* This function determines the fill key of an object based on the
+total amount of endangered plants. The more plants, the darker the color. */
+// function determineFillKey(){
+
 // }
-
 
 function mapDataToCountryCode(unmappedData){
 	
@@ -60,4 +63,6 @@ function mapDataToCountryCode(unmappedData){
 	}
 	
 	console.log(dataDictionary);
+	
+	theFantasticBeautifulAmazingMap(dataDictionary);
 }
