@@ -8,7 +8,7 @@ var colors = [ "#ffffb2", "#fed976", "#feb24c", "#fd8d3c",  "#fc4e2a", "#e31a1c"
 
 /* Wait until page is ready. */
 $('document').ready(function(){
-	getJSONfile(doSomething);
+	getJSONfile(mapDataToCountryCode);
 });
 
 /* Retrieves data from a given JSON file. */
@@ -18,13 +18,8 @@ function getJSONfile(callback){
     });
 }
 
-function doSomething(data){
-	console.log(data);
-	mapDataToCountryCode(data);
-}
 
 function theFantasticBeautifulAmazingMap(dataDictionary){
-	
 
 	console.log(document.getElementById('container'));
 
@@ -39,20 +34,13 @@ function theFantasticBeautifulAmazingMap(dataDictionary){
                         ': ' + data.Amount,
                         '</strong></div>'].join('');
             },
-			highlightFillColor: '#D3D3D3',
-			highlightBorderColor: '#C0C0C0',
+			highlightFillColor: "rgb(211, 211, 211)",
+			highlightBorderColor: "rgb(192, 192, 192)",
 			highlightBorderWidth: 4,
 			highlightBorderOpacity: 1
         },
 		
 		fills:{
-			a: colors[0],
-			b: colors[1],
-			c: colors[2],
-			d: colors[3],
-			e: colors[4],
-			f: colors[5],
-			g: colors[6],
 			defaultFill: '#999999' 
 		},
 		
@@ -63,34 +51,8 @@ function theFantasticBeautifulAmazingMap(dataDictionary){
 }
 
 
-/* This function determines the fill key of an object based on the
-total amount of endangered plants. The more plants, the darker the color. */
-function determineFillKey(amount){
-		
-		console.log(amount);
-		console.log(0 < +amount <=10);
-		console.log(0 < amount && amount  <=10);
-		
-		if (amount == 0)
-			return "a";
-		else if(0 < amount && amount <= 10)
-			return "b";
-		else if(10 < amount && amount  <= 20)
-			return "c";
-		else if(20 < amount && amount  <= 30)
-			return "d";
-		else if(30 < amount && amount  <= 40)
-			return "e";
-		else if(40 < amount && amount  <= 50)
-			return "f";
-		else if(amount >= 50)
-			return "g";			
-
-}
-
-
 function makeRGBA(anInt){
-		return "rgba(250, 0, 50," + (anInt/100) + ")"
+		return "rgba(250, 60, 20," + (anInt/100) + ")"
 }
 
 
@@ -108,12 +70,9 @@ function mapDataToCountryCode(unmappedData){
 		var key = unmappedData[i]['Country Code'];
 		var plantAmount = unmappedData[i]['Amount'];
 		
-		console.log(+plantAmount);
-		console.log(paletteScale(1000));
-		
 		// Check the amount because logarithmic scale cannot handle 0 value
-		if(plantAmount == 0)
-			unmappedData[i]['FillColor'] = makeRGBA(1);
+		if(+plantAmount == 0)
+			unmappedData[i]['fillColor'] = makeRGBA(15);
 		else{
 			var fillColor = makeRGBA(parseInt(paletteScale(+plantAmount)));
 			unmappedData[i]['fillColor'] = fillColor;
@@ -121,11 +80,7 @@ function mapDataToCountryCode(unmappedData){
 		
 		dataDictionary[key] = unmappedData[i];
 	}
-	
+
 	console.log(dataDictionary);
-	
-	for( var key in dataDictionary)
-		console.log(dataDictionary[key].Amount);
-	
 	theFantasticBeautifulAmazingMap(dataDictionary);
 }
