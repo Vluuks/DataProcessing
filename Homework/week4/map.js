@@ -38,7 +38,11 @@ function theFantasticBeautifulAmazingMap(dataDictionary){
                         'Threatened plant species in ' + geo.properties.name,
                         ': ' + data.Amount,
                         '</strong></div>'].join('');
-            }
+            },
+			highlightFillColor: '#D3D3D3',
+			highlightBorderColor: '#C0C0C0',
+			highlightBorderWidth: 4,
+			highlightBorderOpacity: 1
         },
 		
 		fills:{
@@ -85,7 +89,9 @@ function determineFillKey(amount){
 }
 
 
-
+function makeRGBA(anInt){
+		return "rgba(250, 0, 50," + (anInt/100) + ")"
+}
 
 
 function mapDataToCountryCode(unmappedData){
@@ -93,15 +99,26 @@ function mapDataToCountryCode(unmappedData){
 	dataDictionary = {};
 	
 	// Create function to map colors to data
-	var paletteScale = d3.scale.linear()
-            .domain([0,2000]) // TODO MAGIC NUMBERS
-            .range(["#fee391","#b10026"])
+	var paletteScale = d3.scale.log()
+            .domain([0.1,1800]) // TODO MAGIC NUMBERS
+            .range([1, 100]);
 	
 	for (var i =0; i < unmappedData.length; i++){
 		
 		var key = unmappedData[i]['Country Code'];
 		var plantAmount = unmappedData[i]['Amount'];
-		unmappedData[i]['fillColor'] = paletteScale(+plantAmount);
+		
+		console.log(+plantAmount);
+		console.log(paletteScale(1000));
+		
+		// Check the amount because logarithmic scale cannot handle 0 value
+		if(plantAmount == 0)
+			unmappedData[i]['FillColor'] = makeRGBA(1);
+		else{
+			var fillColor = makeRGBA(parseInt(paletteScale(+plantAmount)));
+			unmappedData[i]['fillColor'] = fillColor;
+		}
+		
 		dataDictionary[key] = unmappedData[i];
 	}
 	

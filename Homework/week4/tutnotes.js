@@ -8,7 +8,7 @@
     // color can be whatever you wish
     var paletteScale = d3.scale.linear()
             .domain([minValue,maxValue])
-            .range(["#EFEFFF","#02386F"]); // blue color
+            .range([parseInt(EFEFFF, 16), parseInt(02386F, 16)]); // blue color
     // fill dataset in appropriate format
     series.forEach(function(item){ //
         // item example value ["USA", 70]
@@ -16,3 +16,6 @@
                 value = item[1];
         dataset[iso] = { numberOfThings: value, fillColor: paletteScale(value) };
     });
+	
+	
+	"World","WLD","15056"
