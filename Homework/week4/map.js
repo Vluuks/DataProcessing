@@ -29,10 +29,10 @@ function theFantasticBeautifulAmazingMap(dataDictionary){
 		
 		geographyConfig: {
             popupTemplate: function(geo, data) {
-                return ['<div class="hoverinfo"><strong>',
+                return ['<div class="hoverinfo">',
                         'Threatened plant species in ' + geo.properties.name,
                         ': ' + data.Amount,
-                        '</strong></div>'].join('');
+                        '</div>'].join('');
             },
 			highlightFillColor: "rgb(211, 211, 211)",
 			highlightBorderColor: "rgb(192, 192, 192)",
@@ -50,6 +50,33 @@ function theFantasticBeautifulAmazingMap(dataDictionary){
 		
 }
 
+function drawLegend(paletteScale){
+	
+	var ticks = [1, 5, 10, 20, 50, 100, 200, 400, 800, 1600];
+	var tickColors = [];
+	
+	for(var i = 0; i < ticks.length; i ++)
+		 tickColors[i] = makeRGBA(parseInt(paletteScale(ticks[i])));
+	
+	var legendScale = d3.scale.linear()
+    .domain(ticks)
+	.range(tickColors);
+	
+	var horizontalLegend = d3.svg.legend()
+	
+	horizontalLegend.units("")
+		.cellWidth(60)
+		.cellHeight(20)
+		.inputScale(legendScale)
+		.cellStepping(10);
+	d3.select("svg")
+		.append("g")
+			.attr("transform", "translate(50,70)")
+			.attr("class", "legend")
+			.call(horizontalLegend);
+}
+
+
 
 function makeRGBA(anInt){
 		return "rgba(250, 60, 20," + (anInt/100) + ")"
@@ -65,10 +92,15 @@ function mapDataToCountryCode(unmappedData){
             .domain([0.1,1800]) // TODO MAGIC NUMBERS
             .range([1, 100]);
 	
+	var dictMax = 0;
+	
 	for (var i =0; i < unmappedData.length; i++){
 		
 		var key = unmappedData[i]['Country Code'];
 		var plantAmount = unmappedData[i]['Amount'];
+		
+		if(plantAmount > dictMax)
+			dictMax = plantAmount;
 		
 		// Check the amount because logarithmic scale cannot handle 0 value
 		if(+plantAmount == 0)
@@ -83,4 +115,5 @@ function mapDataToCountryCode(unmappedData){
 
 	console.log(dataDictionary);
 	theFantasticBeautifulAmazingMap(dataDictionary);
+	drawLegend(paletteScale);
 }

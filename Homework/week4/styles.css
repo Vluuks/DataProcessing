@@ -1,0 +1,30 @@
+body{
+	font-family: "Arial";
+}
+#datasource{
+	color: #434343;
+	font-size: 12px;
+	padding-left: 30px;
+}
+#title{
+	padding-top: 20px;
+	padding-left: 30px;
+	font-size: 24px;	
+	margin: 0 auto;
+	color: #454545;
+}
+.datamap{
+	margin-left: 20px;
+	margin-top: 10px;
+	border: 10px;
+	border-style: solid;
+	border-color: #EEEEEE;
+    border-radius: 5px;
+}
+.hoverinfo{
+	font-family: "Arial";
+	color: #434343;
+}
+.mutLegendGroupText{
+	font-size: 12px;	
+}
