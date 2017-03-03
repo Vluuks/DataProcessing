@@ -3,13 +3,15 @@
 	A visualization that shows a map with endangered plant species. 
 	Data source: http://data.worldbank.org/indicator/EN.HPT.THRD.NO
 -->
+
 <!DOCTYPE html>
 <html>
 
     <head>
 	
 		<title>Week 4</title>
-		<!-- External scripts and stylesheets -->
+		
+		<!-- External scripts and stylesheets. -->
 		<link rel="stylesheet" href="styles.css">
 		<script src="Libraries/d3.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -21,9 +23,10 @@
 	</head>
     
 	<body>
-		
-		<a href="../../index.html"><p>Go back</p></a>
 	
+		<!-- Link back to github pages. -->
+		<a href="../../index.html"><p>Go back</p></a>
+		
 		<!-- Selection menu for colors. -->
 		<select id="colorChoice">
 			<option value="red">Red</option>
@@ -37,8 +40,10 @@
 			<h2 id="title">Threatened plant species per country (2015)</h2>
 			<a id="datasource" href="http://data.worldbank.org/indicator/EN.HPT.THRD.NO"> Data Source</a>
 		</div>
+		
     </body>
 </html>
+
 <!--
 
 	The mouseover events in this map are rather simple, they only show the name of the country and the amount of threatened plants.
