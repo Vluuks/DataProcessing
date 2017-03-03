@@ -5,8 +5,10 @@
 -->
 <!DOCTYPE html>
 <html>
+
     <head>
-        <title>Week 2</title>
+	
+        <title>Week 4</title>
         <a href="../../index.html"><p>Go back</p></a>
         
 		<!-- External scripts and stylesheets -->
@@ -19,24 +21,35 @@
 		<script src="map.js"></script>
 		
 	</head>
-    <body>
-                <select id="colorChoice">
-                    <option value="pink">Red</option>
-                    <option value="green">Green</option>
-                    <option value="blue">Blue</option>
-                    <option value="blue">Grayscale</option>
-                </select>
-             <input type="button" value="Change color!" onclick="changeColor()">
-           
-			<div id="container" style="position: absolute; width: 1200px; height: 600px;">
-							<h2 id="title">Threatened plant species per country (2015)</h2>
-							<a id="datasource" href="http://data.worldbank.org/indicator/EN.HPT.THRD.NO"> Data Source</a>
-			</div>
+    
+	<body>
+		<!-- Selection menu for colors. -->
+		<select id="colorChoice">
+			<option value="red">Red</option>
+			<option value="green">Green</option>
+			<option value="blue">Blue</option>
+		</select>
+		 <input type="button" value="Change color!" onclick="setColor()">
+         
+		<!-- Container div for the map and source. -->		
+		<div id="container" style="position: absolute; width: 1200px; height: 600px;">
+						<h2 id="title">Threatened plant species per country (2015)</h2>
+						<a id="datasource" href="http://data.worldbank.org/indicator/EN.HPT.THRD.NO"> Data Source</a>
+		</div>
     </body>
 </html>
 <!--
 
-
-
-
+	The mouseover events in this map are rather simple, they only show the name of the country and the amount of threatened plants.
+	As my dataset did not contain more data than that there is not much more to show. =( The mouseover also triggers a change of the stroke
+	and color of the counry being hovered over, so that it should be clear which one it is. The big stroke helps show which country is selected
+	even in the event of someone not being able to distinguish the mouseover color from the natural colors. 
+	
+	In addition there is an option to change the color as well, so if someone would have a hard time distinguishing various shades of red they
+	could use this drop down menu to change the color to blue or green. The map only shows colors in the same hue, and are made in such 
+	a way that they also should look decent in black and white/grayscale. This should help colorblind people to read the map better, because
+	the contrast between light and dark is preserved, even when the color itself cannot be accurately seen.
+	
+	The saturation is not too bright, the colors are a bit muted, this is	more pleasant on the eye for larger areas like they appear on a map.
+	
 -->
