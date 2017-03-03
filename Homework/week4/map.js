@@ -4,7 +4,7 @@
 */
 
 /* Global stuff */
-var colors = [ "#ffffb2", "#fed976", "#feb24c", "#fd8d3c",  "#fc4e2a", "#e31a1c", "#b10026" ];
+//var colors = [ "#ffffb2", "#fed976", "#feb24c", "#fd8d3c",  "#fc4e2a", "#e31a1c", "#b10026" ];
 
 /* Wait until page is ready. */
 $('document').ready(function(){
@@ -17,6 +17,28 @@ function getJSONfile(callback){
         callback(rawData);
     });
 }
+
+
+function setColor(){
+    
+    //Check if something is selected
+    // Default to red
+    
+    //Create function based on the selecteed color (akin to createtransform)
+    
+    // green rgb(63, 191, 63)
+    // red rgba(250, 60, 20,
+    // bluergb(14, 58, 103)
+    // black  rgb(0, 0, 0)
+    
+    var r, g, b;
+    
+    // Return a function that creates the right color with the given alpha
+    var createRGBA = function(anInt) { return "rgba(" +r "," + b  + "," + g + "," + (anInt/100) + ")" }; 
+    
+    
+}
+
 
 
 function theFantasticBeautifulAmazingMap(dataDictionary){

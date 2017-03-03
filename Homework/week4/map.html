@@ -7,7 +7,7 @@
 <html>
     <head>
         <title>Week 2</title>
-        <a href="../../index.html">Go back</a>
+        <a href="../../index.html"><p>Go back</p></a>
         
 		<!-- External scripts and stylesheets -->
 		<link rel="stylesheet" href="styles.css">
@@ -20,6 +20,14 @@
 		
 	</head>
     <body>
+                <select id="colorChoice">
+                    <option value="pink">Red</option>
+                    <option value="green">Green</option>
+                    <option value="blue">Blue</option>
+                    <option value="blue">Grayscale</option>
+                </select>
+             <input type="button" value="Change color!" onclick="changeColor()">
+           
 			<div id="container" style="position: absolute; width: 1200px; height: 600px;">
 							<h2 id="title">Threatened plant species per country (2015)</h2>
 							<a id="datasource" href="http://data.worldbank.org/indicator/EN.HPT.THRD.NO"> Data Source</a>
