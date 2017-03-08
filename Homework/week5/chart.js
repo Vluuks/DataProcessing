@@ -18,6 +18,16 @@ $('document').ready(function(){
 
 
 
+function checkYear(){
+    
+    // check which year was selected
+    // adjust text
+    //  pass correct json on to canvas
+    
+    // MKE A COOL AS FUCK TRANSITION
+    
+}
+
 
 function initCanvas(error, data2016, data2015){
     
@@ -36,23 +46,12 @@ function initCanvas(error, data2016, data2015){
         
     var svg = d3.select(".container")
         .append("svg")
+        .attr("class", "linechart")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-		    
-    // Function to draw the line
-	var lineGen = d3.svg.line()
-		.x(function(d) {
-            console.log("date" + d.Date);
-            return xScale(makeDate(d.Date));
-		})
-		.y(function(d) {
-            console.log(d.Value);
-            return yScale(d.Value);
-		});
-    
-    
+		        
     // Parse the data
     data.columns = ["Date", "Avg", "High", "Low"];
     var types = data.columns.slice(1).map(function(id) {
@@ -67,9 +66,11 @@ function initCanvas(error, data2016, data2015){
         };
     });
   
-  
+   
     // Create scales	for X, Y and Z
-	var yScale = d3.scale.linear().range([height - margin.top, margin.bottom]).domain([0, 135]);
+	var yScale = d3.scale.linear()
+        .range([height - margin.top, margin.bottom])
+        .domain([0, 135]);
 	
 	var mindate = new Date(2016,0,1),
 		maxdate = new Date(2016,11,31);
@@ -80,6 +81,17 @@ function initCanvas(error, data2016, data2015){
   
     var zScale = d3.scale.ordinal(d3.schemeCategory10)
         .domain(types.map(function(c) { return c.id; }));
+            
+    // Function to draw the line
+	var lineGen = d3.svg.line()
+		.x(function(d) {
+            console.log("date" + d.Date);
+            return xScale(makeDate(d.Date));
+		})
+		.y(function(d) {
+            console.log(d.Value);
+            return yScale(d.Value);
+		});
   
 	// Create axes
 	var xAxis = d3.svg.axis()
@@ -89,9 +101,7 @@ function initCanvas(error, data2016, data2015){
 	var yAxis = d3.svg.axis()
 		.scale(yScale)
 		.orient("left");
-    
-
-		
+  
 	// Append to svg
 	svg.append("svg:g")
 		.attr("class","axis")
@@ -106,12 +116,10 @@ function initCanvas(error, data2016, data2015){
             .attr("x", -75 - margin.left)
             .attr("y", 20)
             .attr("transform", "rotate(-90)")
-             // ?????????
-            //.attr("x", 20)
-            //.attr("dy", "0.71em")
             .attr("fill", "#000")
             .text("Wind speed, m/s");
                 
+    // Line colors
     var colors = {
                             Avg: "#1b9e77",
                             High: "#d95f02",
@@ -128,13 +136,46 @@ function initCanvas(error, data2016, data2015){
         .attr("class", "line")
         .attr("d", function(d) { return lineGen(d.values); })
         .attr("stroke", function(d) { return colors[d.id]; })
-        //.attr('stroke', 'green')
 		.attr('stroke-width', 1)
 		.attr('fill', 'none');
-        
+    
+    
+     // Mouseover
+     
 
+     
+     
+     
+     
+     
+     // Legend
+     var legend = svg.selectAll('.legend')
+      .data(types)
+      .enter()
+      .append('g')
+      .attr('class', 'legend');
+     
+     legend.append('rect')
+      .attr('x', width - 60 - margin.right)
+      .attr('y', function(d, i) {
+        return i * 20;
+      })
+      .attr('width', 10)
+      .attr('height', 10)
+      .style('fill', function(d) {
+        return colors[d.id];
+      });
+
+    legend.append('text')
+      .attr('x', width - 45 - margin.right)
+      .attr('y', function(d, i) {
+        return (i * 20) + 9;
+      })
+      .text(function(d) {
+        return d.id;
+      });
+     
 }
-
 
 
 /* Takes the date from the raw data and makes it suitable for the JS Date object. */

@@ -24,9 +24,24 @@
 	<body>
 	
 		<!-- Link back to github pages. -->
+        <p>Renske Talsma 10896503</p>
 		<a href="../../index.html"><p>Go back</p></a>
 	
-		<div class="container"> 
+		<div class="container">
+            <div class="charttop">
+            
+                <!-- Title. -->
+                <p class ="title">Wind speed at De Bilt, Netherlands<p> 
+                <p class = "subtitle">Data source: KNMI</p>
+                
+                <!-- Selection menu for the year. -->
+                <select id="colorChoice">
+                    <option value="2014">2014</option>
+                    <option value="2015">2015</option>
+                    <option value="2016">2016</option>
+                </select>
+                <input type="button" value="Change color!" onclick="setColor()">
+            </div>
 		
 		</div>
 		
