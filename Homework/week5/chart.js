@@ -26,6 +26,8 @@ function callbackInit(error, data2015, data2016){
 	if(error)
 		throw error;
 	
+	console.log(data2015);
+	
 	// Store globally
 	dataDict[0] = data2015;
 	dataDict[1] = data2016;
@@ -48,51 +50,40 @@ function callbackInit(error, data2015, data2016){
 function setData(){
 	
 	var dataYear = $('#yearChoice').val();
+	var dataDomain = [];
 
 	switch(dataYear){
 		case "2015":
 			data = dataDict[0];
+			dataDomain =  [new Date(2015,1,1), new Date(2015,11,31)];
 			break;
 		case "2016":
 			data = dataDict[1];
+			dataDomain =  [new Date(2016,1,1), new Date(2016,11,31)];
 			break;
 		default:
 			data = dataDict[0];
+			dataDomain =  [new Date(2015,1,1), new Date(2015,11,31)];
 			break;
 	}
     
-	console.log("after switch" + dataDict);
+	console.log(dataDict);
 	console.log(data);
 	
-	initCanvas(data)
+	// Initialize canvas with the chosen data.
+	initCanvas(data, dataDomain)
 }
 
 
-function initCanvas(data){
+function initCanvas(data, dataDomain){
 
-    // if(error)
-        // throw error;
-	
-		// Store globally
-	//dataDict[0] = data2015;
-	//dataDict[1] = data2016;
-	
 	console.log("canvint");
 	console.log(data);
+	console.log(dataDomain);
+    			dataDomain =  [new Date(2016,1,1), new Date(2016,11,31)];
+
+	/* SVG INITIALIZATION */
 	
-	// Match data to chart.
-	//setData();
-	
-	// Set the data properties
-	// dataDict['2015'].data = data2015;
-	// dataDict['2016'].data = data2016;
-	
-	// Set date properties
-	// dataDict['2015'].dateDomain = [new Date(2015,0,1), new Date(2015,11,31)];
-	// dataDict['2016'].dateDomain = [new Date(2016,0,1), new Date(2016,11,31)];
-	
-	//var data = data2016;
-        
     var margin = {top: 10, right: 10, bottom: 10, left: 25};
     var width = 1900 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;   
@@ -105,7 +96,9 @@ function initCanvas(data){
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 		        
-    // Parse the data.
+    /* DATA AND SCALES */
+	
+	// Parse data into columns.
     data.columns = ["Date", "Avg", "High", "Low"];
     var types = data.columns.slice(1).map(function(id) {
         return {
@@ -128,7 +121,7 @@ function initCanvas(data){
 		maxdate = new Date(2016,11,31); // TODO
 		
 	var xScale = d3.time.scale()
-		.domain([mindate, maxdate])    // values between for month of january
+		.domain(dataDomain)    // values between for month of january
 		.range([margin.left, width - margin.right]);   // map these the the chart width = total width minus padding at both sides
   
     var zScale = d3.scale.ordinal(d3.schemeCategory10)
@@ -197,7 +190,7 @@ function initCanvas(data){
 
     mouseG.append("path") // this is the black vertical line to follow mouse
       .attr("class", "mouse-line")
-	  .attr("transform", "translate(" + -4 + ",0)")
+	  //.attr("transform", "translate(" + -4 + ",0)")
       .style("stroke", "black")
       .style("stroke-width", "1px")
       .style("opacity", "0");
