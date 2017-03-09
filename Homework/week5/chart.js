@@ -30,7 +30,7 @@ function callbackInit(error, data2015, data2016){
 	console.log(data2015);
 	
 	// Store globally
-	dataDict[0] = data2016;
+	dataDict[0] = data2015;
 	dataDict[1] = data2016;
 
 	setData();
@@ -47,19 +47,29 @@ function setData(){
 	switch(dataYear){
 		case "2015":
 			data = dataDict[0];
-			dataDomain =  [new Date(2015,1,1), new Date(2015,11,31)];
+			dataDomain =  [new Date(2015,0,1), new Date(2015,11,31)];
 			break;
 		case "2016":
 			data = dataDict[1];
-			dataDomain =  [new Date(2016,1,1), new Date(2016,11,31)];
+			dataDomain =  [new Date(2016,0,1), new Date(2016,11,31)];
 			break;
 		default:
 			data = dataDict[0];
-			dataDomain =  [new Date(2015,1,1), new Date(2015,11,31)];
+			dataDomain =  [new Date(2015,0,1), new Date(2015,11,31)];
 			break;
 	}
     
 	console.log(dataDict);
+
+	
+	// force 2016
+	// data = dataDict[1];
+	// dataDomain =  [new Date(2016,0,1), new Date(2016,11,31)];
+	
+	// force 2015
+	// data = dataDict[0];
+	// dataDomain =  [new Date(2015,0,1), new Date(2015,11,31)];
+	
 	console.log(data);
 	
 	// Initialize canvas with the chosen data.
@@ -67,29 +77,10 @@ function setData(){
 }
 
 function initCanvas(data, dataDomain){
-
-
 	
-
-	// dataDict[0] = data2015;
-	// dataDict[1] = data2016;
-	
-	// console.log("canvint");
-	// console.log(data2015);
-	// console.log(dataDict[0]);
-	
-	// Match data to chart.
-	// setData();
-	
-	// Set the data properties
-	// dataDict['2015'].data = data2015;
-	// dataDict['2016'].data = data2016;
-	
-	// Set date properties
-	// dataDict['2015'].dateDomain = [new Date(2015,0,1), new Date(2015,11,31)];
-	// dataDict['2016'].dateDomain = [new Date(2016,0,1), new Date(2016,11,31)];
-	
-	// var data = data2016;
+	var svgChart = $(".linechart");
+	if (svgChart !== undefined)
+		svgChart.remove();
         
     var margin = {top: 10, right: 10, bottom: 10, left: 25};
     var width = 1900 - margin.left - margin.right,
@@ -120,14 +111,14 @@ function initCanvas(data, dataDomain){
     // Create scales	for X, Y and Z.
 	var yScale = d3.scale.linear()
         .range([height - margin.top, margin.bottom])
-        .domain([0, 135]); // TODO
+        .domain([0, 135]); //TODO
 	
-	var mindate = new Date(2016,0,1), // TODO
-		maxdate = new Date(2016,11,31); // TODO
+	// var mindate = new Date(2016,0,1), 
+		// maxdate = new Date(2016,11,31); 
 		
 	var xScale = d3.time.scale()
-		.domain([mindate, maxdate])    // values between for month of january
-		.range([margin.left, width - margin.right]);   // map these the the chart width = total width minus padding at both sides
+		.domain(dataDomain)   
+		.range([margin.left, width - margin.right]);  
   
     var zScale = d3.scale.ordinal(d3.schemeCategory10)
         .domain(types.map(function(c) { return c.id; }));
@@ -314,7 +305,6 @@ function initCanvas(data, dataDomain){
 
 /* Takes the date from the raw data and makes it suitable for the JS Date object. */
 function makeDate(dateString){
-
 	dateString = dateString.trim();
 	return new Date((dateString.substr(0,4) + "," + dateString.substr(4,2) + "," + dateString.substr(6,2)));
 
