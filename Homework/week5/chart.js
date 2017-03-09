@@ -13,11 +13,10 @@ var dataDict = [];
 $('document').ready(function(){
     
     // Load all of the data. 
-  
         queue()
             .defer(d3.json, 'Data/data2015.json')
             .defer(d3.json, 'Data/data2016.json')
-            .await(initCanvas);
+            .await(callbackInit);
         
 });
 
@@ -31,13 +30,13 @@ function callbackInit(error, data2015, data2016){
 	dataDict[0] = data2015;
 	dataDict[1] = data2016;
 	
-	console.log(cbInit);
-	console.log(data2015);
-	console.log(dataDict[0]);
+	// console.log("callbackint");
+	// console.log(data2015);
+	// console.log(dataDict[0]);
 	
 	// And set dates as well.
-	dataDict['2015'].dateDomain = [new Date(2015,0,1), new Date(2015,11,31)];
-	dataDict['2016'].dateDomain = [new Date(2016,0,1), new Date(2016,11,31)];
+	// dataDict['2015'].dateDomain = [new Date(2015,0,1), new Date(2015,11,31)];
+	// dataDict['2016'].dateDomain = [new Date(2016,0,1), new Date(2016,11,31)];
 	
 	// Match data to chart.
 	setData();
@@ -62,28 +61,27 @@ function setData(){
 			break;
 	}
     
-	console.log(dataDict);
+	console.log("after switch" + dataDict);
 	console.log(data);
 	
+	initCanvas(data)
 }
 
 
-function initCanvas(error, data2016, data2015){
+function initCanvas(data){
 
-    if(error)
-        throw error;
-	
+    // if(error)
+        // throw error;
 	
 		// Store globally
-	dataDict[0] = data2015;
-	dataDict[1] = data2016;
+	//dataDict[0] = data2015;
+	//dataDict[1] = data2016;
 	
 	console.log("canvint");
-	console.log(data2015);
-	console.log(dataDict[0]);
+	console.log(data);
 	
 	// Match data to chart.
-	setData();
+	//setData();
 	
 	// Set the data properties
 	// dataDict['2015'].data = data2015;
@@ -93,7 +91,7 @@ function initCanvas(error, data2016, data2015){
 	// dataDict['2015'].dateDomain = [new Date(2015,0,1), new Date(2015,11,31)];
 	// dataDict['2016'].dateDomain = [new Date(2016,0,1), new Date(2016,11,31)];
 	
-	var data = data2016;
+	//var data = data2016;
         
     var margin = {top: 10, right: 10, bottom: 10, left: 25};
     var width = 1900 - margin.left - margin.right,
