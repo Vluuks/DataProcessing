@@ -6,7 +6,7 @@
 
 
 /* Global dict to store data */
-var dataDict = [];
+var dataDict = {};
 
 
 /* Wait until page is ready. */
@@ -17,84 +17,59 @@ $('document').ready(function(){
         queue()
             .defer(d3.json, 'Data/data2015.json')
             .defer(d3.json, 'Data/data2016.json')
-            .await(initCanvas);
+            .await(callbackInit);
         
 });
 
 
 function callbackInit(error, data2015, data2016){
-
+	
+	// Error check.
 	if(error)
 		throw error;
 	
-	// Store globally
-	dataDict[0] = data2015;
-	dataDict[1] = data2016;
+	// Add data and date references to global dict.
+	dataDict['2015'] = data2015;
+	dataDict['2016'] = data2016;
 	
-	console.log(cbInit);
-	console.log(data2015);
-	console.log(dataDict[0]);
-	
-	// And set dates as well.
-	dataDict['2015'].dateDomain = [new Date(2015,0,1), new Date(2015,11,31)];
-	dataDict['2016'].dateDomain = [new Date(2016,0,1), new Date(2016,11,31)];
-	
-	// Match data to chart.
+	// Start building the chart
 	setData();
-	
 }
 
 
-
+/* ???? ?*/
 function setData(){
 	
 	var dataYear = $('#yearChoice').val();
-
+	var data, dataDomain;
+	
 	switch(dataYear){
 		case "2015":
-			data = dataDict[0];
+			data = dataDict['2015'];
+			dataDomain =  [new Date(2015,0,1), new Date(2015,11,31)];
 			break;
 		case "2016":
-			data = dataDict[1];
+			data = dataDict['2016'];
+			dataDomain =  [new Date(2016,0,1), new Date(2016,11,31)];
 			break;
 		default:
-			data = dataDict[0];
+			data = dataDict['2015'];
+			dataDomain =  [new Date(2015,0,1), new Date(2015,11,31)];
 			break;
 	}
     
-	console.log(dataDict);
 	console.log(data);
+	console.log(dataDomain);
 	
+	if(data != undefined && dataDomain != undefined)
+		initCanvas(data, dataDomain);
+	else
+		alert("could not set data *cries* ");
 }
 
 
-function initCanvas(error, data2016, data2015){
+function initCanvas(data, dataDomain){
 
-    if(error)
-        throw error;
-	
-	
-		// Store globally
-	dataDict[0] = data2015;
-	dataDict[1] = data2016;
-	
-	console.log("canvint");
-	console.log(data2015);
-	console.log(dataDict[0]);
-	
-	// Match data to chart.
-	setData();
-	
-	// Set the data properties
-	// dataDict['2015'].data = data2015;
-	// dataDict['2016'].data = data2016;
-	
-	// Set date properties
-	// dataDict['2015'].dateDomain = [new Date(2015,0,1), new Date(2015,11,31)];
-	// dataDict['2016'].dateDomain = [new Date(2016,0,1), new Date(2016,11,31)];
-	
-	var data = data2016;
-        
     var margin = {top: 10, right: 10, bottom: 10, left: 25};
     var width = 1900 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;   
@@ -124,14 +99,11 @@ function initCanvas(error, data2016, data2015){
     // Create scales	for X, Y and Z.
 	var yScale = d3.scale.linear()
         .range([height - margin.top, margin.bottom])
-        .domain([0, 135]); // TODO
+        .domain([0, 135]);
 	
-	var mindate = new Date(2016,0,1), // TODO
-		maxdate = new Date(2016,11,31); // TODO
-		
 	var xScale = d3.time.scale()
-		.domain([mindate, maxdate])    // values between for month of january
-		.range([margin.left, width - margin.right]);   // map these the the chart width = total width minus padding at both sides
+		.domain([dataDomain[0], dataDomain[1]])  
+		.range([margin.left, width - margin.right]);  
   
     var zScale = d3.scale.ordinal(d3.schemeCategory10)
         .domain(types.map(function(c) { return c.id; }));
@@ -192,12 +164,13 @@ function initCanvas(error, data2016, data2015){
 		.attr('fill', 'none');
     
     
-     // Mouseover
+	/* MOUSE OVER INTERACTION */
 	 
 	var mouseG = svg.append("g")
       .attr("class", "mouse-over-effects");
 
-    mouseG.append("path") // this is the black vertical line to follow mouse
+	// Set line and adjust slightly to make it on point with mouse. 
+    mouseG.append("path")
       .attr("class", "mouse-line")
 	  .attr("transform", "translate(" + -4 + ",0)")
       .style("stroke", "black")
@@ -256,7 +229,7 @@ function initCanvas(error, data2016, data2015){
 
         d3.selectAll(".mouse-per-line")
           .attr("transform", function(d, i) {
-            //console.log(width/mouse[0])
+            console.log(width/mouse[0])
             var xDate = xScale.invert(mouse[0]),
                 bisect = d3.bisector(function(d) { return d.Datum; }).right;
                 idx = bisect(d.values, xDate);
@@ -284,39 +257,40 @@ function initCanvas(error, data2016, data2015){
       });
 	 
 	 
-	 /************************************************************************/
+
      
-     // Legend.
+     /* LEGEND */
+	 
      var legend = svg.selectAll('.legend')
       .data(types)
       .enter()
       .append('g')
       .attr('class', 'legend');
-     
-     legend.append('rect')
-      .attr('x', width - 100 - margin.right)
-      .attr('y', function(d, i) {
-        return 50 + i * 20;
-      })
-      .attr('width', 10)
-      .attr('height', 10)
-      .style('fill', function(d) {
-        return colors[d.id];
-      });
+    
+	// Colored squares.
+	legend.append('rect')
+		.attr('x', width - 100 - margin.right)
+		.attr('y', function(d, i) {
+			return 50 + i * 20;
+		})
+		.attr('width', 10)
+		.attr('height', 10)
+		.style('fill', function(d) {
+			return colors[d.id];
+		});
 
+	// Text.
     legend.append('text')
-      .attr('x', width - 80 - margin.right)
-      .attr('y', function(d, i) {
-        return 50 + (i * 20) + 9;
-      })
-      .text(function(d) {
-        return d.id;
-      });
-     
+		.attr('x', width - 80 - margin.right)
+		.attr('y', function(d, i) {
+			return 50 + (i * 20) + 9;
+		})
+		.text(function(d) {
+			return d.id;
+		});
 }
 
-
-/* Takes the date from the raw data and makes it suitable for the JS Date object. */
+/* Takes the date from the raw data and transforms it into a JS date. */
 function makeDate(dateString){
 
 	dateString = dateString.trim();
