@@ -58,20 +58,7 @@ function setData(){
 			dataDomain =  [new Date(2015,0,1), new Date(2015,11,31)];
 			break;
 	}
-    
-	console.log(dataDict);
-
-	
-	// force 2016
-	// data = dataDict[1];
-	// dataDomain =  [new Date(2016,0,1), new Date(2016,11,31)];
-	
-	// force 2015
-	// data = dataDict[0];
-	// dataDomain =  [new Date(2015,0,1), new Date(2015,11,31)];
-	
-	console.log(data);
-	
+   
 	// Initialize canvas with the chosen data.
 	initCanvas(data, dataDomain)
 }
@@ -79,7 +66,7 @@ function setData(){
 function initCanvas(data, dataDomain){
 	
 	var svgChart = $(".linechart");
-	if (svgChart !== undefined)
+	if (svgChart !== undefined){
 		svgChart.remove();
         
     var margin = {top: 10, right: 10, bottom: 10, left: 25};
@@ -111,10 +98,7 @@ function initCanvas(data, dataDomain){
     // Create scales	for X, Y and Z.
 	var yScale = d3.scale.linear()
         .range([height - margin.top, margin.bottom])
-        .domain([0, 135]); //TODO
-	
-	// var mindate = new Date(2016,0,1), 
-		// maxdate = new Date(2016,11,31); 
+        .domain([0, 135]);
 		
 	var xScale = d3.time.scale()
 		.domain(dataDomain)   

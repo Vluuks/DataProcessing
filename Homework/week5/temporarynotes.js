@@ -1,44 +1,30 @@
+// ** Update data section (Called from the onclick)
+function updateData() {
 
-function callbackInit(error, data2015, data2016){
+    // Get the data again
+    d3.csv("data-alt.csv", function(error, data) {
+       	data.forEach(function(d) {
+	    	d.date = parseDate(d.date);
+	    	d.close = +d.close;
+	    });
 
-	if(error)
-		throw error;
-	
-	console.log(data2015);
-	
-	// Store globally
-	dataDict[0] = data2016;
-	dataDict[1] = data2016;
+    	// Scale the range of the data again 
+    	x.domain(d3.extent(data, function(d) { return d.date; }));
+	    y.domain([0, d3.max(data, function(d) { return d.close; })]);
 
-	setData();
-	
-}
+    // Select the section we want to apply our changes to
+    var svg = d3.select("body").transition();
 
+    // Make the changes
+        svg.select(".line")   // change the line
+            .duration(750)
+            .attr("d", valueline(data));
+        svg.select(".x.axis") // change the x axis
+            .duration(750)
+            .call(xAxis);
+        svg.select(".y.axis") // change the y axis
+            .duration(750)
+            .call(yAxis);
 
-
-function setData(){
-	
-	var dataYear = $('#yearChoice').val();
-	var dataDomain = [];
-
-	switch(dataYear){
-		case "2015":
-			data = dataDict[0];
-			dataDomain =  [new Date(2015,1,1), new Date(2015,11,31)];
-			break;
-		case "2016":
-			data = dataDict[1];
-			dataDomain =  [new Date(2016,1,1), new Date(2016,11,31)];
-			break;
-		default:
-			data = dataDict[0];
-			dataDomain =  [new Date(2015,1,1), new Date(2015,11,31)];
-			break;
-	}
-    
-	console.log(dataDict);
-	console.log(data);
-	
-	// Initialize canvas with the chosen data.
-	initCanvas(data, dataDomain)
+    });
 }
