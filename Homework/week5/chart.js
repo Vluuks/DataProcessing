@@ -14,7 +14,6 @@
 	
 */
 
-
 /* Global dict to store data */
 var dataDict = [];
 
@@ -27,7 +26,6 @@ $("document").ready(function(){
             .defer(d3.json, "Data/data2016.json")
             .await(callbackInit);
 });
-
 
 /* When the data is loaded, check for errors and store it globally. */
 function callbackInit(error, data2015, data2016){
@@ -80,9 +78,9 @@ function drawChart(data, dataDomain){
 		svgChart.remove();
     
 	// Initialize size and margins.
-    var margin = {top: 10, right: 10, bottom: 10, left: 25};
+    var margin = {top: 60, right: 65, bottom: 20, left: 65};
     var width = 1600 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;   
+        height = 550 - margin.top - margin.bottom;   
     
 	// Initialize canvas. 
     var svg = d3.select(".container")
@@ -148,11 +146,11 @@ function drawChart(data, dataDomain){
 		.attr("transform", "translate(" + (margin.left) + ",0)")
 		.call(yAxis)
         .append("text")
-            .attr("x", -75 - margin.left)
-            .attr("y", 20)
+            .attr("x", - 17)
+            .attr("y", - 17)
             .attr("transform", "rotate(-90)")
             .attr("fill", "#000")
-            .text("Wind speed, m/s");
+            .text("Speed, m/s");
                 
     // Line colors.
     var colors = {
@@ -180,6 +178,7 @@ function drawChart(data, dataDomain){
 
 	// Draw the vertical line.  
     mouseG.append("path")
+		.attr("y", 20)
 		.attr("class", "mouse-line")
 		.attr("transform", "translate(" + 0 + ",0)")
 		.style("stroke", "black")
@@ -196,20 +195,27 @@ function drawChart(data, dataDomain){
 	// Add the circle to the mouseover.
     mousePerLine.append("circle")
 		.attr("r", 7)
-		.style("stroke", function(d) {
+		.style("fill", function(d) {
 			return colors[d.id];
 		})
-		.style("fill", "none")
-		.style("stroke-width", "1px")
 		.style("opacity", "0");
 	
+	// Add the circle to the mouseover.
+    mousePerLine.append("rect")
+		.attr("width", 70)
+		.attr("height", 20)
+		.attr("transform", "translate(8, -10)")
+		.style("fill", "#EEEEEE")
+		.style("opacity", "0");
+		
 	// Add tooltip text. 
     mousePerLine.append("text")
-		.attr("transform", "translate(10,3)");
+		.attr("transform", "translate(10, 5)");
 
     // Append a rect to catch mouse movements on canvas.
-    mouseG.append("svg:rect") 
-		.attr("width", width) 
+    mouseG.append("svg:rect")
+		.attr("x", margin.left - 5)
+		.attr("width", width - margin.left - margin.right) 
 		.attr("height", height)
 		.attr("fill", "none")
 		.attr("pointer-events", "all")
@@ -222,6 +228,8 @@ function drawChart(data, dataDomain){
 			.style("opacity", "0");
 		d3.selectAll(".mouse-per-line text")
 			.style("opacity", "0");
+		d3.selectAll(".mouse-per-line rect")
+			.style("opacity", "0");
 		d3.selectAll(".tooltip")
 			.style("opacity", "0");
 	})
@@ -233,6 +241,8 @@ function drawChart(data, dataDomain){
 		d3.selectAll(".mouse-per-line circle")
 			.style("opacity", "1");
 		d3.selectAll(".mouse-per-line text")
+			.style("opacity", "1");
+		d3.selectAll(".mouse-per-line rect")
 			.style("opacity", "1");
 		d3.selectAll(".tooltip")
 			.style("opacity", "1");
@@ -278,9 +288,11 @@ function drawChart(data, dataDomain){
             d3.select(this).select("text")
 				.text(yScale.invert(pos.y).toFixed(2) + " m/s");
             
-			// Add exact date tooltip to the right.
+			// Add exact date tooltip.
             d3.select(".tooltip")
                 .select("text")
+				.attr("x", mouse[0])
+				.attr("transform", "translate(-30 , -15)")
                 .text(String(xDate).substr(0, 11));
             
             return "translate(" + mouse[0] + "," + pos.y +")";
@@ -296,25 +308,24 @@ function drawChart(data, dataDomain){
      
 	 // Legend constants.
 	const LEGEND_OFFSET = 30;
-	const LEGEND_INTERSPACING = 20;
+	const LEGEND_INTERSPACING = 30;
      
-	// Colored squares of the legend. 
-	legend.append("rect")
-		.attr("x", width - 100 - margin.right)
-		.attr("y", function(d, i) {
+	// Colored circles of the legend. 	
+	legend.append("circle")
+		.attr("cx", width - 10)
+		.attr("cy", function(d, i) {
 			return LEGEND_OFFSET + i * LEGEND_INTERSPACING;
 		})
-		.attr("width", 10)
-		.attr("height", 10)
+		.attr("r", 7)
 		.style("fill", function(d) {
 			return colors[d.id];
 		});
 
 	// Add line type text to the legend. 	
 	legend.append("text")
-		.attr("x", width - 80 - margin.right)
+		.attr("x", width)
 		.attr("y", function(d, i) {
-			return LEGEND_OFFSET + (i * LEGEND_INTERSPACING) + 9;
+			return 26 + (i * LEGEND_INTERSPACING) + 9;
 		})
 		.text(function(d) {
 			return d.id;
