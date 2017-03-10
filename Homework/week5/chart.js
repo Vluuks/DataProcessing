@@ -159,7 +159,7 @@ function drawChart(data, dataDomain){
                             Low: "#7570b3"
                         }
      
-     // Draw the line of doom.
+    // Draw the line of doom.
     var type = svg.selectAll(".type")
         .data(types)
         .enter().append("g")
@@ -220,7 +220,7 @@ function drawChart(data, dataDomain){
 		.attr("fill", "none")
 		.attr("pointer-events", "all")
 
-	  // Hide mouseover elements on mouseout. 
+	// Hide mouseover elements on mouseout. 
 	.on("mouseout", function() {
 		d3.select(".mouse-line")
 			.style("opacity", "0");
@@ -299,14 +299,14 @@ function drawChart(data, dataDomain){
 		});
 	});
 
-     // Legend.
+    // Legend.
     var legend = svg.selectAll(".legend")
 		.data(types)
 		.enter()
 		.append("g")
 		.attr("class", "legend");
      
-	 // Legend constants.
+	// Legend constants.
 	const LEGEND_OFFSET = 30;
 	const LEGEND_INTERSPACING = 30;
      
