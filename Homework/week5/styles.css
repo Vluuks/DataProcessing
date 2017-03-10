@@ -35,3 +35,7 @@ body{
 	border-color: #EEEEEE;
     border-radius: 2px;
 }
+.mouse-per-line{
+	font-size: 13px; 
+	background-color: #FFFFFF;
+}
