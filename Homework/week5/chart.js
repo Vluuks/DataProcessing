@@ -62,7 +62,7 @@ function setData(){
 			break;
 	}
    
-    // Set title correctly
+    // Set title correctly.
     $("#charttitle").text("Wind speed at De Bilt, Netherlands (" + dataYear + ")");
    
 	// Initialize canvas with the chosen data.
@@ -160,7 +160,7 @@ function drawChart(data, dataDomain){
                         }
      
      // Draw the line of doom.
-     var type = svg.selectAll(".type")
+    var type = svg.selectAll(".type")
         .data(types)
         .enter().append("g")
         .attr("class", "type");
@@ -300,7 +300,7 @@ function drawChart(data, dataDomain){
 	});
 
      // Legend.
-     var legend = svg.selectAll(".legend")
+    var legend = svg.selectAll(".legend")
 		.data(types)
 		.enter()
 		.append("g")
@@ -331,7 +331,7 @@ function drawChart(data, dataDomain){
 			return d.id;
 		});
       
-     var tooltip = svg.selectAll(".legend")
+	var tooltip = svg.selectAll(".legend")
         .append("g")
         .attr("class", "tooltip")
         .append("text")
