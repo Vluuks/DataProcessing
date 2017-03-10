@@ -214,7 +214,7 @@ function drawChart(data, dataDomain){
 
     // Append a rect to catch mouse movements on canvas.
     mouseG.append("svg:rect")
-		.attr("x", margin.left - 5)
+		.attr("x", margin.left)
 		.attr("width", width - margin.left - margin.right) 
 		.attr("height", height)
 		.attr("fill", "none")
