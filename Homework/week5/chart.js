@@ -8,20 +8,18 @@
 /* Global dict to store data */
 var dataDict = [];
 
-
 /* Wait until page is ready. */
-$('document').ready(function(){
+$("document").ready(function(){
     
-    // Load all of the data. 
-  
+    // Load all of the data.  
         queue()
-            .defer(d3.json, 'Data/data2015.json')
-            .defer(d3.json, 'Data/data2016.json')
+            .defer(d3.json, "Data/data2015.json")
+            .defer(d3.json, "Data/data2016.json")
             .await(callbackInit);
-        
 });
 
 
+/* When the data is loaded, check for errors and store it globally. */
 function callbackInit(error, data2015, data2016){
 
 	if(error)
@@ -38,10 +36,10 @@ function callbackInit(error, data2015, data2016){
 }
 
 
-
+/* Set the data according to user choice or default. */
 function setData(){
 	
-	var dataYear = $('#yearChoice').val();
+	var dataYear = $("#yearChoice").val();
 	var dataDomain = [];
 
 	switch(dataYear){
@@ -59,18 +57,23 @@ function setData(){
 			break;
 	}
    
+    // Set title correctly
+    $("#charttitle").text("Wind speed at De Bilt, Netherlands (" + dataYear + ")");
+   
 	// Initialize canvas with the chosen data.
 	initCanvas(data, dataDomain)
 }
 
+
+/* Handle the canvas. */
 function initCanvas(data, dataDomain){
 	
 	var svgChart = $(".linechart");
-	if (svgChart !== undefined){
+	if (svgChart !== undefined)
 		svgChart.remove();
         
     var margin = {top: 10, right: 10, bottom: 10, left: 25};
-    var width = 1900 - margin.left - margin.right,
+    var width = 1600 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;   
         
     var svg = d3.select(".container")
@@ -80,7 +83,7 @@ function initCanvas(data, dataDomain){
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-		        
+    		        
     // Parse the data.
     data.columns = ["Date", "Avg", "High", "Low"];
     var types = data.columns.slice(1).map(function(id) {
@@ -159,8 +162,8 @@ function initCanvas(data, dataDomain){
         .attr("class", "line")
         .attr("d", function(d) { return lineGen(d.values); })
         .attr("stroke", function(d) { return colors[d.id]; })
-		.attr('stroke-width', 1)
-		.attr('fill', 'none');
+		.attr("stroke-width", 1)
+		.attr("fill", "none");
     
     
      // Mouseover
@@ -175,9 +178,9 @@ function initCanvas(data, dataDomain){
       .style("stroke-width", "1px")
       .style("opacity", "0");
       
-    var lines = document.getElementsByClassName('line');
+    var lines = document.getElementsByClassName("line");
 
-    var mousePerLine = mouseG.selectAll('.mouse-per-line')
+    var mousePerLine = mouseG.selectAll(".mouse-per-line")
       .data(types)
       .enter()
       .append("g")
@@ -195,12 +198,13 @@ function initCanvas(data, dataDomain){
     mousePerLine.append("text")
       .attr("transform", "translate(10,3)");
 
-    mouseG.append('svg:rect') // append a rect to catch mouse movements on canvas
-      .attr('width', width) // can't catch mouse events on a g element
-      .attr('height', height)
-      .attr('fill', 'none')
-      .attr('pointer-events', 'all')
-      .on('mouseout', function() { // on mouse out hide line, circles and text
+    // append a rect to catch mouse movements on canvas.
+    mouseG.append("svg:rect") 
+      .attr("width", width) 
+      .attr("height", height)
+      .attr("fill", "none")
+      .attr("pointer-events", "all")
+      .on("mouseout", function() { // on mouse out hide line, circles and text
         d3.select(".mouse-line")
           .style("opacity", "0");
         d3.selectAll(".mouse-per-line circle")
@@ -208,7 +212,7 @@ function initCanvas(data, dataDomain){
         d3.selectAll(".mouse-per-line text")
           .style("opacity", "0");
       })
-      .on('mouseover', function() { // on mouse in show line, circles and text
+      .on("mouseover", function() { // on mouse in show line, circles and text
         d3.select(".mouse-line")
           .style("opacity", "1");
         d3.selectAll(".mouse-per-line circle")
@@ -216,7 +220,7 @@ function initCanvas(data, dataDomain){
         d3.selectAll(".mouse-per-line text")
           .style("opacity", "1");
       })
-      .on('mousemove', function() { // mouse moving over canvas
+      .on("mousemove", function() { // mouse moving over canvas
         var mouse = d3.mouse(this);
         d3.select(".mouse-line")
           .attr("d", function() {
@@ -227,7 +231,6 @@ function initCanvas(data, dataDomain){
 
         d3.selectAll(".mouse-per-line")
           .attr("transform", function(d, i) {
-            //console.log(width/mouse[0])
             var xDate = xScale.invert(mouse[0]),
                 bisect = d3.bisector(function(d) { return d.Datum; }).right;
                 idx = bisect(d.values, xDate);
@@ -244,45 +247,58 @@ function initCanvas(data, dataDomain){
               }
               if (pos.x > mouse[0])      end = target;
               else if (pos.x < mouse[0]) beginning = target;
-              else break; //position found
+              else break;
             }
             
-            d3.select(this).select('text')
-              .text(yScale.invert(pos.y).toFixed(2));
+            // Add text to the onhover circles.
+            d3.select(this).select("text")
+              .text(yScale.invert(pos.y).toFixed(2) + "m/s");
               
+            d3.select(".tooltip")
+                .select("text")
+                .text(String(xDate).substr(0, 11));
+            
             return "translate(" + mouse[0] + "," + pos.y +")";
           });
       });
 	 
-	 
-	 /************************************************************************/
-     
+
      // Legend.
-     var legend = svg.selectAll('.legend')
+     var legend = svg.selectAll(".legend")
       .data(types)
       .enter()
-      .append('g')
-      .attr('class', 'legend');
+      .append("g")
+      .attr("class", "legend");
      
-     legend.append('rect')
-      .attr('x', width - 100 - margin.right)
-      .attr('y', function(d, i) {
-        return 50 + i * 20;
+     const LEGEND_OFFSET = 30;
+     const LEGEND_INTERSPACING = 20;
+     
+     legend.append("rect")
+      .attr("x", width - 100 - margin.right)
+      .attr("y", function(d, i) {
+        return LEGEND_OFFSET + i * LEGEND_INTERSPACING;
       })
-      .attr('width', 10)
-      .attr('height', 10)
-      .style('fill', function(d) {
+      .attr("width", 10)
+      .attr("height", 10)
+      .style("fill", function(d) {
         return colors[d.id];
       });
 
-    legend.append('text')
-      .attr('x', width - 80 - margin.right)
-      .attr('y', function(d, i) {
-        return 50 + (i * 20) + 9;
+    legend.append("text")
+      .attr("x", width - 80 - margin.right)
+      .attr("y", function(d, i) {
+        return LEGEND_OFFSET + (i * LEGEND_INTERSPACING) + 9;
       })
       .text(function(d) {
         return d.id;
       });
+      
+     var tooltip = svg.selectAll(".legend")
+        .append("g")
+        .attr("class", "tooltip")
+        .append("text")
+        .attr("x", width - 100 - margin.right)
+        .attr("y", 20)
      
 }
 
@@ -293,3 +309,5 @@ function makeDate(dateString){
 	return new Date((dateString.substr(0,4) + "," + dateString.substr(4,2) + "," + dateString.substr(6,2)));
 
 }
+
+function generateToolTip(){}
