@@ -13,18 +13,18 @@
 // ????
 // profit
 
-
-class Character = {
-      name: "",
-      agonyResist: -1,
-      profession: "",
-      level: -1,
-      ascendedArmor: -1,
-      ascendedWeapons: -1,
-      ascendedTrinkets: -1,
+// how do i make a model class help
+function Character() {
+      this.name = "";
+      this.agonyResist = -1;
+      this.profession = "";
+      this.level = -1;
+      this.ascendedArmor = -1;
+      this.ascendedWeapons = -1;
+      this.ascendedTrinkets = -1;
 }
 
-class Account = {
+var account = {
     
     apiKey: "",
     hoursPlayed: -1,
@@ -49,7 +49,7 @@ var verifiedApiKey = "";
 
 // handle all global things by the global account variable if possible
 // otherwise gonna be a huge clusterfuck
-var account = new Account();
+//var account = new Account();
 
 
 /* Wait until page is ready. */
@@ -63,16 +63,23 @@ function showError(errorMessage){
 }
 
 
+function initCanvases(){
+	// TODO
+}
+
+
 /* Check the given API and then start retrieving data if it has been verified. 
 This function is invoked by pressing the button on the webpage and will not run on itself. */
 function getUserApi(){
 
     // Check for basics
-    var apiKey = $("#apiKey").value;
+    var apiKey = $("#apiKey").val().trim();
+	console.log(apiKey);
+	apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0"
     
     if(apiKey == "" || apiKey == undefined)
     {
-    	showError("Please do not omit the first field").
+    	showError("Please do not omit the field");
     }
     else{
         
@@ -144,10 +151,17 @@ function getUserApi(){
 }
 
 
-apiCheckCallback(apiKey){
+function apiCheckCallback(apiKey){
     
     // make api global now that it has been verified
-    verifiedApiKey = verifiedApi;
+    account.apiKey = apiKey;
+	
+	// Get account properties such as the name, characters etc.
+	
+	
+	// Retrieve the fractal achievements and perform display cb.
+	getFractalAchievements(apiKey, displayFractalAchievements);
+	
     
     // Figure out which things can be done simultaneously and which are callback dependent
     
@@ -168,6 +182,85 @@ apiCheckCallback(apiKey){
     //3
     // Look up fractal dailies and status (perhaps this can be done in same time with the other achievements)
     
-    
-    
+}
+
+function getFractalAchievements(apiKey, callback){
+	
+	// Get the array of API 
+	$.ajax({
+	type: "GET",
+	async: true,
+	url: "https://api.guildwars2.com/v2/account/achievements?access_token=" + apiKey,
+	cache: false,
+	dataType: 'text',
+	
+		success: function(){
+		},
+		error: function(){
+			showError("Could not retrieve information about achievements.");
+		},
+		complete: function(data){
+			
+			var achievementArray = JSON.parse(data.responseText);
+			var fractalAchievementArray = new Array(4);
+			
+			// Find the fractal achievements in the array (they do not have a fixed index, unfortunately).
+			for(var i = 0, length = achievementArray.length; i < length; i++){
+				switch(achievementArray[i].id){
+					
+					// Initiate
+					case 2965:
+						fractalAchievementArray[0] = achievementArray[i].bits;
+						break;
+						
+					// Adept
+					case 2894:
+						fractalAchievementArray[1] = achievementArray[i].bits;
+						break;
+						
+					// Expert
+					case 2217:
+						fractalAchievementArray[2] = achievementArray[i].bits;
+						break;
+					
+					// Master
+					case 2415:
+						fractalAchievementArray[3] = achievementArray[i].bits;
+						break;
+				} 
+			}
+			
+			console.log(fractalAchievementArray);
+			callback(fractalAchievementArray);
+		}
+	});
+}
+
+function displayFractalAchievements(dataArray){
+	
+	console.log(dataArray);
+	
+	// Turn the array into a more useful/uniform data format.
+	for(var i = 0; i < dataArray.length; i++){
+		
+		console.log(dataArray[i]);
+		
+		// Initialize an array full of true. 
+		achievementBoolArray = new Array(25);
+		for(var j = 0; j < achievementBoolArray.length; j++)
+			achievementBoolArray[j] = true;
+		
+		// Set incomplete achievements to false for indices in subarrays.
+		for (var k = 0; k < dataArray[i].length; k++){
+			achievementBoolArray[dataArray[i][k]] = false;
+		}
+		
+		dataArray[i] = achievementBoolArray;
+	
+	}
+	
+	console.log(dataArray);
+	console.log("callback hoi");
+	
+	// Now I can do something with the data!
 }
