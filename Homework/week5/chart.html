@@ -1,33 +1,41 @@
 <!-- 
 	Renske Talsma 10896503
+	Data source: http://projects.knmi.nl/klimatologie/daggegevens/selectie.cgi
 -->
 
 <!DOCTYPE html>
 <html>
 
     <head>
-	
 		<title>Week 5</title>
-		
 		<!-- External scripts and stylesheets. -->
 		<link rel="stylesheet" href="styles.css">
 		<script src="Libraries/d3.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-		<script src="Libraries/topojson.min.js"></script>
-		<script src="Libraries/datamaps.world.min.js"></script>
 		<script src="Libraries/legend.js"></script>
         <script src="Libraries/queue.v1.min.js"></script>
-		<script src="chart.js"></script>
-		
+		<script src="chart.js"></script>	
 	</head>
-    
 	<body>
-	
 		<!-- Link back to github pages. -->
         <p>Renske Talsma 10896503</p>
 		<a href="../../index.html"><p>Go back</p></a>
-	
-		
+
+		<!-- Container. -->
+		<div class="container">
+            <div class="charttop">
+            
+                <!-- Title. -->
+                <p class ="title" id="charttitle"><p> 
+                <p class = "subtitle">Data source: <a href="http://projects.knmi.nl/klimatologie/daggegevens/selectie.cgi">KNMI</a></p>
+                
+                <!-- Selection menu for the year. -->
+                <select id="yearChoice">
+                    <option value="2015">2015</option>
+                    <option value="2016">2016</option>
+                </select>
+                <input type="button" value="Change" onclick="setData()">
+            </div>
+		</div>
     </body>
 </html>
-
