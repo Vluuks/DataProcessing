@@ -15,7 +15,8 @@
 
 
 
-// how do i make a model class help
+/* Model "class" used to store data about characters. Initializes with default
+values and is further filled in as API requests are completed and data retrieved. */
 function Character() {
       this.name = "";
       this.race = "";
@@ -26,9 +27,8 @@ function Character() {
       this.equipmentRarity = [];
 }
 
-
-
-
+/* A global object used to store all the information pertaining to the account
+that is currently using the visualization. */
 var account = {
     
     apiKey: "",
@@ -47,30 +47,24 @@ var account = {
     
 }
 
-
-// handle all global things by the global account variable if possible
-// otherwise gonna be a huge clusterfuck
-//var account = new Account();
-
-
-/* Wait until page is ready. */ // hetzelfde als window.onload
+/* Wait until page is ready. */
 $('document').ready(function(){
 	console.log("page ready");
 });
 
-
+/* Small function that takes a string and shows it in the error span on top of the page. */
 function showError(errorMessage){
     $('#error').text(errorMessage);
 }
 
-
+/* Initializes the different svg canvases used by this visualization. */
 function initCanvases(){
 	// TODO
 }
 
 
 /* Check the given API and then start retrieving data if it has been verified. 
-This function is invoked by pressing the button on the webpage and will not run on itself. */
+This function is invoked by pressing the button on the webpage. */
 function getUserApi(){
 
     // Check for basics
@@ -148,17 +142,18 @@ function getUserApi(){
     }
 }
 
-
+/* Called after the API key has been verified and handles the subsequent calls to other functions
+which retrieve more information from the API. */
 function apiCheckCallback(apiKey){
     
-    // make api global now that it has been verified
+    // Make api global now that it has been verified.
     account.apiKey = apiKey;
 	
-	// Get account properties such as the names etc.
+	// Get characters and in turn character equipment.
     getCharacters(getGeneralCharacterInfo);
     
 	// Retrieve the fractal achievements and perform display cb.
-	getFractalAchievements(displayFractalAchievements);
+	//getFractalAchievements(displayFractalAchievements);
 
     
     // Figure out which things can be done simultaneously and which are callback dependent
@@ -213,15 +208,11 @@ function getCharacters(callback){
 	}); 
 }
 
-
 /* Retrieves information about a character based on the name of the character and
 stores the information in a character object which will be globally accessible by the
 other functions in the script. */
 function getGeneralCharacterInfo(){
-    
-    console.log("getequips initialized");
-    
-    
+  
     var characterArray = account.characters;
     var counter = 0;
     // ??? ?? ?? AAAAAAH
@@ -271,31 +262,27 @@ function getGeneralCharacterInfo(){
 and checks for every piece what type it is and whether it is of ascended (best in slot) rarity. Because
 this information is nested within the API, multiple API calls are necessary, we need to retrieve information
 about the item using the item ID. This needs to be done with iterations because items are not always
-present on a character (ie not all equipment slots are filled) so there are no fixed indices to use. */
+present on a character (ie not all equipment slots are filled) so there are no fixed indices to use.
+
+For every item we look up the rarity and the type and this is stored in an object which in turn is stored
+in the dictionary with the character name as a key. This dictionary is globally accessible and will, after
+the callback, be available for use by the visualizations. */
 function fetchEquipment(){
-   
-   
-   console.log("WHERE IS THIS THING");
-   console.log(account.characterDictionary);
-   account.characterDictionary["Yleste"].equipment;
    
    // Iterate over the characters in the dictionary and access equipment array for each.
     for (let character in account.characterDictionary) {
         (function(character){
-            console.log("meh 1 " + character);
-        
             if (account.characterDictionary.hasOwnProperty(character)) {
                 
-                console.log("meh 2 " + character);
-                
                 var equipmentArray = account.characterDictionary[character].equipment;
-                
+                var agonyResistCounter = 0;
                 var gearCheckCounter = 0;
                 
                 // Loop over the equipment array and perform check on each piece that is present.
                 for(let i = 0; i < equipmentArray.length; i++){
                     (function(i){
-                        
+                         
+                        // Request API for item rarity and type using the item id.
                         $.ajax({
                             type: "GET",
                             url: "https://api.guildwars2.com/v2/items?id=" + equipmentArray[i].id,
@@ -318,27 +305,38 @@ function fetchEquipment(){
                                         slot: equipmentArray[i].slot
                                     }
                                     
+                                    // Push to equipment array. 
                                     account.characterDictionary[character].equipmentRarity.push(itemObject);
+                                    
+                                    // Calculate agony resist on this item. Weapons get special treatment due to two possible sets. 
+                                    if(itemObject.type == "Weapon")
+                                        agonyResistCounter += calculateAgonyResist(equipmentArray[i].infusions, 1);
+                                    else
+                                        agonyResistCounter += calculateAgonyResist(equipmentArray[i].infusions, 0);
+                                    
                                 }   
                                 
                                 // Increase counter for callback
                                 gearCheckCounter++;
                                 console.log("counter" + gearCheckCounter + "/" + (equipmentArray.length)-1 +"|| name " + character);
-                                console.log("is lastchar? " + character == account.characters[account.characterAmount-1]);
-                                console.log("is last gear?" + gearCheckCounter == equipmentArray.length-1);
+                                console.log("is lastchar " + character == account.characters[account.characterAmount-1]);
+                                console.log("is last gear" + gearCheckCounter == equipmentArray.length-1);
 
                                 // If it's the last character and the last equipment piece of that character, then we can go on!    
                                 if(character == account.characters[account.characterAmount-1]
                                 && gearCheckCounter == (equipmentArray.length)-1){
                                     console.log("CHECK CHECK DUBBELCHECK all done callback ready jeuj");
                                     onDataReady();
-                                    
                                 }
                             
                             }
                         });              
                     })(i);
                 }
+                
+                // Add total agony resist to data.
+                // TODO make distinction between weapon sets
+                account.characterDictionary[character].agonyResist = agonyResistCounter;
             }
         }(character));
     }    
@@ -347,7 +345,12 @@ function fetchEquipment(){
 
 function onDataReady(){
     
-    console.log(account.characterDictionary["Clarente"].equipmentRarity)
+    console.log(account.characterDictionary);
+    
+    for(character in account.characterDictionary){
+        console.log(account.characterDictionary[character].equipmentRarity);
+        console.log(account.characterDictionary[character].agonyResist);
+    }
     
     
 }
@@ -359,6 +362,8 @@ There are many different infusions in this game due to ArenaNet's inconsistent a
 revamps of the system, which makes switches necessary to account for all possible types. 
 If no infusions are present the infusionsarray will not exist and the function will return 0. */
 function calculateAgonyResist(infusionsArray){
+    
+    
     
     var agonyResist = 0;
     if(infusionsArray != undefined){
