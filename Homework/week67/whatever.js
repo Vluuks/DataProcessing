@@ -13,16 +13,23 @@
 // ????
 // profit
 
+
+
 // how do i make a model class help
 function Character() {
       this.name = "";
+      this.race = "";
       this.agonyResist = -1;
       this.profession = "";
       this.level = -1;
+      this.equipment = [];
       this.ascendedArmor = -1;
       this.ascendedWeapons = -1;
       this.ascendedTrinkets = -1;
 }
+
+
+
 
 var account = {
     
@@ -32,7 +39,8 @@ var account = {
     characterAmount: -1,
     fractalLevel: -1,
     fractalRelics: -1,
-    fractalPristine: -1
+    fractalPristine: -1,
+    characterDictionary: {}
 
     // if i have time
     // matrices
@@ -42,17 +50,12 @@ var account = {
 }
 
 
-
-
-/* Global things */
-var verifiedApiKey = "";
-
 // handle all global things by the global account variable if possible
 // otherwise gonna be a huge clusterfuck
 //var account = new Account();
 
 
-/* Wait until page is ready. */
+/* Wait until page is ready. */ // hetzelfde als window.onload
 $('document').ready(function(){
 	console.log("page ready");
 });
@@ -129,9 +132,7 @@ function getUserApi(){
 									break;
 							}
 						}
-						
-						console.log(permissionCount);
-						
+
 						// Check if permission requirements were met, if so, invoke callback function.
 						if(permissionCount == 4)
 							apiCheckCallback(apiKey);
@@ -141,13 +142,12 @@ function getUserApi(){
 				}    
 			});
 		}
+        
 		// If API key didn't pass regex it can never be valid.
 		else{
 			showError("Your API key is not valid");
 		}
-        
     }
-
 }
 
 
@@ -156,12 +156,12 @@ function apiCheckCallback(apiKey){
     // make api global now that it has been verified
     account.apiKey = apiKey;
 	
-	// Get account properties such as the name, characters etc.
-	
-	
+	// Get account properties such as the names etc.
+    getCharacters(getGeneralCharacterInfo);
+    
 	// Retrieve the fractal achievements and perform display cb.
-	getFractalAchievements(apiKey, displayFractalAchievements);
-	getCharacters(getGeneralCharacterInfo);
+	getFractalAchievements(displayFractalAchievements);
+
     
     // Figure out which things can be done simultaneously and which are callback dependent
     
@@ -184,6 +184,8 @@ function apiCheckCallback(apiKey){
     
 }
 
+/* This function retrieves a list of the characters on the account from the API and then
+calls the callback which will retrieve additional info based on the character names. */
 function getCharacters(callback){
  
     $.ajax({
@@ -199,27 +201,34 @@ function getCharacters(callback){
             },
 			complete: function(data){
 						
-				// convert json array to javascript array
+				// Convert json array to javascript.
 				characterArray = JSON.parse(data.responseText);
 				console.log(characterArray);
 				console.log(characterArray.length);
+                
+                account.characters = characterArray;
+                account.characterAmount = characterArray.length;
 				
-				// start fetching equipment
-                callback(characterArray);
+				// Fetch general info and equipment.
+                callback();
 			}    
-	});
-    
+	}); 
 }
 
-function getGeneralCharacterInfo(characterArray){
+
+/* Retrieves information about a character based on the name of the character and
+stores the information in a character object which will be globally accessible by the
+other functions in the script. */
+function getGeneralCharacterInfo(){
     
-    console.log("getequips entered");
+    console.log("getequips initialized");
     
+    
+    var characterArray = account.characters;
     var counter = 0;
     // ??? ?? ?? AAAAAAH
     
-    
-    for (let i = 0; i < characterArray.length; i++) { //TODO
+    for (let i = 0; i < account.characterAmount; i++) { 
         (function(i){
         
             $.ajax({
@@ -235,40 +244,336 @@ function getGeneralCharacterInfo(characterArray){
                 complete: function(data){
                             
                     // convert json data to javascript
-                    var characterobject = JSON.parse(data.responseText);
-                    console.log(i)
-                    console.log(characterobject);
+                    var characterObject = JSON.parse(data.responseText);
+                    counter++;
+                    console.log("loop index " + i);
+                    console.log("counter" + counter);
+                    console.log(characterObject);
                     
-                    // store character info and character age in dictionary
-                    // charinfodictionary[a_characterArray[l]] = characterobject.level + " " + characterobject.race; 
-                    // classdictionary[a_characterArray[l]] = characterobject.profession;
-                    // agedictionary[a_characterArray[l]] = (characterobject.age / 3600).toFixed(0);
-                    if(i == characterArray.length-1)
-                        console.log("loop test" + i);
-                        
+                    // Add properties to the object
+                    var character = new Character();
+                    character.race = characterObject.race;
+                    character.level = characterObject.level;
+                    character.equipment = characterObject.equipment;
+                    character.profession = characterObject.profession;
+                    character.hoursPlayed = (characterObject.age / 3600).toFixed(0);
+                    account.characterDictionary[characterObject.name] = character;
+                    
+                    if(counter == characterArray.length){
+                        console.log("CALLBACKS WTF NEE HELP loop test" + counter);   
+                        fetchEquipment();
+                    }
                 }
             });
-        
         })(i);
     }
 }
 
+/* This function extracts the equipment array from the dictionary of characters and their info
+and checks for every piece what type it is and whether it is of ascended (best in slot) rarity. Because
+this information is nested within the API, multiple API calls are necessary, we need to retrieve information
+about the item using the item ID. This needs to be done with iterations because items are not always
+present on a character (ie not all equipment slots are filled) which means that the equipment items do
+not always have the same indices, making the switch a necessary addition. */
+function fetchEquipment(){
+   
+   // Iterate over the characters in the dictionary and access equipment array for each.
+    for (var character in account.characterDictionary) {
+        if (Object.prototype.hasOwnProperty.call(account.characterDictionary)) {
+            
+            var equipmentArray = account.characterDictionary[character].equipment;
+            console.log(equipmentArray);
+            
+            // Counters to track agony resist on each equipment part.
+            var armorAgony = 0;
+            var weaponSet OneAgony = 0;
+            var weaponSetTwoAgony = 0;
+            
+            // Array to store finalized list of ascended equipment per character.
+            ascendedEquipmentArray = [];
+            
+            // Loop over the equipment array and perform check on each piece that is present.
+            for(let i = 0; i < equipmentArray.length; i++){
+                (function(i){
+                    
+                    // Check in which slot the equipment item goes and perform check if it's present.
+                    switch(equipmentArray[i].slot){
+                            
+                            // Armor.
+                            case "Coat":
+                                var coat = equipmentArray[i].id;
+                                checkForAscended(coat, "Coat");
+                                calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                            case "Helm":
+                                var helm = equipmentArray[i].id;
+                                checkForAscended(helm, "Helm");
+                                calculateAgonyResist(equipmentArray[i].infusions);
+                                break;		
+                            case "Shoulders":
+                                var shoulders = equipmentArray[i].id;
+                                checkForAscended(shoulders, "Shoulders");
+                                calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                            case "Gloves":
+                                var gloves = equipmentArray[i].id;
+                                checkForAscended(gloves, "Gloves");
+                                calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                            case "Leggings":
+                                var leggings = equipmentArray[i].id;
+                                checkForAscended(leggings, "Leggings");
+                                calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                            case "Boots":
+                                var boots = equipmentArray[i].id;
+                                checkForAscended(boots, "Boots");
+                                calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                                
+                            // Trinkets.
+                            case "Backpack":
+                                var backpiece = equipmentArray[i].id;
+                                checkForAscended(backpiece, "Backpack");
+                                calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                            case "Accessory1":
+                                var acc1 = equipmentArray[i].id;
+                                checkForAscended(acc1, "Accessory1");
+                                calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                            case "Accessory2":
+                                var acc2 = equipmentArray[i].id;
+                                checkForAscended(acc2, "Accessory2");
+                                calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                            case "Ring1":
+                                var ring1 = equipmentArray[i].id;
+                                checkForAscended(ring1, "Ring1");
+                                calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                            case "Ring2":
+                                var ring2 = equipmentArray[i].id;
+                                checkForAscended(ring2, "Ring2");
+                                calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                            case "Amulet":
+                                var amulet = equipmentArray[i].id;
+                                checkForAscended(amulet, "Amulet");
+                                calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                                
+                            // Weapons.
+                            case "WeaponA1":
+                                checkForAscended(equipmentArray[i].id, "WeaponA1");
+                                weaponset1agonyResist += calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                            case "WeaponA2":
+                                checkForAscended(equipmentArray[i].id, "WeaponA2");
+                                weaponset1agonyResist += calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                            case "WeaponB1":
+                                checkForAscended(equipmentArray[i].id, "WeaponB1");
+                                weaponset2agonyResist += calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                            case "WeaponB2":
+                                checkForAscended(equipmentArray[i].id, "WeaponB2");
+                                weaponset2agonyResist += calculateAgonyResist(equipmentArray[i].infusions);
+                                break;
+                    } // einde switch
+                    
+                    
+                     
+                    
+                    
+                    
+                })(i);
+            }
+            // use val
+        }
+    }    
+}
 
-function getCharacterEquipment(characterArray){
+/* Function that checks whether an armor piece with a given id is of ascended quality. Legendary
+armor and weapons do also have ascended stats and thus they qualify as ascended in this case.*/
+function checkForAscended(){
     
+    $.ajax({
+	            type: "GET",
+	            url: itemurl,
+	            async: true,
+	            cache: false,
+	            dataType: 'text',
+	            
+				success: function(){},
+				error: function(){},
+				complete: function(data){
+					itemObject = JSON.parse(data.responseText);
+					switch(itemObject.rarity){
+						case "Ascended":
+                            return true;
+						case "Legendary":
+							return true;
+                        default: 
+                            return false;
+					}		
+				}
+        });
+}
+
+/* For a given armor piece, calculate the agony infusions present, and based on the ID of these
+infusions return the total amount of agony resist present in the armor piece, trinket or weapon. 
+There are many different infusions in this game due to ArenaNet's inconsistent additions and 
+revamps of the system, which makes switches necessary to account for all possible types. 
+If no infusions are present the infusionsarray will not exist and the function will return 0. */
+function calculateAgonyResist(infusionsArray){
     
+    var agonyResist = 0;
+    if(infusionsArray != undefined){
+		
+		for(var i = 0; i < infusionsArray.length; i++){
+		
+			switch(infusionsarray[n]){
+				
+				// Special infusions (aura)
+				case 78028:
+					agonyResist += 9;
+					break;
+				case 78052:
+					agonyResist += 9;
+					break;
+					
+				// TODO add ghostly infusions (multiple stats!!)	
+                // koda's warmth
+                // and other shit
+                // why
+				
+				// Versatile simple infusions TODO add 3
+				case 37138:
+					agonyResist += 5;
+					break;
+				case 70852:
+					agonyResist += 7;
+					break;
+				
+				// Regular infusions.
+				case 49424:
+					agonyResist += 1;
+					break;
+				case 49425:
+					agonyResist += 2;
+					break;
+				case 49426:
+					agonyResist += 3;
+					break;
+				case 49427:
+					agonyResist += 4;
+					break;
+				case 49428:
+					agonyResist += 5;
+					break;
+				case 49429:
+					agonyResist += 6;
+					break;
+				case 49430:
+					agonyResist += 7;
+					break;
+				case 49431:
+					agonyResist += 8;
+					break;	
+				case 49432:
+					agonyResist += 9;
+					break;
+				case 49433:
+					agonyResist += 10;
+					break;
+				case 49434:
+					agonyResist += 11;
+					break;
+				case 49435:
+					agonyResist += 12;
+					break;
+				case 49436:
+					agonyResist += 13;
+					break;
+				case 49437:
+					agonyResist += 14;
+					break;
+				case 49438:
+					agonyResist += 15;
+					break;
+				case 49439:
+					agonyResist += 16;
+					break;
+				case 49440:
+					agonyResist += 17;
+					break;
+				case 49441:
+					agonyResist += 18;
+					break;
+				case 49442:
+					agonyResist += 19;
+					break;
+				case 49443:
+					agonyResist += 20;
+					break;
+                    
+                // Stat infusions
+                // just fuck it
+			}
+		}
+	}
     
+    return agonyResist;
 }
 
 
 
-function getFractalAchievements(apiKey, callback){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ACHIEVEMENTS AND SUCH */
+function getFractalAchievements(callback){
 	
 	// Get the array of API 
 	$.ajax({
 	type: "GET",
 	async: true,
-	url: "https://api.guildwars2.com/v2/account/achievements?access_token=" + apiKey,
+	url: "https://api.guildwars2.com/v2/account/achievements?access_token=" + account.apiKey,
 	cache: false,
 	dataType: 'text',
 	
