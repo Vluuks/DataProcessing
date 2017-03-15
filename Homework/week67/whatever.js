@@ -161,7 +161,7 @@ function apiCheckCallback(apiKey){
 	
 	// Retrieve the fractal achievements and perform display cb.
 	getFractalAchievements(apiKey, displayFractalAchievements);
-	
+	getCharacters(getGeneralCharacterInfo);
     
     // Figure out which things can be done simultaneously and which are callback dependent
     
@@ -183,6 +183,84 @@ function apiCheckCallback(apiKey){
     // Look up fractal dailies and status (perhaps this can be done in same time with the other achievements)
     
 }
+
+function getCharacters(callback){
+ 
+    $.ajax({
+		type: "GET",
+		async: true,
+		url: "https://api.guildwars2.com/v2/characters?access_token=" + account.apiKey,
+		cache: false,
+		dataType: 'text',
+		
+			success: function(){},
+			error: function(){
+                showError("Could not retrieve character data.");
+            },
+			complete: function(data){
+						
+				// convert json array to javascript array
+				characterArray = JSON.parse(data.responseText);
+				console.log(characterArray);
+				console.log(characterArray.length);
+				
+				// start fetching equipment
+                callback(characterArray);
+			}    
+	});
+    
+}
+
+function getGeneralCharacterInfo(characterArray){
+    
+    console.log("getequips entered");
+    
+    var counter = 0;
+    // ??? ?? ?? AAAAAAH
+    
+    
+    for (let i = 0; i < characterArray.length; i++) { //TODO
+        (function(i){
+        
+            $.ajax({
+                type: "GET",
+                async: true,
+                url: "https://api.guildwars2.com/v2/characters/" + characterArray[i] + "?access_token=" + account.apiKey,
+                cache: false,
+                dataType: 'text',               
+                success: function(){},
+                error: function(){},
+                
+                // wait until request is done
+                complete: function(data){
+                            
+                    // convert json data to javascript
+                    var characterobject = JSON.parse(data.responseText);
+                    console.log(i)
+                    console.log(characterobject);
+                    
+                    // store character info and character age in dictionary
+                    // charinfodictionary[a_characterArray[l]] = characterobject.level + " " + characterobject.race; 
+                    // classdictionary[a_characterArray[l]] = characterobject.profession;
+                    // agedictionary[a_characterArray[l]] = (characterobject.age / 3600).toFixed(0);
+                    if(i == characterArray.length-1)
+                        console.log("loop test" + i);
+                        
+                }
+            });
+        
+        })(i);
+    }
+}
+
+
+function getCharacterEquipment(characterArray){
+    
+    
+    
+}
+
+
 
 function getFractalAchievements(apiKey, callback){
 	
