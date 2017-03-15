@@ -23,9 +23,7 @@ function Character() {
       this.profession = "";
       this.level = -1;
       this.equipment = [];
-      this.ascendedArmor = -1;
-      this.ascendedWeapons = -1;
-      this.ascendedTrinkets = -1;
+      this.equipmentRarity = [];
 }
 
 
@@ -204,9 +202,9 @@ function getCharacters(callback){
 				// Convert json array to javascript.
 				characterArray = JSON.parse(data.responseText);
 				console.log(characterArray);
-				console.log(characterArray.length);
+				// console.log(characterArray.length);
                 
-                account.characters = characterArray;
+                account.characters = characterArray.sort();
                 account.characterAmount = characterArray.length;
 				
 				// Fetch general info and equipment.
@@ -246,9 +244,9 @@ function getGeneralCharacterInfo(){
                     // convert json data to javascript
                     var characterObject = JSON.parse(data.responseText);
                     counter++;
-                    console.log("loop index " + i);
-                    console.log("counter" + counter);
-                    console.log(characterObject);
+                    // console.log("loop index " + i);
+                    // console.log("counter" + counter);
+                    // console.log(characterObject);
                     
                     // Add properties to the object
                     var character = new Character();
@@ -273,153 +271,87 @@ function getGeneralCharacterInfo(){
 and checks for every piece what type it is and whether it is of ascended (best in slot) rarity. Because
 this information is nested within the API, multiple API calls are necessary, we need to retrieve information
 about the item using the item ID. This needs to be done with iterations because items are not always
-present on a character (ie not all equipment slots are filled) which means that the equipment items do
-not always have the same indices, making the switch a necessary addition. */
+present on a character (ie not all equipment slots are filled) so there are no fixed indices to use. */
 function fetchEquipment(){
    
+   
+   console.log("WHERE IS THIS THING");
+   console.log(account.characterDictionary);
+   account.characterDictionary["Yleste"].equipment;
+   
    // Iterate over the characters in the dictionary and access equipment array for each.
-    for (var character in account.characterDictionary) {
-        if (Object.prototype.hasOwnProperty.call(account.characterDictionary)) {
-            
-            var equipmentArray = account.characterDictionary[character].equipment;
-            console.log(equipmentArray);
-            
-            // Counters to track agony resist on each equipment part.
-            var armorAgony = 0;
-            var weaponSet OneAgony = 0;
-            var weaponSetTwoAgony = 0;
-            
-            // Array to store finalized list of ascended equipment per character.
-            ascendedEquipmentArray = [];
-            
-            // Loop over the equipment array and perform check on each piece that is present.
-            for(let i = 0; i < equipmentArray.length; i++){
-                (function(i){
-                    
-                    // Check in which slot the equipment item goes and perform check if it's present.
-                    switch(equipmentArray[i].slot){
+    for (let character in account.characterDictionary) {
+        (function(character){
+            console.log("meh 1 " + character);
+        
+            if (account.characterDictionary.hasOwnProperty(character)) {
+                
+                console.log("meh 2 " + character);
+                
+                var equipmentArray = account.characterDictionary[character].equipment;
+                
+                var gearCheckCounter = 0;
+                
+                // Loop over the equipment array and perform check on each piece that is present.
+                for(let i = 0; i < equipmentArray.length; i++){
+                    (function(i){
+                        
+                        $.ajax({
+                            type: "GET",
+                            url: "https://api.guildwars2.com/v2/items?id=" + equipmentArray[i].id,
+                            async: true,
+                            cache: false,
+                            dataType: 'text',
                             
-                            // Armor.
-                            case "Coat":
-                                var coat = equipmentArray[i].id;
-                                checkForAscended(coat, "Coat");
-                                calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
-                            case "Helm":
-                                var helm = equipmentArray[i].id;
-                                checkForAscended(helm, "Helm");
-                                calculateAgonyResist(equipmentArray[i].infusions);
-                                break;		
-                            case "Shoulders":
-                                var shoulders = equipmentArray[i].id;
-                                checkForAscended(shoulders, "Shoulders");
-                                calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
-                            case "Gloves":
-                                var gloves = equipmentArray[i].id;
-                                checkForAscended(gloves, "Gloves");
-                                calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
-                            case "Leggings":
-                                var leggings = equipmentArray[i].id;
-                                checkForAscended(leggings, "Leggings");
-                                calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
-                            case "Boots":
-                                var boots = equipmentArray[i].id;
-                                checkForAscended(boots, "Boots");
-                                calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
+                            success: function(){},
+                            error: function(){},
+                            complete: function(data){
+                                itemObject = JSON.parse(data.responseText);
                                 
-                            // Trinkets.
-                            case "Backpack":
-                                var backpiece = equipmentArray[i].id;
-                                checkForAscended(backpiece, "Backpack");
-                                calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
-                            case "Accessory1":
-                                var acc1 = equipmentArray[i].id;
-                                checkForAscended(acc1, "Accessory1");
-                                calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
-                            case "Accessory2":
-                                var acc2 = equipmentArray[i].id;
-                                checkForAscended(acc2, "Accessory2");
-                                calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
-                            case "Ring1":
-                                var ring1 = equipmentArray[i].id;
-                                checkForAscended(ring1, "Ring1");
-                                calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
-                            case "Ring2":
-                                var ring2 = equipmentArray[i].id;
-                                checkForAscended(ring2, "Ring2");
-                                calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
-                            case "Amulet":
-                                var amulet = equipmentArray[i].id;
-                                checkForAscended(amulet, "Amulet");
-                                calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
+                                // Store item properties in object and store object in the array of items on the character
+                                if(itemObject.type == ("Armor") || itemObject.type == ("Trinket") || itemObject.type == ("Weapon") || itemObject.type == ("Back") ){
+                                    var itemObject = {
+                                        name: itemObject.name,
+                                        rarity: itemObject.rarity,
+                                        agonyResist: calculateAgonyResist(equipmentArray[i].infusions),
+                                        type: itemObject.type,
+                                        slot: equipmentArray[i].slot
+                                    }
+                                    
+                                    account.characterDictionary[character].equipmentRarity.push(itemObject);
+                                }   
                                 
-                            // Weapons.
-                            case "WeaponA1":
-                                checkForAscended(equipmentArray[i].id, "WeaponA1");
-                                weaponset1agonyResist += calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
-                            case "WeaponA2":
-                                checkForAscended(equipmentArray[i].id, "WeaponA2");
-                                weaponset1agonyResist += calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
-                            case "WeaponB1":
-                                checkForAscended(equipmentArray[i].id, "WeaponB1");
-                                weaponset2agonyResist += calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
-                            case "WeaponB2":
-                                checkForAscended(equipmentArray[i].id, "WeaponB2");
-                                weaponset2agonyResist += calculateAgonyResist(equipmentArray[i].infusions);
-                                break;
-                    } // einde switch
-                    
-                    
-                     
-                    
-                    
-                    
-                })(i);
+                                // Increase counter for callback
+                                gearCheckCounter++;
+                                console.log("counter" + gearCheckCounter + "/" + (equipmentArray.length)-1 +"|| name " + character);
+                                console.log("is lastchar? " + character == account.characters[account.characterAmount-1]);
+                                console.log("is last gear?" + gearCheckCounter == equipmentArray.length-1);
+
+                                // If it's the last character and the last equipment piece of that character, then we can go on!    
+                                if(character == account.characters[account.characterAmount-1]
+                                && gearCheckCounter == (equipmentArray.length)-1){
+                                    console.log("CHECK CHECK DUBBELCHECK all done callback ready jeuj");
+                                    onDataReady();
+                                    
+                                }
+                            
+                            }
+                        });              
+                    })(i);
+                }
             }
-            // use val
-        }
+        }(character));
     }    
 }
 
-/* Function that checks whether an armor piece with a given id is of ascended quality. Legendary
-armor and weapons do also have ascended stats and thus they qualify as ascended in this case.*/
-function checkForAscended(){
+
+function onDataReady(){
     
-    $.ajax({
-	            type: "GET",
-	            url: itemurl,
-	            async: true,
-	            cache: false,
-	            dataType: 'text',
-	            
-				success: function(){},
-				error: function(){},
-				complete: function(data){
-					itemObject = JSON.parse(data.responseText);
-					switch(itemObject.rarity){
-						case "Ascended":
-                            return true;
-						case "Legendary":
-							return true;
-                        default: 
-                            return false;
-					}		
-				}
-        });
+    console.log(account.characterDictionary["Clarente"].equipmentRarity)
+    
+    
 }
+
 
 /* For a given armor piece, calculate the agony infusions present, and based on the ID of these
 infusions return the total amount of agony resist present in the armor piece, trinket or weapon. 
@@ -433,7 +365,7 @@ function calculateAgonyResist(infusionsArray){
 		
 		for(var i = 0; i < infusionsArray.length; i++){
 		
-			switch(infusionsarray[n]){
+			switch(infusionsArray[i]){
 				
 				// Special infusions (aura)
 				case 78028:
@@ -448,6 +380,9 @@ function calculateAgonyResist(infusionsArray){
                 // and other shit
                 // why
 				
+                // DICTIONARY VAN MAKEN TODO
+                
+                
 				// Versatile simple infusions TODO add 3
 				case 37138:
 					agonyResist += 5;
