@@ -5,22 +5,12 @@
 	
 */
 
-
-// get api
-// verify api
-// get data in steps
-// show data in steps
-// ????
-// profit
-
-
-
 /* Model "class" used to store data about characters. Initializes with default
 values and is further filled in as API requests are completed and data retrieved. */
 function Character() {
       this.name = "";
       this.race = "";
-      this.agonyResist = -1;
+      this.agonyResist = {};
       this.profession = "";
       this.level = -1;
       this.equipment = [];
@@ -47,6 +37,14 @@ var account = {
     
 }
 
+var barChartCanvas = {
+	margin: {}
+}
+
+var sunBurstCanvas = {
+	margin: {}
+}
+
 /* Wait until page is ready. */
 $('document').ready(function(){
 	console.log("page ready");
@@ -59,9 +57,29 @@ function showError(errorMessage){
 
 /* Initializes the different svg canvases used by this visualization. */
 function initCanvases(){
-	// TODO
-}
+	
+	barChartCanvas.margin = {top: 100, right: 180, bottom: 100, left: 100};
+    var width = 1200 - barChartCanvas.margin.left - barChartCanvas.margin.right,
+        height = 840 - barChartCanvas.margin.top - barChartCanvas.margin.bottom;
 
+    var svg = d3.select("body")
+      .append("svg")
+      .attr("width", width + barChartCanvas.margin.left + barChartCanvas.margin.right)
+      .attr("height", height + barChartCanvas.margin.top + barChartCanvas.margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + barChartCanvas.margin.left + "," + barChartCanvas.margin.top + ")");
+	  
+	sunBurstCanvas.margin = {top: 100, right: 180, bottom: 100, left: 100};
+    var width = 1200 - sunBurstCanvas.margin.left - sunBurstCanvas.margin.right,
+        height = 840 - sunBurstCanvas.margin.top - sunBurstCanvas.margin.bottom;
+
+    var svg = d3.select("body")
+      .append("svg")
+      .attr("width", width + sunBurstCanvas.margin.left + sunBurstCanvas.margin.right)
+      .attr("height", height + sunBurstCanvas.margin.top + sunBurstCanvas.margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + sunBurstCanvas.margin.left + "," + sunBurstCanvas.margin.top + ")");
+}
 
 /* Check the given API and then start retrieving data if it has been verified. 
 This function is invoked by pressing the button on the webpage. */
@@ -69,7 +87,7 @@ function getUserApi(){
 
     // Check for basics
     var apiKey = $("#apiKey").val().trim();
-	console.log(apiKey);
+
 	apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0"
     
     if(apiKey == "" || apiKey == undefined)
@@ -215,8 +233,7 @@ function getGeneralCharacterInfo(){
   
     var characterArray = account.characters;
     var counter = 0;
-    // ??? ?? ?? AAAAAAH
-    
+    // account.characterAmount
     for (let i = 0; i < account.characterAmount; i++) { 
         (function(i){
         
@@ -300,27 +317,19 @@ function fetchEquipment(){
                                     var itemObject = {
                                         name: itemObject.name,
                                         rarity: itemObject.rarity,
-                                        agonyResist: calculateAgonyResist(equipmentArray[i].infusions),
+                                        infusions: equipmentArray[i].infusions,
                                         type: itemObject.type,
-                                        slot: equipmentArray[i].slot
+                                        slot: equipmentArray[i].slot,
+										agonyResist: 0
                                     }
                                     
                                     // Push to equipment array. 
                                     account.characterDictionary[character].equipmentRarity.push(itemObject);
                                     
-                                    // Calculate agony resist on this item. Weapons get special treatment due to two possible sets. 
-                                    if(itemObject.type == "Weapon")
-                                        agonyResistCounter += calculateAgonyResist(equipmentArray[i].infusions, 1);
-                                    else
-                                        agonyResistCounter += calculateAgonyResist(equipmentArray[i].infusions, 0);
-                                    
                                 }   
                                 
                                 // Increase counter for callback
                                 gearCheckCounter++;
-                                console.log("counter" + gearCheckCounter + "/" + (equipmentArray.length)-1 +"|| name " + character);
-                                console.log("is lastchar " + character == account.characters[account.characterAmount-1]);
-                                console.log("is last gear" + gearCheckCounter == equipmentArray.length-1);
 
                                 // If it's the last character and the last equipment piece of that character, then we can go on!    
                                 if(character == account.characters[account.characterAmount-1]
@@ -349,161 +358,127 @@ function onDataReady(){
     
     for(character in account.characterDictionary){
         console.log(account.characterDictionary[character].equipmentRarity);
-        console.log(account.characterDictionary[character].agonyResist);
+		
+		// Calculate the total agony resist on the gear.
+		var equipment = account.characterDictionary[character].equipmentRarity;
+		account.characterDictionary[character].agonyResist = calculateAgonyResist(equipment);
+		
     }
-    
-    
-}
 
+	// When calculating the AR is done, we can make the barchart.
+	makeBarChart();
+}
 
 /* For a given armor piece, calculate the agony infusions present, and based on the ID of these
 infusions return the total amount of agony resist present in the armor piece, trinket or weapon. 
 There are many different infusions in this game due to ArenaNet's inconsistent additions and 
-revamps of the system, which makes switches necessary to account for all possible types. 
+revamps of the system, which makes a dictionary necessary to account for all possible types. 
 If no infusions are present the infusionsarray will not exist and the function will return 0. */
-function calculateAgonyResist(infusionsArray){
+function calculateAgonyResist(equipment){
     
-    
-    
-    var agonyResist = 0;
-    if(infusionsArray != undefined){
+    var infusionDictionary = {		
+		"78028" : 9,		"78052" : 9,		"37138" : 5,		"70852" : 7, 		"49424" : 1,			"49425" : 2,			"49426" : 3,			"49427" : 4,			"49428" : 5,			"49429" : 6,		"49430" : 7,				"49431" : 8,				"49432" : 9,		"49433" : 10,			"49434" : 11,			"49435" : 12,		"49436" : 13,			"49437" : 14,			"49438" : 15,			"49439" : 16,			"49440" : 17,				"49441" : 18,		"49442" :19,				"49443" : 20
 		
-		for(var i = 0; i < infusionsArray.length; i++){
+		// todo
+		// add ghostly infusion variations
+		// koda's warmth infusion variations
 		
-			switch(infusionsArray[i]){
+	};
+	
+	// Counters to track different sources of AR.
+	var agonyResist = { 
+		total: 0,
+		trinkets: 0,
+		armor: 0,
+		weaponsA: 0,
+		weaponsB: 0,
+		aquatic: 0
+	}
+	
+	// Iterate over all the items.
+	for(item in equipment){
+	
+		// If the item has one or multiple infusions.
+		if(equipment[item].infusions != undefined){
+		
+			// Loop over all the infusions in the item.
+			for(var i = 0; i < equipment[item].infusions.length; i++){
+			
+				var infusion = equipment[item].infusions[i];
 				
-				// Special infusions (aura)
-				case 78028:
-					agonyResist += 9;
-					break;
-				case 78052:
-					agonyResist += 9;
-					break;
+				// Add agony resist back to the item object for later reference.
+				equipment[item].agonyResist += infusionDictionary[infusion];
+			
+				// If it's a weapon, check which one.
+				if(equipment[item].type == "Weapon"){
 					
-				// TODO add ghostly infusions (multiple stats!!)	
-                // koda's warmth
-                // and other shit
-                // why
+					switch(equipment[item].slot){
+					
+						case "WeaponA1":
+							agonyResist.weaponsA += infusionDictionary[infusion];
+							break;
+						case "WeaponA2":
+							agonyResist.weaponsA += infusionDictionary[infusion];
+							break;
+						case "WeaponB1":
+							agonyResist.weaponsB += infusionDictionary[infusion];
+							break;
+						case "WeaponB2":
+							agonyResist.weaponsB += infusionDictionary[infusion];
+							break;
+						case "WeaponAquaticA":
+							agonyResist.aquatic += infusionDictionary[infusion];
+							break;
+						case "WeaponAquaticB":
+							agonyResist.aquatic += infusionDictionary[infusion];
+							break;						
+					}
+				}
 				
-                // DICTIONARY VAN MAKEN TODO
-                
-                
-				// Versatile simple infusions TODO add 3
-				case 37138:
-					agonyResist += 5;
-					break;
-				case 70852:
-					agonyResist += 7;
-					break;
+				// If it's a trinket, add to total.
+				else if(equipment[item].type == "Trinket" && equipment[item].slot != "Amulet"){		
+					agonyResist.trinkets += infusionDictionary[infusion];
+				}
 				
-				// Regular infusions.
-				case 49424:
-					agonyResist += 1;
-					break;
-				case 49425:
-					agonyResist += 2;
-					break;
-				case 49426:
-					agonyResist += 3;
-					break;
-				case 49427:
-					agonyResist += 4;
-					break;
-				case 49428:
-					agonyResist += 5;
-					break;
-				case 49429:
-					agonyResist += 6;
-					break;
-				case 49430:
-					agonyResist += 7;
-					break;
-				case 49431:
-					agonyResist += 8;
-					break;	
-				case 49432:
-					agonyResist += 9;
-					break;
-				case 49433:
-					agonyResist += 10;
-					break;
-				case 49434:
-					agonyResist += 11;
-					break;
-				case 49435:
-					agonyResist += 12;
-					break;
-				case 49436:
-					agonyResist += 13;
-					break;
-				case 49437:
-					agonyResist += 14;
-					break;
-				case 49438:
-					agonyResist += 15;
-					break;
-				case 49439:
-					agonyResist += 16;
-					break;
-				case 49440:
-					agonyResist += 17;
-					break;
-				case 49441:
-					agonyResist += 18;
-					break;
-				case 49442:
-					agonyResist += 19;
-					break;
-				case 49443:
-					agonyResist += 20;
-					break;
-                    
-                // Stat infusions
-                // just fuck it
+				// If it's armor, check for aquabreather and else add to total.
+				else{
+					
+					if(equipment[item].slot != "HelmAquatic")
+						agonyResist.armor += infusionDictionary[infusion];
+					else				
+						agonyResist.aquatic += infusionDictionary[infusion];
+				}
+		
 			}
 		}
 	}
     
+	console.log(agonyResist.armor, agonyResist.trinkets, agonyResist.weaponsA, agonyResist.weaponsB, agonyResist.aquatic);
+	
+	// Calculate the effective total using the weapon set with the biggest amount and discarding underwater weapons.
+	agonyResist.total = agonyResist.armor + agonyResist.trinkets;
+	
+	if(agonyResist.weaponsA < agonyResist.weaponsB)
+		agonyResist.total += agonyResist.weaponsB
+	else if (agonyResist.weaponsA > agonyResist.weaponsB)
+		agonyResist.total += agonyResist.weaponsA
+	else
+		agonyResist.total += agonyResist.weaponsA
+	
+	// Return the object with all the data.
+	console.log(agonyResist);
+	
     return agonyResist;
 }
 
+/* BAR CHART VISUALIZATION */
 
+/* Maps the data to a format that is well received by the bar chart. */
+function mapDataBarChart(){
+	
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	
+}
 
 
 /* ACHIEVEMENTS AND SUCH */
