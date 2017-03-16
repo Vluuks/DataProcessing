@@ -1,0 +1,24 @@
+body{
+    padding-top:10px;
+    padding-left:20px;
+}
+h2{
+    font-family: "Arial";
+    padding-top: 70px;
+    margin-bottom: 0px;
+    padding-left: 50px;
+}
+.axis text {
+  font: 11px sans-serif;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+.legend{
+    font-family: "Arial";
+    font-size: 11px;
+}
+

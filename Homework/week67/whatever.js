@@ -58,27 +58,27 @@ function showError(errorMessage){
 /* Initializes the different svg canvases used by this visualization. */
 function initCanvases(){
 	
-	barChartCanvas.margin = {top: 100, right: 180, bottom: 100, left: 100};
-    var width = 1200 - barChartCanvas.margin.left - barChartCanvas.margin.right,
-        height = 840 - barChartCanvas.margin.top - barChartCanvas.margin.bottom;
+	// barChartCanvas.margin = {top: 100, right: 180, bottom: 100, left: 100};
+    // var width = 1200 - barChartCanvas.margin.left - barChartCanvas.margin.right,
+        // height = 840 - barChartCanvas.margin.top - barChartCanvas.margin.bottom;
 
-    var svg = d3.select("body")
-      .append("svg")
-      .attr("width", width + barChartCanvas.margin.left + barChartCanvas.margin.right)
-      .attr("height", height + barChartCanvas.margin.top + barChartCanvas.margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + barChartCanvas.margin.left + "," + barChartCanvas.margin.top + ")");
+    // var svg = d3.select("body")
+      // .append("svg")
+      // .attr("width", width + barChartCanvas.margin.left + barChartCanvas.margin.right)
+      // .attr("height", height + barChartCanvas.margin.top + barChartCanvas.margin.bottom)
+      // .append("g")
+      // .attr("transform", "translate(" + barChartCanvas.margin.left + "," + barChartCanvas.margin.top + ")");
 	  
-	sunBurstCanvas.margin = {top: 100, right: 180, bottom: 100, left: 100};
-    var width = 1200 - sunBurstCanvas.margin.left - sunBurstCanvas.margin.right,
-        height = 840 - sunBurstCanvas.margin.top - sunBurstCanvas.margin.bottom;
+	// sunBurstCanvas.margin = {top: 100, right: 180, bottom: 100, left: 100};
+    // var width = 1200 - sunBurstCanvas.margin.left - sunBurstCanvas.margin.right,
+        // height = 840 - sunBurstCanvas.margin.top - sunBurstCanvas.margin.bottom;
 
-    var svg = d3.select("body")
-      .append("svg")
-      .attr("width", width + sunBurstCanvas.margin.left + sunBurstCanvas.margin.right)
-      .attr("height", height + sunBurstCanvas.margin.top + sunBurstCanvas.margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + sunBurstCanvas.margin.left + "," + sunBurstCanvas.margin.top + ")");
+    // var svg = d3.select("body")
+      // .append("svg")
+      // .attr("width", width + sunBurstCanvas.margin.left + sunBurstCanvas.margin.right)
+      // .attr("height", height + sunBurstCanvas.margin.top + sunBurstCanvas.margin.bottom)
+      // .append("g")
+      // .attr("transform", "translate(" + sunBurstCanvas.margin.left + "," + sunBurstCanvas.margin.top + ")");
 }
 
 /* Check the given API and then start retrieving data if it has been verified. 
@@ -89,6 +89,7 @@ function getUserApi(){
     var apiKey = $("#apiKey").val().trim();
 
 	apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0"
+	//apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374"
     
     if(apiKey == "" || apiKey == undefined)
     {
@@ -336,15 +337,13 @@ function fetchEquipment(){
                                 && gearCheckCounter == (equipmentArray.length)-1){
                                     console.log("CHECK CHECK DUBBELCHECK all done callback ready jeuj");
                                     onDataReady();
-                                }
-                            
+                                }  
                             }
                         });              
                     })(i);
                 }
                 
-                // Add total agony resist to data.
-                // TODO make distinction between weapon sets
+                // Add total agony resist dictionary to data.
                 account.characterDictionary[character].agonyResist = agonyResistCounter;
             }
         }(character));
@@ -355,6 +354,8 @@ function fetchEquipment(){
 function onDataReady(){
     
     console.log(account.characterDictionary);
+	
+	var dataArray = [];
     
     for(character in account.characterDictionary){
         console.log(account.characterDictionary[character].equipmentRarity);
@@ -363,10 +364,20 @@ function onDataReady(){
 		var equipment = account.characterDictionary[character].equipmentRarity;
 		account.characterDictionary[character].agonyResist = calculateAgonyResist(equipment);
 		
+		// Create a new data array for the bar chart, using the character name and total agony resist.
+		var dataObject = {
+			characterName: character,
+			agonyResist: account.characterDictionary[character].agonyResist.total
+		}
+		
+		dataArray.push(dataObject);
+		
     }
 
+	console.log(dataArray);
+	console.log("after loop");
 	// When calculating the AR is done, we can make the barchart.
-	makeBarChart();
+	makeBarChart(dataArray);
 }
 
 /* For a given armor piece, calculate the agony infusions present, and based on the ID of these
@@ -471,13 +482,78 @@ function calculateAgonyResist(equipment){
     return agonyResist;
 }
 
-/* BAR CHART VISUALIZATION */
 
 /* Maps the data to a format that is well received by the bar chart. */
-function mapDataBarChart(){
-	
+function makeBarChart(data){
+		
+	console.log("entered bar chart part");	
+		
+	// set the dimensions of the canvas
+	var margin = {top: 20, right: 20, bottom: 150, left: 40},
+		width = 20 * account.characterAmount - margin.left - margin.right,
+		height = 400 - margin.top - margin.bottom;
 
+
+	// set the ranges
+	var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+	var y = d3.scale.linear().range([height, 0]);
+
+	  // Scale the range of the data
+	  x.domain(data.map(function(d) { return d.characterName; }));
+	  y.domain([0, 150]);
 	
+	// define the axis
+	var xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom")
+
+	var yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left")
+		.ticks(15);
+
+
+	// add the SVG element
+	var svg = d3.select(".barchartpart").append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+	  .append("g")
+		.attr("transform", 
+			  "translate(" + margin.left + "," + margin.top + ")");
+
+
+	  // add axis
+	  svg.append("g")
+		  .attr("class", "x axis")
+		  .attr("transform", "translate(0," + height + ")")
+		  .call(xAxis)
+		.selectAll("text")
+		  .style("text-anchor", "end")
+		  .attr("dx", "-.8em")
+		  .attr("dy", "-.55em")
+		  .attr("transform", "rotate(-90)" );
+
+	  svg.append("g")
+		  .attr("class", "y axis")
+		  .call(yAxis)
+		.append("text")
+		  .attr("transform", "rotate(-90)")
+		  .attr("y", 5)
+		  .attr("dy", ".71em")
+		  .style("text-anchor", "end")
+		  .text("Agony Resist");
+
+
+	  // Add bar chart
+	  svg.selectAll("bar")
+		  .data(data)
+		.enter().append("rect")
+		  .attr("class", "bar")
+		  .attr("x", function(d) { return x(d.characterName); })
+		  .attr("width", x.rangeBand())
+		  .attr("y", function(d) { return y(d.agonyResist); })
+		  .attr("height", function(d) { return height - y(d.agonyResist); });
+
 }
 
 
