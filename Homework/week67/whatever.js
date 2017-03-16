@@ -511,7 +511,7 @@ function calculateAgonyResist(equipment){
 				// If it's armor, check for aquabreather and else add to total.
 				else if(equipment[item].type == "Armor"){
 					
-					if(equipment[item].slot != "HelmAquatic"")
+					if(equipment[item].slot != "HelmAquatic")
 						agonyResist.armor += infusionDictionary[infusion];
 					else				
 						agonyResist.aquatic += infusionDictionary[infusion];
