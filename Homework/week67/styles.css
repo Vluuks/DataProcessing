@@ -21,4 +21,6 @@ h2{
     font-family: "Arial";
     font-size: 11px;
 }
-
+.bar:hover {
+  fill: "steelblue";
+}
