@@ -90,6 +90,7 @@ function getUserApi(){
 
 	apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0"
 	//apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374"
+	//apiKey = "ikoh";
     
     if(apiKey == "" || apiKey == undefined)
     {
@@ -378,6 +379,9 @@ function onDataReady(){
 
 	console.log(dataArray);
 	console.log("after loop");
+	
+	console.log(account.characterDictionary);
+	
 	// When calculating the AR is done, we can make the barchart.
 	makeBarChart(dataArray);
 }
@@ -608,7 +612,6 @@ function makeBarChart(data){
 		  .style("text-anchor", "end")
 		  .text("Agony Resist");
 
-
 	  // Add bar chart
 	  svg.selectAll("bar")
 		  .data(data)
@@ -618,16 +621,13 @@ function makeBarChart(data){
 			.attr("width", x.rangeBand())
 			.attr("y", function(d) { return y(d.agonyResist); })
 			.attr("height", function(d) { return height - y(d.agonyResist); })
-			.style("fill", "#7aa4e8");
+			.style("fill", "#7aa4e8")
 			.on('mouseover', tip.show)
 			.on('mouseout', tip.hide)
 			.on("click", function(d) {
 				console.log("test" + d.characterName);
 			});
-
-
 }
-
 
 /* ACHIEVEMENTS AND SUCH */
 function getFractalAchievements(callback){
