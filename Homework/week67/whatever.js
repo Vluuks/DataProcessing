@@ -88,8 +88,8 @@ function getUserApi(){
     // Check for basics
     var apiKey = $("#apiKey").val().trim();
 
-	//apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0"
-	apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374"
+	apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0"
+	//apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374"
     
     if(apiKey == "" || apiKey == undefined)
     {
@@ -358,11 +358,12 @@ function onDataReady(){
 	var dataArray = [];
     
     for(character in account.characterDictionary){
+		console.log(character);
         console.log(account.characterDictionary[character].equipmentRarity);
 		
 		// Calculate the total agony resist on the gear.
 		var equipment = account.characterDictionary[character].equipmentRarity;
-		account.characterDictionary[character].agonyResist = calculateAgonyResist(equipment);
+		account.characterDictionary[character].agonyResist = calculateAgonyResist(equipment, character);
 		
 		// Create a new data array for the bar chart, using the character name and total agony resist.
 		var dataObject = {
@@ -371,6 +372,7 @@ function onDataReady(){
 		}
 		
 		dataArray.push(dataObject);
+		console.log(dataObject);
 		
     }
 
@@ -385,7 +387,7 @@ infusions return the total amount of agony resist present in the armor piece, tr
 There are many different infusions in this game due to ArenaNet's inconsistent additions and 
 revamps of the system, which makes a dictionary necessary to account for all possible types. 
 If no infusions are present the infusionsarray will not exist and the function will return 0. */
-function calculateAgonyResist(equipment){
+function calculateAgonyResist(equipment, character){
     
     var infusionDictionary = {
 		
@@ -502,9 +504,8 @@ function calculateAgonyResist(equipment){
 					}
 				}
 				
-				// If it's a trinket, add to total.
-				else if(equipment[item].type == "Trinket" && equipment[item].slot != "Amulet"){
-					console.log("slot" + equipment[item].slot);
+				// If it's a trinket or backpiece, add to total. Discard amulet since these infusions are not AR ones.
+				else if((equipment[item].type == "Trinket" && equipment[item].slot != "Amulet") || equipment[item].type == "Back"){
 					agonyResist.trinkets += infusionDictionary[infusion];
 				}
 				
@@ -544,11 +545,18 @@ function calculateAgonyResist(equipment){
 function makeBarChart(data){
 		
 	console.log("entered bar chart part");	
+	
+	var tip = d3.tip()
+		.attr('class', 'd3-tip')
+		.offset([-10, 0])
+		.html(function(d) {
+		return "<span>" + d.agonyResist + "</span>";
+		})
 		
 	// set the dimensions of the canvas
 	var margin = {top: 20, right: 20, bottom: 150, left: 40},
 		width = 800 - margin.left - margin.right,
-		height = 400 - margin.top - margin.bottom;
+		height = 600 - margin.top - margin.bottom;
 
 
 	// set the ranges
@@ -577,7 +585,7 @@ function makeBarChart(data){
 	  .append("g")
 		.attr("transform", 
 			  "translate(" + margin.left + "," + margin.top + ")");
-
+	svg.call(tip);
 
 	  // add axis
 	  svg.append("g")
@@ -595,7 +603,7 @@ function makeBarChart(data){
 		  .call(yAxis)
 		.append("text")
 		  .attr("transform", "rotate(-90)")
-		  .attr("y", 5)
+		  .attr("y", -15)
 		  .attr("dy", ".71em")
 		  .style("text-anchor", "end")
 		  .text("Agony Resist");
@@ -605,15 +613,18 @@ function makeBarChart(data){
 	  svg.selectAll("bar")
 		  .data(data)
 		.enter().append("rect")
-		  .attr("class", "bar")
-		  .attr("x", function(d) { return x(d.characterName); })
-		  .attr("width", x.rangeBand())
-		  .attr("y", function(d) { return y(d.agonyResist); })
-		  .attr("height", function(d) { return height - y(d.agonyResist); })
-		  .on("click", function(d) {
-			  console.log("test" + d.characterName);
-		  });
-		  
+			.attr("class", "bar")
+			.attr("x", function(d) { return x(d.characterName); })
+			.attr("width", x.rangeBand())
+			.attr("y", function(d) { return y(d.agonyResist); })
+			.attr("height", function(d) { return height - y(d.agonyResist); })
+			.style("fill", "#7aa4e8");
+			.on('mouseover', tip.show)
+			.on('mouseout', tip.hide)
+			.on("click", function(d) {
+				console.log("test" + d.characterName);
+			});
+
 
 }
 

@@ -1,6 +1,7 @@
 body{
     padding-top:10px;
     padding-left:20px;
+	font-family: "Arial";
 }
 h2{
     font-family: "Arial";
@@ -9,7 +10,7 @@ h2{
     padding-left: 50px;
 }
 .axis text {
-  font: 11px sans-serif;
+  font: 12px "Arial";
 }
 .axis path,
 .axis line {
