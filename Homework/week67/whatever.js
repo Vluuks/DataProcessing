@@ -15,6 +15,7 @@ function Character() {
       this.level = -1;
       this.equipment = [];
       this.equipmentRarity = [];
+      this.equipmentSunburst = undefined;
 }
 
 /* A global object used to store all the information pertaining to the account
@@ -352,6 +353,59 @@ function fetchEquipment(){
 }
 
 
+/* Function that transforms the obtained data about agony resist and armor pieces and combines them into a
+structure that is suitable for a sunburst visualization. This needs to be done after since the item object itself and
+the agony resist are not retrieved at the same time, so making this can only occur after calculating AR is done. 
+Request is done on a per characeter basis because sunburst is only made once a specific bar is clicked. However,
+the result is stored  after creating it once so it does not need to be remade every time after.  */
+function transformDataForSunBurst(character){
+    
+    
+    // Get the equipment array containing objects form the character dictionary.
+    var  equipment = account.characterDictionary[character].equipmentRarity;
+    var sunburstObject = {
+        
+        "name" : "Equipment",
+        "children" : [
+        
+            {"name" : "Armor"
+               "children" : []
+            },
+            {"name" : "Trinkets"
+               "children" : []
+            }, 
+            {"name" : "Weapons"
+               "children" : []
+            },
+            {"name" : "Aquatic"
+               "children" : []
+            },            
+        ]
+        
+    };
+    
+    for(var piece in equipment)
+    {
+        
+        // If it's an armor piece but not an underwater piece
+        if(piece.type == "Armor" && piece.slot != "HelmAquatic")
+            sunburstObject.children[0].children.push(piece)
+        // If it's a trinket or backpiece
+        else if(piece.type == "Trinket" || piece.type == "Back")
+            sunburstObject.children[1].children.push(piece)
+        else if(piece.type == "Weapon" && !(piece.slot == "WeaponAquaticA" || piece.slot == "WeaponAquaticA"))
+            sunburstObject.children[2].children.push(piece)
+        else if(piece.slot == "HelmAquatic" || piece.slot == "WeaponAquaticA" || piece.slot == "WeaponAquaticB")
+            sunburstObject.children[3].children.push(piece)
+            
+        
+        
+    }
+    
+}
+
+
+
 function onDataReady(){
     
     console.log(account.characterDictionary);
@@ -548,6 +602,9 @@ function calculateAgonyResist(equipment, character){
 /* Maps the data to a format that is well received by the bar chart. */
 function makeBarChart(data){
 		
+        
+    console.log(account.characterDictionary["Asvata"].equipmentRarity);   
+        
 	console.log("entered bar chart part");	
 	
 	var tip = d3.tip()
