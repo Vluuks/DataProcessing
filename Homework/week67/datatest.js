@@ -36,7 +36,7 @@ var obj = {
              {"name": "armor 1 TEST TEST TEST"},
              {"name": "armor 2"},
              {"name": "armor 3"},
-             {"name": "armor 4"}
+
              
              ]
             
@@ -59,3 +59,9 @@ var obj = {
 
 console.log(obj.children)
 console.log(obj.children[2].children[0].name);
+
+
+var newobj =              {"name": "armor 4 test test test"};
+
+obj.children[2].children.push(newobj);
+console.log(obj.children[2]);

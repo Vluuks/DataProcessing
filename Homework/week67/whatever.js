@@ -56,32 +56,6 @@ function showError(errorMessage){
     $('#error').text(errorMessage);
 }
 
-/* Initializes the different svg canvases used by this visualization. */
-function initCanvases(){
-	
-	// barChartCanvas.margin = {top: 100, right: 180, bottom: 100, left: 100};
-    // var width = 1200 - barChartCanvas.margin.left - barChartCanvas.margin.right,
-        // height = 840 - barChartCanvas.margin.top - barChartCanvas.margin.bottom;
-
-    // var svg = d3.select("body")
-      // .append("svg")
-      // .attr("width", width + barChartCanvas.margin.left + barChartCanvas.margin.right)
-      // .attr("height", height + barChartCanvas.margin.top + barChartCanvas.margin.bottom)
-      // .append("g")
-      // .attr("transform", "translate(" + barChartCanvas.margin.left + "," + barChartCanvas.margin.top + ")");
-	  
-	// sunBurstCanvas.margin = {top: 100, right: 180, bottom: 100, left: 100};
-    // var width = 1200 - sunBurstCanvas.margin.left - sunBurstCanvas.margin.right,
-        // height = 840 - sunBurstCanvas.margin.top - sunBurstCanvas.margin.bottom;
-
-    // var svg = d3.select("body")
-      // .append("svg")
-      // .attr("width", width + sunBurstCanvas.margin.left + sunBurstCanvas.margin.right)
-      // .attr("height", height + sunBurstCanvas.margin.top + sunBurstCanvas.margin.bottom)
-      // .append("g")
-      // .attr("transform", "translate(" + sunBurstCanvas.margin.left + "," + sunBurstCanvas.margin.top + ")");
-}
-
 /* Check the given API and then start retrieving data if it has been verified. 
 This function is invoked by pressing the button on the webpage. */
 function getUserApi(){
@@ -89,8 +63,8 @@ function getUserApi(){
     // Check for basics
     var apiKey = $("#apiKey").val().trim();
 
-	apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0"
-	//apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374"
+    //apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0";
+	apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374";
 	//apiKey = "ikoh";
     
     if(apiKey == "" || apiKey == undefined)
@@ -323,7 +297,8 @@ function fetchEquipment(){
                                         infusions: equipmentArray[i].infusions,
                                         type: itemObject.type,
                                         slot: equipmentArray[i].slot,
-										agonyResist: 0
+										agonyResist: 0,
+                                        size: 1
                                     }
                                     
                                     // Push to equipment array. 
@@ -368,16 +343,16 @@ function transformDataForSunBurst(character){
         "name" : "Equipment",
         "children" : [
         
-            {"name" : "Armor"
+            {"name" : "Armor",
                "children" : []
             },
-            {"name" : "Trinkets"
+            {"name" : "Trinkets",
                "children" : []
             }, 
-            {"name" : "Weapons"
+            {"name" : "Weapons",
                "children" : []
             },
-            {"name" : "Aquatic"
+            {"name" : "Aquatic",
                "children" : []
             },            
         ]
@@ -387,20 +362,23 @@ function transformDataForSunBurst(character){
     for(var piece in equipment)
     {
         
+        var currentPiece  = equipment[piece];
+
         // If it's an armor piece but not an underwater piece
-        if(piece.type == "Armor" && piece.slot != "HelmAquatic")
-            sunburstObject.children[0].children.push(piece)
+        if(currentPiece.type == "Armor" && currentPiece.slot != "HelmAquatic")
+            sunburstObject.children[0].children.push(currentPiece);
         // If it's a trinket or backpiece
-        else if(piece.type == "Trinket" || piece.type == "Back")
-            sunburstObject.children[1].children.push(piece)
-        else if(piece.type == "Weapon" && !(piece.slot == "WeaponAquaticA" || piece.slot == "WeaponAquaticA"))
-            sunburstObject.children[2].children.push(piece)
-        else if(piece.slot == "HelmAquatic" || piece.slot == "WeaponAquaticA" || piece.slot == "WeaponAquaticB")
-            sunburstObject.children[3].children.push(piece)
-            
-        
-        
+        else if(currentPiece.type == "Trinket" || currentPiece.type == "Back")
+            sunburstObject.children[1].children.push(currentPiece);
+        // If it's a weapon but not an underwater weapon
+        else if(currentPiece.type == "Weapon" && !(currentPiece.slot == "WeaponAquaticA" || currentPiece.slot == "WeaponAquaticB"))
+            sunburstObject.children[2].children.push(currentPiece);
+        // If it's an underwater equipment piece
+        else if(currentPiece.slot == "HelmAquatic" || currentPiece.slot == "WeaponAquaticA" || currentPiece.slot == "WeaponAquaticB")
+            sunburstObject.children[3].children.push(currentPiece);
     }
+
+    makeSunburst(sunburstObject);
     
 }
 
@@ -430,11 +408,6 @@ function onDataReady(){
 		console.log(dataObject);
 		
     }
-
-	console.log(dataArray);
-	console.log("after loop");
-	
-	console.log(account.characterDictionary);
 	
 	// When calculating the AR is done, we can make the barchart.
 	makeBarChart(dataArray);
@@ -592,9 +565,6 @@ function calculateAgonyResist(equipment, character){
 	else
 		agonyResist.total += agonyResist.weaponsA
 	
-	// Return the object with all the data.
-	console.log(agonyResist);
-	
     return agonyResist;
 }
 
@@ -603,7 +573,7 @@ function calculateAgonyResist(equipment, character){
 function makeBarChart(data){
 		
         
-    console.log(account.characterDictionary["Asvata"].equipmentRarity);   
+    //console.log(account.characterDictionary["Asvata"].equipmentRarity);   
         
 	console.log("entered bar chart part");	
 	
@@ -683,6 +653,7 @@ function makeBarChart(data){
 			.on('mouseout', tip.hide)
 			.on("click", function(d) {
 				console.log("test" + d.characterName);
+                transformDataForSunBurst(d.characterName);
 			});
 }
 
@@ -733,7 +704,6 @@ function getFractalAchievements(callback){
 				} 
 			}
 			
-			console.log(fractalAchievementArray);
 			callback(fractalAchievementArray);
 		}
 	});
@@ -762,8 +732,134 @@ function displayFractalAchievements(dataArray){
 	
 	}
 	
-	console.log(dataArray);
-	console.log("callback hoi");
-	
 	// Now I can do something with the data!
+}
+
+
+
+function makeSunburst(data){
+    
+    console.log(data);
+    
+    // Dictionary containing the colors that should be used for the visualization. 
+    var colorDictionary = {
+        
+        // Rarities.
+        "Basic" : "#f2f2f2",
+        "Fine" : "#569ff",
+        "Masterwork" : "#6dad1f",
+        "Rare" : "#ffc700",
+        "Exotic" : "#ff8800",
+        "Ascended" : "#dd1a7f",
+        "Legendary" : "#8119d1",
+        
+        // Categories
+        "Armor" : "#75645b",
+        "Weapons" : "#4c4441",
+        "Aquatic" : "#8e817c",
+        "Trinkets" : "#99837b"
+        
+    }
+    
+    // Set dimensions of the visualization.
+    var width = 960,
+        height = 700,
+        radius = Math.min(width, height) / 2;
+
+    // Make x and y scales.
+    var x = d3.scale.linear()
+        .range([0, 2 * Math.PI]);
+
+    var y = d3.scale.linear()
+        .range([0, radius]);
+
+    var color = d3.scale.category20c();
+
+    // Add svg to webpage.
+    var svg = d3.select(".piechartpart").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+      .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
+
+    var partition = d3.layout.partition()
+        .value(function(d) { return d.size; });
+
+    var arc = d3.svg.arc()
+        .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+        .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+        .innerRadius(function(d) { return Math.max(0, y(d.y)); })
+        .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+
+    // Add data to the svg.
+    var g = svg.selectAll("g")
+        .data(partition.nodes(data))
+            .enter().append("g");
+
+    var path = g.append("path")
+        .attr("d", arc)
+        .style("fill", function(d) {
+            
+            
+            console.log(d.name); 
+            console.log(d.rarity);
+            //console.log(colorDictionary[d.name]); 
+            
+            
+            
+            if(d.name == "Weapons" || d.name == "Armor" || d.name == "Aquatic" || d.name == "Trinkets")
+                return colorDictionary[(d.children ? d : d.parent).name]; 
+            if(d.name == "Equipment")
+                return "#FFFFFF"
+            else
+                return colorDictionary[d.rarity];
+        })
+        .on("click", click);
+
+      var text = g.append("text")
+        .attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; })
+        .attr("x", function(d) { return y(d.y); })
+        .attr("dx", "6") // margin
+        .attr("dy", ".35em") // vertical-align
+        .text(function(d) { return d.name; });
+
+    function click(d) {
+        // fade out all text elements
+        text.transition().attr("opacity", 0);
+
+        path.transition()
+          .duration(750)
+          .attrTween("d", arcTween(d))
+          .each("end", function(e, i) {
+              // check if the animated element's data e lies within the visible angle span given in d
+              if (e.x >= d.x && e.x < (d.x + d.dx)) {
+                // get a selection of the associated text element
+                var arcText = d3.select(this.parentNode).select("text");
+                // fade in the text element and recalculate positions
+                arcText.transition().duration(750)
+                  .attr("opacity", 1)
+                  .attr("transform", function() { return "rotate(" + computeTextRotation(e) + ")" })
+                  .attr("x", function(d) { return y(d.y); });
+              }
+          });
+      }
+
+    d3.select(self.frameElement).style("height", height + "px");
+
+    // Interpolate the scales!
+    function arcTween(d) {
+      var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+          yd = d3.interpolate(y.domain(), [d.y, 1]),
+          yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+      return function(d, i) {
+        return i
+            ? function(t) { return arc(d); }
+            : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+      };
+    }
+
+    function computeTextRotation(d) {
+      return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
+    }
+    
 }
