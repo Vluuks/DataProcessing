@@ -1,0 +1,11 @@
+IMPORTANT
+- clickable x axis
+- store sunburst data 
+- dont remake sunburst multiple times under eachother
+- titles in sunburst wraparound
+- extra character info on click x axis
+- achievement section
+
+AESTHETICS and OPTIONAL 
+- class color in bar, class icons for readability
+- tear  of alba in graph
