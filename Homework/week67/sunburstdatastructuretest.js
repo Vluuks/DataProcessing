@@ -1,5 +1,3 @@
-console.log("meh");
-
 // set the dimensions of the canvas
 var margin = {top: 20, right: 20, bottom: 70, left: 40},
     width = 600 - margin.left - margin.right,
@@ -32,109 +30,8 @@ var svg = d3.select("body").append("svg")
           "translate(" + margin.left + "," + margin.top + ")");
 
 
-var data = [
-{
-	"Letter": "A",
-	"Freq": 20	
-},
-{
-	"Letter" : "B",
-	"Freq": 12
-},
-{
-	"Letter" : "C",
-	"Freq": 47
-},
-{
-	"Letter" : "D",
-	"Freq": 34
-},
-{
-	"Letter" : "E",
-	"Freq" : 54
-},
-{
-	"Letter" : "F",
-	"Freq" : 21
-},
-{
-	"Letter" : "G",
-	"Freq" : 57
-},
-{
-	"Letter" : "H",
-	"Freq" : 31
-},
-{
-	"Letter" : "I",
-	"Freq" : 17
-},
-{
-	"Letter" : "J",
-	"Freq" : 5
-},
-{
-	"Letter" : "K",
-	"Freq" : 23
-},
-{
-	"Letter" : "L",
-	"Freq" : 39
-},
-{
-	"Letter" : "M",
-	"Freq" : 29
-},
-{
-	"Letter" : "N",
-	"Freq" : 33
-},
-{
-	"Letter" : "O",
-	"Freq" : 18
-},
-{
-	"Letter" : "P",
-	"Freq" : 35
-},
-{
-	"Letter" : "Q",
-	"Freq" : 11
-},
-{
-	"Letter" : "R",
-	"Freq" : 45
-},
-{
-	"Letter" : "S",
-	"Freq" : 43
-},
-{
-	"Letter" : "T",
-	"Freq" : 28
-},
-{
-	"Letter" : "U",
-	"Freq" : 26
-},
-{
-	"Letter" : "V",
-	"Freq" : 30
-},
-{
-	"Letter" : "X",
-	"Freq" : 5
-},
-{
-	"Letter" : "Y",
-	"Freq" : 4
-},
-{
-	"Letter" : "Z",
-	"Freq" : 2
-}
-];
-
+// load the data
+d3.json("data.json", function(error, data) {
 
     data.forEach(function(d) {
         d.Letter = d.Letter;
@@ -177,4 +74,4 @@ var data = [
       .attr("y", function(d) { return y(d.Freq); })
       .attr("height", function(d) { return height - y(d.Freq); });
 
-
+});

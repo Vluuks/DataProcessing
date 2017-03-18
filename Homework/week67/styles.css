@@ -4,10 +4,62 @@ body{
 	font-family: "Arial";
 }
 h2{
-    font-family: "Arial";
-    padding-top: 70px;
+    font-family: "Cambria";
     margin-bottom: 0px;
-    padding-left: 50px;
+	margin-top: 0px;
+}
+#wrapperdiv{
+	margin-top: 20px;
+	background-color: #EEEEEE;
+}
+#sidebar{
+	width: 200px;
+	height: 1000px;
+	display: inline-block;
+	padding: 10px;
+	background-color: #DDDDDD;
+	font-size: 12px;
+	margin: 10px;
+	margin-left:20px;
+	float: left;
+}
+#account{
+	padding: 10px;
+	margin: 0px;
+	
+}
+#barchartpart{
+	width: 800px;
+	height: 400px;
+	display: inline-block;
+	float: left;
+	padding: 10px;
+	background-color: #CCCCCC;
+	margin: 10px;
+}
+#piechartpart{
+	width: 600px;
+	height: 800px;
+	display: inline-block;
+	padding: 10px;
+	background-color: #333333;
+	margin: 10px;
+}
+#achievementpart{
+	width: 800px;
+	height: 560px;
+	display: inline-block;
+	padding: 10px;
+	background-color: #666666;
+	margin: 10px;
+	float: left;
+	float: top;
+}
+#error{
+	margin-bottom: 20px;
+	padding: 10px;
+	color: #D8000C;
+	background-color: #FFBABA;
 }
 .axis text {
   font: 12px "Arial";

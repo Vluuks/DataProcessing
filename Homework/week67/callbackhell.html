@@ -13,11 +13,9 @@
 		<link rel="stylesheet" href="styles.css">
 		<script src="Libraries/d3.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-		<script src="Libraries/topojson.min.js"></script>
-		<script src="Libraries/datamaps.world.min.js"></script>
 		<script src="Libraries/legend.js"></script>
         <script src="Libraries/queue.v1.min.js"></script>
-			<script src="Libraries/d3.tip.v0.6.3.js"></script>
+		<script src="Libraries/d3.tip.v0.6.3.js"></script>
 		<script src="whatever.js"></script>
 		
 	</head>
@@ -25,25 +23,38 @@
 	<body>
 	
 		<!-- Link back to github pages. -->
-        <p>Renske Talsma 10896503</p>
-		<a href="../../index.html"><p>Go back</p></a>
-	
-        <span class="error" id="error">ERROR SPAN TODO</span>
-        <div class="header">
-            <h1>Fractal Hub</h1>
-            <p> Insert your api key to continue</p>
-            
-            
-            <input type="text" id="apiKey" value="" id ="1">
-            <button onclick="getUserApi()">Go!</button> 
-            
-            
-            
-        </div>
-        <div class="sidebar"></div>
-        <div class="barchartpart"></div>
-        <div class ="piechartpart"></div>
+        <p>Renske Talsma 10896503 <a href="../../index.html">Go back</a></p>
 		
+		<!-- Error message span. -->
+		<span class="error" id="error"></span>
+		
+		<!-- Divs that contain the actual content. -->
+		<div id= "wrapperdiv">
+			<div id="sidebar">
+			  
+				<p width="200px"> Insert your API key to continue. 
+						Your key will need the following permissions to function: characters, wallet, account, builds and progression.</p>
+				
+				
+				<input type="text" id="apiKey" value="" id ="1">
+				<button onclick="getUserApi()">Go!</button> 
+				<p id="accountdiv">
+					<ul id="account">
+						<li id="accountName">account name</li>
+						<li id="characterAmount">characters</li>
+						<li id="fractalRelics">fractal relics</li>
+						<li id="pristineFractalRelics">pristine relics</li>
+						<li id="fractal level">frac level</li>
+					</ul>
+				</p>
+			</div>
+			
+			<div id="barchartpart"></div>
+			<div id="achievementpart"></div>
+			<div id ="piechartpart">
+				<p>Char infos</p>
+			</div>
+		</div>
     </body>
 </html>
 

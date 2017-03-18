@@ -21,7 +21,7 @@ function Character() {
 /* A global object used to store all the information pertaining to the account
 that is currently using the visualization. */
 var account = {
-    
+	accountName: "",
     apiKey: "",
     hoursPlayed: -1,
     characters: [],
@@ -30,20 +30,6 @@ var account = {
     fractalRelics: -1,
     fractalPristine: -1,
     characterDictionary: {}
-
-    // if i have time
-    // matrices
-    // integrated matrices
-    // fractal specific collections
-    
-}
-
-var barChartCanvas = {
-	margin: {}
-}
-
-var sunBurstCanvas = {
-	margin: {}
 }
 
 /* Wait until page is ready. */
@@ -149,27 +135,6 @@ function apiCheckCallback(apiKey){
     
 	// Retrieve the fractal achievements and perform display cb.
 	//getFractalAchievements(displayFractalAchievements);
-
-    
-    // Figure out which things can be done simultaneously and which are callback dependent
-    
-    // 1
-    // Look up characters -> look up gear per character -> calculate agony resist
-    
-    // Construct barchart of AR per character
-    // Show class also
-    // Make character object!!!
-    
-    
-    // 2
-    // Look up fractal achievements
-    // Find indices taht correspond
-    // Report status
-    
-    
-    //3
-    // Look up fractal dailies and status (perhaps this can be done in same time with the other achievements)
-    
 }
 
 /* This function retrieves a list of the characters on the account from the API and then
@@ -185,7 +150,7 @@ function getCharacters(callback){
 		
 			success: function(){},
 			error: function(){
-                showError("Could not retrieve character data.");
+                showError("Something went wrong fetching the character info.");
             },
 			complete: function(data){
 						
@@ -221,19 +186,16 @@ function getGeneralCharacterInfo(){
                 cache: false,
                 dataType: 'text',               
                 success: function(){},
-                error: function(){},
-                
-                // wait until request is done
+                error: function(){
+					showError("Something went wrong fetching the character info.");
+				},
                 complete: function(data){
                             
-                    // convert json data to javascript
+                    // Convert json data to javascript object.
                     var characterObject = JSON.parse(data.responseText);
                     counter++;
-                    // console.log("loop index " + i);
-                    // console.log("counter" + counter);
-                    // console.log(characterObject);
-                    
-                    // Add properties to the object
+					
+                    // Add properties to the object.
                     var character = new Character();
                     character.race = characterObject.race;
                     character.level = characterObject.level;
@@ -243,7 +205,6 @@ function getGeneralCharacterInfo(){
                     account.characterDictionary[characterObject.name] = character;
                     
                     if(counter == characterArray.length){
-                        console.log("CALLBACKS WTF NEE HELP loop test" + counter);   
                         fetchEquipment();
                     }
                 }
@@ -285,7 +246,9 @@ function fetchEquipment(){
                             dataType: 'text',
                             
                             success: function(){},
-                            error: function(){},
+                            error: function(){
+								showError("Something went wrong fetching the equipment info.");
+							},
                             complete: function(data){
                                 itemObject = JSON.parse(data.responseText);
                                 
@@ -310,9 +273,7 @@ function fetchEquipment(){
                                 gearCheckCounter++;
 
                                 // If it's the last character and the last equipment piece of that character, then we can go on!    
-                                if(character == account.characters[account.characterAmount-1]
-                                && gearCheckCounter == (equipmentArray.length)-1){
-                                    console.log("CHECK CHECK DUBBELCHECK all done callback ready jeuj");
+                                if(character == account.characters[account.characterAmount-1] && gearCheckCounter == (equipmentArray.length)-1){
                                     onDataReady();
                                 }  
                             }
@@ -327,14 +288,12 @@ function fetchEquipment(){
     }    
 }
 
-
 /* Function that transforms the obtained data about agony resist and armor pieces and combines them into a
 structure that is suitable for a sunburst visualization. This needs to be done after since the item object itself and
 the agony resist are not retrieved at the same time, so making this can only occur after calculating AR is done. 
 Request is done on a per characeter basis because sunburst is only made once a specific bar is clicked. However,
 the result is stored  after creating it once so it does not need to be remade every time after.  */
 function transformDataForSunBurst(character){
-    
     
     // Get the equipment array containing objects form the character dictionary.
     var  equipment = account.characterDictionary[character].equipmentRarity;
@@ -361,7 +320,6 @@ function transformDataForSunBurst(character){
     
     for(var piece in equipment)
     {
-        
         var currentPiece  = equipment[piece];
 
         // If it's an armor piece but not an underwater piece
@@ -378,22 +336,18 @@ function transformDataForSunBurst(character){
             sunburstObject.children[3].children.push(currentPiece);
     }
 
+	// Create the sunburst visualization with this data.
     makeSunburst(sunburstObject);
     
 }
 
-
-
+/* When the data is ready, calculate the total agony resist on the gear and store this in an object
+that can be visualized in a bar chart. */
 function onDataReady(){
-    
-    console.log(account.characterDictionary);
-	
-	var dataArray = [];
-    
+
+	var dataArray = [];  
     for(character in account.characterDictionary){
-		console.log(character);
-        console.log(account.characterDictionary[character].equipmentRarity);
-		
+
 		// Calculate the total agony resist on the gear.
 		var equipment = account.characterDictionary[character].equipmentRarity;
 		account.characterDictionary[character].agonyResist = calculateAgonyResist(equipment, character);
@@ -405,8 +359,6 @@ function onDataReady(){
 		}
 		
 		dataArray.push(dataObject);
-		console.log(dataObject);
-		
     }
 	
 	// When calculating the AR is done, we can make the barchart.
@@ -420,9 +372,10 @@ revamps of the system, which makes a dictionary necessary to account for all pos
 If no infusions are present the infusionsarray will not exist and the function will return 0. */
 function calculateAgonyResist(equipment, character){
     
+	// A dictionary containing key value pairs of item ids and agony resist.
     var infusionDictionary = {
 		
-		// Stat infusions, legacy infusions, aura infusions
+		// Stat infusions, legacy infusions, aura infusions.
 		"75480" : 3,
 		"37137" : 5,
 		"37138" : 5,
@@ -476,9 +429,9 @@ function calculateAgonyResist(equipment, character){
 		"37135" : 9,
 		"37136" : 9,
 		"37131" : 9,
-				// Regular infusions that can be broken down/crafted		"49424" : 1,			"49425" : 2,			"49426" : 3,			"49427" : 4,			"49428" : 5,			"49429" : 6,		"49430" : 7,				"49431" : 8,				"49432" : 9,		"49433" : 10,			"49434" : 11,			"49435" : 12,		"49436" : 13,			"49437" : 14,			"49438" : 15,			"49439" : 16,			"49440" : 17,				"49441" : 18,		"49442" :19,				"49443" : 20,
+				// Regular infusions that can be broken down/crafted.		"49424" : 1,			"49425" : 2,			"49426" : 3,			"49427" : 4,			"49428" : 5,			"49429" : 6,		"49430" : 7,				"49431" : 8,				"49432" : 9,		"49433" : 10,			"49434" : 11,			"49435" : 12,		"49436" : 13,			"49437" : 14,			"49438" : 15,			"49439" : 16,			"49440" : 17,				"49441" : 18,		"49442" :19,				"49443" : 20,
 		
-		// Nonsense values map to 0 for safety
+		// Nonsense values map to 0 for safety.
 		undefined: 0,
 		"undefined" : 0,
 		NaN : 0
@@ -548,7 +501,6 @@ function calculateAgonyResist(equipment, character){
 					else				
 						agonyResist.aquatic += infusionDictionary[infusion];
 				}
-		
 			}
 		}
 	}
@@ -558,6 +510,7 @@ function calculateAgonyResist(equipment, character){
 	// Calculate the effective total using the weapon set with the biggest amount and discarding underwater weapons.
 	agonyResist.total = agonyResist.armor + agonyResist.trinkets;
 	
+	// Take the weapon set with the higher agony resist.
 	if(agonyResist.weaponsA < agonyResist.weaponsB)
 		agonyResist.total += agonyResist.weaponsB
 	else if (agonyResist.weaponsA > agonyResist.weaponsB)
@@ -568,37 +521,37 @@ function calculateAgonyResist(equipment, character){
     return agonyResist;
 }
 
-
-/* Maps the data to a format that is well received by the bar chart. */
-function makeBarChart(data){
-		
-        
-    //console.log(account.characterDictionary["Asvata"].equipmentRarity);   
-        
-	console.log("entered bar chart part");	
+/* Updates the sidebar with information about the current account that is being viewed. */
+function setAccountData(){
 	
-	var tip = d3.tip()
-		.attr('class', 'd3-tip')
-		.offset([-10, 0])
-		.html(function(d) {
-		return "<span>" + d.agonyResist + "</span>";
-		})
-		
-	// set the dimensions of the canvas
+	// Account name
+	// total age
+	// amount of characters
+	
+	
+	var dataString = 
+	
+	// Select account data paragraph and set the text.
+	 $('#account').text();
+	
+}
+
+/* Draws the bar chart that shows each character and their level of agony resist. The maximum 
+amount is infinite in theory but more than 150 makes no sense, so the max of the chart is set at 150. */
+function makeBarChart(data){
+	
+	// Set the dimensions of the canvas.
 	var margin = {top: 20, right: 20, bottom: 150, left: 40},
 		width = 800 - margin.left - margin.right,
 		height = 600 - margin.top - margin.bottom;
 
-
-	// set the ranges
+	// Set the domain and range.
 	var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
 	var y = d3.scale.linear().range([height, 0]);
-
-	  // Scale the range of the data
-	  x.domain(data.map(function(d) { return d.characterName; }));
-	  y.domain([0, 150]);
+	x.domain(data.map(function(d) { return d.characterName; }));
+	y.domain([0, 150]);
 	
-	// define the axis
+	// Define the axes.
 	var xAxis = d3.svg.axis()
 		.scale(x)
 		.orient("bottom")
@@ -608,53 +561,69 @@ function makeBarChart(data){
 		.orient("left")
 		.ticks(15);
 
-
-	// add the SVG element
+	// Add the SVG element.
 	var svg = d3.select(".barchartpart").append("svg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
 	  .append("g")
 		.attr("transform", 
 			  "translate(" + margin.left + "," + margin.top + ")");
+			  
+	// Add tooltip.
+	var tip = d3.tip()
+		.attr('class', 'd3-tip')
+		.offset([-10, 0])
+		.html(function(d) {
+		return "<span>" + d.agonyResist + "</span>";
+		});	
 	svg.call(tip);
 
-	  // add axis
-	  svg.append("g")
+	// Add axes.
+	svg.append("g")
 		  .attr("class", "x axis")
 		  .attr("transform", "translate(0," + height + ")")
 		  .call(xAxis)
-		.selectAll("text")
-		  .style("text-anchor", "end")
-		  .attr("dx", "-.8em")
-		  .attr("dy", "-.55em")
-		  .attr("transform", "rotate(-90)" );
+	.selectAll("text")
+		.style("text-anchor", "end")
+		.attr("dx", "-.8em")
+		.attr("dy", "-.55em")
+		.attr("transform", "rotate(-90)" );
 
-	  svg.append("g")
-		  .attr("class", "y axis")
-		  .call(yAxis)
-		.append("text")
-		  .attr("transform", "rotate(-90)")
-		  .attr("y", -15)
-		  .attr("dy", ".71em")
-		  .style("text-anchor", "end")
-		  .text("Agony Resist");
+	svg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis)
+	.append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", -15)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text("Agony Resist");
 
-	  // Add bar chart
-	  svg.selectAll("bar")
-		  .data(data)
-		.enter().append("rect")
-			.attr("class", "bar")
-			.attr("x", function(d) { return x(d.characterName); })
-			.attr("width", x.rangeBand())
-			.attr("y", function(d) { return y(d.agonyResist); })
-			.attr("height", function(d) { return height - y(d.agonyResist); })
-			.style("fill", "#7aa4e8")
-			.on('mouseover', tip.show)
-			.on('mouseout', tip.hide)
-			.on("click", function(d) {
-				console.log("test" + d.characterName);
-                transformDataForSunBurst(d.characterName);
-			});
+	// Add bar chart.
+	svg.selectAll("bar")
+		.data(data)
+			.enter().append("rect")
+				.attr("class", "bar")
+				.attr("x", function(d) { return x(d.characterName); })
+				.attr("width", x.rangeBand())
+				.attr("y", function(d) { return y(d.agonyResist); })
+				.attr("height", function(d) { return height - y(d.agonyResist); })
+				.style("fill", "#7aa4e8")
+				.on('mouseover', tip.show)
+				.on('mouseout', tip.hide)
+				.on("click", function(d) {
+					console.log("test" + d.characterName);
+					transformDataForSunBurst(d.characterName);
+				});
+
+	// Make bar chart x axis ticks clickable.
+	svg.selectAll(".y.axis .tick")
+		.on("click", function(d) {  
+			// Get character name, 
+			// go to sunburst of character name
+			console.log(d);
+		});
+	
 }
 
 /* ACHIEVEMENTS AND SUCH */
@@ -711,13 +680,9 @@ function getFractalAchievements(callback){
 
 function displayFractalAchievements(dataArray){
 	
-	console.log(dataArray);
-	
 	// Turn the array into a more useful/uniform data format.
 	for(var i = 0; i < dataArray.length; i++){
-		
-		console.log(dataArray[i]);
-		
+	
 		// Initialize an array full of true. 
 		achievementBoolArray = new Array(25);
 		for(var j = 0; j < achievementBoolArray.length; j++)
@@ -729,17 +694,15 @@ function displayFractalAchievements(dataArray){
 		}
 		
 		dataArray[i] = achievementBoolArray;
-	
 	}
 	
 	// Now I can do something with the data!
 }
 
-
-
+/* Function that creates a sunburst visualization with data about a character. The data contains
+information about all the gear that a character has on them, and the rarity and name of these
+items. */
 function makeSunburst(data){
-    
-    console.log(data);
     
     // Dictionary containing the colors that should be used for the visualization. 
     var colorDictionary = {
@@ -800,13 +763,7 @@ function makeSunburst(data){
         .attr("d", arc)
         .style("fill", function(d) {
             
-            
-            console.log(d.name); 
-            console.log(d.rarity);
-            //console.log(colorDictionary[d.name]); 
-            
-            
-            
+			// Determine the color of the data point.
             if(d.name == "Weapons" || d.name == "Armor" || d.name == "Aquatic" || d.name == "Trinkets")
                 return colorDictionary[(d.children ? d : d.parent).name]; 
             if(d.name == "Equipment")
@@ -816,6 +773,7 @@ function makeSunburst(data){
         })
         .on("click", click);
 
+	// Append text to  each block of the sunburst. 
       var text = g.append("text")
         .attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; })
         .attr("x", function(d) { return y(d.y); })
@@ -823,6 +781,7 @@ function makeSunburst(data){
         .attr("dy", ".35em") // vertical-align
         .text(function(d) { return d.name; });
 
+	// Function that handles clicks on the sunburst so that it can zoom.
     function click(d) {
         // fade out all text elements
         text.transition().attr("opacity", 0);
@@ -861,5 +820,10 @@ function makeSunburst(data){
     function computeTextRotation(d) {
       return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
     }
-    
+}
+
+/* This function writes the data that has been retrieved from the API to a text file in JSON format. 
+This ensures that even if the API is down the visualization can be run with this data. */
+function makeBackUp(){
+	
 }
