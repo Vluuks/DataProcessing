@@ -5,22 +5,26 @@ body{
 }
 h2{
     font-family: "Cambria";
-    margin-bottom: 0px;
+    margin-bottom: 10px;
 	margin-top: 0px;
+	font-size: 20px;
+	text-tranform: all-caps;
 }
 #wrapperdiv{
+	width: 1740px;
 	margin-top: 20px;
 	background-color: #EEEEEE;
 }
 #sidebar{
 	width: 200px;
-	height: 1000px;
+	height: 800px;
 	display: inline-block;
 	padding: 10px;
 	background-color: #DDDDDD;
 	font-size: 12px;
 	margin: 10px;
-	margin-left:20px;
+	margin-left: 20px;
+	margin-bottom: 10px;
 	float: left;
 }
 #account{
@@ -34,23 +38,23 @@ h2{
 	display: inline-block;
 	float: left;
 	padding: 10px;
-	background-color: #CCCCCC;
+	background-color: #DDDDDD;
 	margin: 10px;
 }
 #piechartpart{
 	width: 600px;
 	height: 800px;
+	margin: 10px;
 	display: inline-block;
 	padding: 10px;
-	background-color: #333333;
-	margin: 10px;
+	background-color: #DDDDDD;
 }
 #achievementpart{
 	width: 800px;
-	height: 560px;
+	height: 360px;
 	display: inline-block;
 	padding: 10px;
-	background-color: #666666;
+	background-color: #DDDDDD;
 	margin: 10px;
 	float: left;
 	float: top;
@@ -77,3 +81,49 @@ h2{
 .bar:hover {
   fill: "steelblue";
 }
+.accountdiv
+{
+    padding: 0;
+    margin: 0;
+}
+ul
+{
+    list-style-type: none;
+}
+
+div ul li
+{
+    margin: 5px;
+}    
+
+img
+{
+    vertical-align: middle;
+	padding-right: 5px;
+}
+div ul li p
+{
+    display: inline-block;
+    vertical-align: middle;
+}
+
+# Colors corresponding to professions.
+.necromancer{
+}
+.elementalist{
+}
+.mesmer{
+}
+.engineer{
+}
+.ranger{
+}
+.thief{
+}
+.guardian{
+}
+.warrior{
+}
+.revenant{
+}
+

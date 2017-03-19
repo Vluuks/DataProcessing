@@ -35,16 +35,25 @@ var account = {
 /* Wait until page is ready. */
 $('document').ready(function(){
 	console.log("page ready");
+	
+	// Manage DOM element visibilities.
+	$('#error').hide();
+	//$('#accountdiv').hide();
+	//$('#sunburstwait').hide();
 });
 
 /* Small function that takes a string and shows it in the error span on top of the page. */
 function showError(errorMessage){
+	$('#error').show();
     $('#error').text(errorMessage);
 }
 
 /* Check the given API and then start retrieving data if it has been verified. 
 This function is invoked by pressing the button on the webpage. */
 function getUserApi(){
+	
+	// Hide DOM element.
+	$('#error').hide();
 
     // Check for basics
     var apiKey = $("#apiKey").val().trim();

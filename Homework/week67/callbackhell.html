@@ -32,28 +32,29 @@
 		<div id= "wrapperdiv">
 			<div id="sidebar">
 			  
-				<p width="200px"> Insert your API key to continue. 
-						Your key will need the following permissions to function: characters, wallet, account, builds and progression.</p>
+				<p width="200px">
+						Please insert your API key to continue. 
+						Your key will need the following permissions to function: characters, wallet, account, builds and progression.<br><br>
+						Made using the official GW2 API. </p>
 				
-				
-				<input type="text" id="apiKey" value="" id ="1">
+				<input type="text" id="apiKey" value="" id ="1" width="100px">
 				<button onclick="getUserApi()">Go!</button> 
-				<p id="accountdiv">
+				<div id="accountdiv">
 					<ul id="account">
-						<li id="accountName">account name</li>
-						<li id="characterAmount">characters</li>
-						<li id="fractalRelics">fractal relics</li>
-						<li id="pristineFractalRelics">pristine relics</li>
-						<li id="fractal level">frac level</li>
+						<li id="accountName"><img class="listimg" src="Static/accountname.png" alt="Account Name"> account name</li>
+						<li id="characterAmount"><img class="listimg" src="Static/charactersamount.png" alt="Characters"> characters</li>
+						<li id="characterAmount"><img class="listimg" src="Static/accountage.png" alt="Age"> account age</li>
+						<li id="fractalRelics"><img class="listimg" src="Static/fractalrelic.png" alt="Account Name"> fractal relics</li>
+						<li id="pristineFractalRelics"><img class="listimg" src="Static/pristinefractalrelic.png" alt="Account Name"> pristine relics</li>
+						<li id="fractal level"><img class="listimg" src="Static/fractallevel.png" alt="Account Name"> frac level</li>
 					</ul>
-				</p>
+				</div>
 			</div>
 			
-			<div id="barchartpart"></div>
-			<div id="achievementpart"></div>
-			<div id ="piechartpart">
-				<p>Char infos</p>
-			</div>
+			<div id="barchartpart"><h2 class="divtitle"><img class="listimg" src="Static/agonyresistance.png" alt="AR"> Agony Resistance (AR) per character</h2></div>
+			<div id="achievementpart"><h2 class="divtitle"><img class="listimg" src="Static/achievements.png" alt="Achievements"> Fractal Achievement overview</h2></div>
+			<div id ="piechartpart"><h2 class="divtitle"><img class="listimg" src="Static/character.png" alt="Character Gear"> Character Equipment</h2>
+			<p id="sunburstwait">Select a character from the bar chart to see their gear.</p></div>
 		</div>
     </body>
 </html>
