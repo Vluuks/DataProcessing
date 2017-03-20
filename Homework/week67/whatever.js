@@ -5,6 +5,7 @@
 	
 */
 
+
 /* Model "class" used to store data about characters. Initializes with default
 values and is further filled in as API requests are completed and data retrieved. */
 function Character() {
@@ -30,6 +31,12 @@ var account = {
     fractalRelics: -1,
     fractalPristine: -1,
     characterDictionary: {}
+}
+
+var classColors = {
+    
+    
+    
 }
 
 /* Wait until page is ready. */
@@ -143,7 +150,7 @@ function apiCheckCallback(apiKey){
     getCharacters(getGeneralCharacterInfo);
     
 	// Retrieve the fractal achievements and perform display cb.
-	//getFractalAchievements(displayFractalAchievements);
+	getFractalAchievements(displayFractalAchievements);
 }
 
 /* This function retrieves a list of the characters on the account from the API and then
