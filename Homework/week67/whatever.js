@@ -882,7 +882,7 @@ function makePieCharts(data){
 		.attr("transform", "translate(" + radius + "," + radius + ")");
 	
 	var pie = d3.layout.pie()
-		.value(function(d){ return d.value; });
+		.value(function(d){ console.log(d.value); return d.value; });
 		
 	// Arc generator.
 	var arc = d3.svg.arc().outerRadius(radius);	
@@ -894,12 +894,12 @@ function makePieCharts(data){
 	
 	// Set colors of each slice.
 	arcs.append("svg:path")
-		.attr("fill", function(d){ return colorDictionary[d.label]; })
+		.attr("fill", function(d, i){ return colorDictionary[data[i].label]; })
 
 	// Add text labels.
 	arcs.append("svg:text").attr("transform", function(d){
 			d.innerRadius = 0;
-			d.outerRadius = r;
+			d.outerRadius = radius;
 			return "translate(" + arc.centroid(d) + ")";})
 				.attr("text-anchor", "middle").text( function(d, i) { return data[i].label; });
 }
