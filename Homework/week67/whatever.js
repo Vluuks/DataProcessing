@@ -5,6 +5,45 @@
 	
 */
 
+var deDataDerData = [
+	{
+		"label": "Engineer", 
+		"value":"2"
+	},
+	{
+		"label": "Ranger", 
+		"value":"2"
+	},
+	{
+		"label": "Thief", 
+		"value":"2"
+	},
+	{
+		"label": "Elementalist", 
+		"value":"2"
+	},
+	{
+		"label": "Mesmer", 
+		"value":"2"
+	},
+	{
+		"label": "Necromancer", 
+		"value":"2"
+	},
+	{
+		"label": "Revenant", 
+		"value":"2"
+	},
+	{
+		"label": "Guardian", 
+		"value":"2"
+	},
+	{
+		"label": "Warrior", 
+		"value":"2"
+	}
+];
+
 var deBesteData = {
 	
 		initiate : [ false, true, true, true, false, false, false, true, true, true],
@@ -237,10 +276,42 @@ var account = {
     characterDictionary: {}
 }
 
-var classColors = {
-    
-    
-    
+var colorDictionary = {
+	
+	// Rarities.
+	"Basic" : "#f2f2f2",
+	"Fine" : "#569fff",
+	"Masterwork" : "#6dad1f",
+	"Rare" : "#ffc700",
+	"Exotic" : "#ff8800",
+	"Ascended" : "#dd1a7f",
+	"Legendary" : "#8119d1",
+	
+	// Categories.
+	"Armor" : "#75645b",
+	"Weapons" : "#4c4441",
+	"Aquatic" : "#8e817c",
+	"Trinkets" : "#99837b",
+	
+	// Professions.
+	"Guardian" : "#2a6cd6",
+	"Dragonhunter" : "#2a6cd6",
+	"Revenant" : "#a85555",
+	"Herald" : "#a85555",
+	"Warrior" : "#e2ad18",
+	"Berserker" : "#e2ad18",
+	"Engineer" :  "#915a31",
+	"Scrapper" : "#915a31",
+	"Thief" :  "#66605b",
+	"Daredevil" : "#66605b",
+	"Ranger" : "#99c661",
+	"Druid" : "#99c661",
+	"Elementalist" : "#ce3b40",
+	"Tempest" : "#ce3b40", 
+	"Mesmer" :  "#ce3bc9",
+	"Chronomancer" : "#ce3bc9",
+	"Necromancer" : "#3a916e",
+	"Reaper" : "#3a916e"
 }
 
 /* Wait until page is ready. */
@@ -250,6 +321,7 @@ $('document').ready(function() {
 	// DIKKE ONZIN TODO
 	makeSunburst(tempData);
 	makeBarChart(echteArrayDataWow);
+	makePieCharts(deDataDerData);
 	
 	// Manage DOM element visibilities.
 	$('#error').hide();
@@ -794,9 +866,42 @@ function setAccountData() {
 }
 
 /* Displays small pie charts in the sidebar with class and race distribution. */
-function makePieCharts(){
+function makePieCharts(data){
 
-	// TODO TODO
+	// Set dimensions of the pie chart.
+	var width = 150,
+		height = 150,
+		radius = height/2;
+	
+	// Append svg to div.
+	var pieChart = d3.select('#sidebar').append("svg:svg")
+		.data([data])
+		.attr("width", width)
+		.attr("height", height)
+		.append("svg:g")
+		.attr("transform", "translate(" + radius + "," + radius + ")");
+	
+	var pie = d3.layout.pie()
+		.value(function(d){ return d.value; });
+		
+	// Arc generator.
+	var arc = d3.svg.arc().outerRadius(radius);	
+	var arcs = pieChart.selectAll("g.slice")
+		.data(pie)
+		.enter()
+		.append("svg:g")
+		.attr("class", "slice");
+	
+	// Set colors of each slice.
+	arcs.append("svg:path")
+		.attr("fill", function(d){ return colorDictionary[d.label]; })
+
+	// Add text labels.
+	arcs.append("svg:text").attr("transform", function(d){
+			d.innerRadius = 0;
+			d.outerRadius = r;
+			return "translate(" + arc.centroid(d) + ")";})
+				.attr("text-anchor", "middle").text( function(d, i) { return data[i].label; });
 }
 
 /* Draws the bar chart that shows each character and their level of agony resist. The maximum 
@@ -976,25 +1081,6 @@ function makeSunburst(data) {
 	// Hide the information message.
 	$('#sunburstwait').hide();
 	
-    // Dictionary containing the colors that should be used for the visualization. 
-    var colorDictionary = {
-        
-        // Rarities.
-        "Basic" : "#f2f2f2",
-        "Fine" : "#569fff",
-        "Masterwork" : "#6dad1f",
-        "Rare" : "#ffc700",
-        "Exotic" : "#ff8800",
-        "Ascended" : "#dd1a7f",
-        "Legendary" : "#8119d1",
-        
-        // Categories.
-        "Armor" : "#75645b",
-        "Weapons" : "#4c4441",
-        "Aquatic" : "#8e817c",
-        "Trinkets" : "#99837b"
-    }
-    
     // Set dimensions of the visualization.
     var width = 600,
         height = 600,
@@ -1101,8 +1187,6 @@ function makeAchievementGraph(data){
 
 	var data = [false, true, true, true, false];
 	// for every tier, append rectangles?? idk yet how to visualize this very well.
-
-	
 	
 	var legend = svg.selectAll(".legend")
         .data(colors)
