@@ -5,6 +5,171 @@
 	
 */
 
+var tempData = {
+    "name": "Equipment",
+    "children" : [
+    
+        { 
+            "name": "Armor",
+            "children": [
+                
+                {
+                    name: "Woww heeee",
+                    rarity: "Rare",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 },
+                 {
+                    name: "Wat leuk test 1234",
+                    rarity: "Fine",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 },
+                 {
+                    name: "Sample",
+                    rarity: "Masterwork",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 },
+                 {
+                    name: "ayyyyy",
+                    rarity: "Exotic",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 },
+                 {
+                    name: "Sample TEXT TEST TEST LENGTE",
+                    rarity: "Ascended",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 }
+            
+            ]
+            
+        },
+        { 
+            "name": "Weapons",
+            "children": [
+                
+                {
+                    name: "Sample",
+                    rarity: "Ascended",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 },
+                 {
+                    name: "Sample",
+                    rarity: "Basic",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 },
+                 {
+                    name: "Sample",
+                    rarity: "Legendary",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 },
+                 {
+                    name: "Sample",
+                    rarity: "Rare",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 },
+                 {
+                    name: "Sample",
+                    rarity: "Rare",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 }
+            
+            ]
+            
+        },
+        { 
+            "name": "Trinkets",
+            "children": [
+                
+                {
+                    name: "Test test test test test testttttttttttttt",
+                    rarity: "Basic",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 },
+                 {
+                    name: "Sample",
+                    rarity: "Ascended",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 },
+                 {
+                    name: "Sample",
+                    rarity: "Legendary",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 },
+                 {
+                    name: "Sample",
+                    rarity: "Exotic",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 },
+                 {
+                    name: "Sample",
+                    rarity: "Basic",
+                    infusions: "N/A",
+                    type: "Armor",
+                    slot:  "Head",
+                    agonyResist: 9,
+                    size: 1
+                 }
+            
+            ]
+            
+        }
+    ]
+};
 
 /* Model "class" used to store data about characters. Initializes with default
 values and is further filled in as API requests are completed and data retrieved. */
@@ -42,6 +207,7 @@ var classColors = {
 /* Wait until page is ready. */
 $('document').ready(function() {
 	console.log("page ready");
+	makeSunburst(tempData);
 	
 	// Manage DOM element visibilities.
 	$('#error').hide();
@@ -191,7 +357,7 @@ function getGeneralCharacterInfo() {
   
     var characterArray = account.characters;
     var counter = 0;
-    // account.characterAmount
+
     for (let i = 0; i < account.characterAmount; i++) { 
         (function(i) {
         
@@ -545,7 +711,7 @@ function setAccountData() {
 	// amount of characters
 	
 	
-	var dataString = 
+	var dataString = "wasasfsa";
 	
 	// Select account data paragraph and set the text.
 	 $('#account').text();
@@ -722,12 +888,14 @@ information about all the gear that a character has on them, and the rarity and 
 items. */
 function makeSunburst(data) {
     
+	$('#sunburstwait').hide();
+	
     // Dictionary containing the colors that should be used for the visualization. 
     var colorDictionary = {
         
         // Rarities.
         "Basic" : "#f2f2f2",
-        "Fine" : "#569ff",
+        "Fine" : "#569fff",
         "Masterwork" : "#6dad1f",
         "Rare" : "#ffc700",
         "Exotic" : "#ff8800",
@@ -743,8 +911,8 @@ function makeSunburst(data) {
     }
     
     // Set dimensions of the visualization.
-    var width = 960,
-        height = 700,
+    var width = 600,
+        height = 600,
         radius = Math.min(width, height) / 2;
 
     // Make x and y scales.
@@ -757,9 +925,9 @@ function makeSunburst(data) {
     var color = d3.scale.category20c();
 
     // Add svg to webpage.
-    var svg = d3.select(".piechartpart").append("svg")
+    var svg = d3.select("#piechartpart").append("svg")
         .attr("width", width)
-        .attr("height", height)
+        .attr("height", height + 20)
       .append("g")
         .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
 
@@ -785,7 +953,7 @@ function makeSunburst(data) {
             if (d.name == "Weapons" || d.name == "Armor" || d.name == "Aquatic" || d.name == "Trinkets")
                 return colorDictionary[(d.children ? d : d.parent).name]; 
             if (d.name == "Equipment")
-                return "#FFFFFF"
+                return "#DDDDDD";
             else
                 return colorDictionary[d.rarity];
         })

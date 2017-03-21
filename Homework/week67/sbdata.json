@@ -8,7 +8,7 @@
                 
                 {
                     name: "Sample",
-                    rarity: "Basic",
+                    rarity: "Rare",
                     infusions: "N/A",
                     type: "Armor",
                     slot:  "Head",
@@ -26,7 +26,7 @@
                  },
                  {
                     name: "Sample",
-                    rarity: "Basic",
+                    rarity: "Masterwork",
                     infusions: "N/A",
                     type: "Armor",
                     slot:  "Head",
@@ -35,7 +35,7 @@
                  },
                  {
                     name: "Sample",
-                    rarity: "Basic",
+                    rarity: "Exotic",
                     infusions: "N/A",
                     type: "Armor",
                     slot:  "Head",
@@ -43,8 +43,8 @@
                     size: 1
                  },
                  {
-                    name: "Sample",
-                    rarity: "Basic",
+                    name: "Sample TEXT TEST TEST LENGTE",
+                    rarity: "Ascended",
                     infusions: "N/A",
                     type: "Armor",
                     slot:  "Head",
@@ -61,7 +61,7 @@
                 
                 {
                     name: "Sample",
-                    rarity: "Basic",
+                    rarity: "Ascended",
                     infusions: "N/A",
                     type: "Armor",
                     slot:  "Head",
@@ -160,18 +160,6 @@
             
             ]
             
-        },
-    
-    
-    
-    
-    
-    
+        }
     ]
-
-
-
-
-
-
 }
