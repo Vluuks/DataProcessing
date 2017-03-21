@@ -14,7 +14,6 @@ var deBesteData = {
 		
 }
 
-
 var echteArrayDataWow = [
 	{ 
 		"characterName" : "test test test",
@@ -37,7 +36,7 @@ var echteArrayDataWow = [
 		"agonyResist" : 50
 	},
 	{ 
-		"characterName" : "tewegwgwgst4",
+		"characterName" : "tewegwgwgst4 fsaifhiasfh aisfhasifha",
 		"agonyResist" : 150
 	}
 ];
@@ -209,6 +208,8 @@ var tempData = {
     ]
 };
 
+/***** OBJECTS AND CONSTANTS  **************************************************************************************************/
+
 /* Model "class" used to store data about characters. Initializes with default
 values and is further filled in as API requests are completed and data retrieved. */
 function Character() {
@@ -261,6 +262,9 @@ function showError(errorMessage) {
 	$('#error').show();
     $('#error').text(errorMessage);
 }
+
+
+/***** DATA RETRIEVAL **************************************************************************************************/
 
 /* Check the given API and then start retrieving data if it has been verified. 
 This function is invoked by pressing the button on the webpage. */
@@ -511,83 +515,6 @@ function fetchEquipment() {
     }    
 }
 
-/* Function that transforms the obtained data about agony resist and armor pieces and combines them into a
-structure that is suitable for a sunburst visualization. This needs to be done after since the item object itself and
-the agony resist are not retrieved at the same time, so making this can only occur after calculating AR is done. 
-Request is done on a per characeter basis because sunburst is only made once a specific bar is clicked. However,
-the result is stored  after creating it once so it does not need to be remade every time after.  */
-function transformDataForSunBurst(character) {
-    
-    // Get the equipment array containing objects form the character dictionary.
-    var  equipment = account.characterDictionary[character].equipmentRarity;
-    var sunburstObject = {
-        
-        "name" : "Equipment",
-        "children" : [
-        
-            {"name" : "Armor",
-               "children" : []
-            },
-            {"name" : "Trinkets",
-               "children" : []
-            }, 
-            {"name" : "Weapons",
-               "children" : []
-            },
-            {"name" : "Aquatic",
-               "children" : []
-            },            
-        ]
-        
-    };
-    
-    for (var piece in equipment)
-    {
-        var currentPiece  = equipment[piece];
-
-        // If it's an armor piece but not an underwater piece
-        if (currentPiece.type == "Armor" && currentPiece.slot != "HelmAquatic")
-            sunburstObject.children[0].children.push(currentPiece);
-        // If it's a trinket or backpiece
-        else if (currentPiece.type == "Trinket" || currentPiece.type == "Back")
-            sunburstObject.children[1].children.push(currentPiece);
-        // If it's a weapon but not an underwater weapon
-        else if (currentPiece.type == "Weapon" && !(currentPiece.slot == "WeaponAquaticA" || currentPiece.slot == "WeaponAquaticB"))
-            sunburstObject.children[2].children.push(currentPiece);
-        // If it's an underwater equipment piece
-        else if (currentPiece.slot == "HelmAquatic" || currentPiece.slot == "WeaponAquaticA" || currentPiece.slot == "WeaponAquaticB")
-            sunburstObject.children[3].children.push(currentPiece);
-    }
-
-	// Create the sunburst visualization with this data.
-    makeSunburst(sunburstObject);
-    
-}
-
-/* When the data is ready, calculate the total agony resist on the gear and store this in an object
-that can be visualized in a bar chart. */
-function onDataReady() {
-
-	var dataArray = [];  
-    for (character in account.characterDictionary) {
-
-		// Calculate the total agony resist on the gear.
-		var equipment = account.characterDictionary[character].equipmentRarity;
-		account.characterDictionary[character].agonyResist = calculateAgonyResist(equipment, character);
-		
-		// Create a new data array for the bar chart, using the character name and total agony resist.
-		var dataObject = {
-			characterName: character,
-			agonyResist: account.characterDictionary[character].agonyResist.total
-		}
-		
-		dataArray.push(dataObject);
-    }
-	
-	// When calculating the AR is done, we can make the barchart.
-	makeBarChart(dataArray);
-}
-
 /* For a given armor piece, calculate the agony infusions present, and based on the ID of these
 infusions return the total amount of agony resist present in the armor piece, trinket or weapon. 
 There are many different infusions in this game due to ArenaNet's inconsistent additions and 
@@ -616,7 +543,8 @@ function calculateAgonyResist(equipment, character) {
 		"37129" : 7,
 		"37133" : 7,
 		"37134" : 7,
-		"78028" : 9,		"78052" : 9,
+		"78028" : 9,
+		"78052" : 9,
 		"78012" : 9,
 		"78016" : 9, 
 		"78030" : 9, 
@@ -652,7 +580,28 @@ function calculateAgonyResist(equipment, character) {
 		"37135" : 9,
 		"37136" : 9,
 		"37131" : 9,
-				// Regular infusions that can be broken down/crafted.		"49424" : 1,			"49425" : 2,			"49426" : 3,			"49427" : 4,			"49428" : 5,			"49429" : 6,		"49430" : 7,				"49431" : 8,				"49432" : 9,		"49433" : 10,			"49434" : 11,			"49435" : 12,		"49436" : 13,			"49437" : 14,			"49438" : 15,			"49439" : 16,			"49440" : 17,				"49441" : 18,		"49442" :19,				"49443" : 20,
+		
+		// Regular infusions that can be broken down/crafted.
+		"49424" : 1,	
+		"49425" : 2,	
+		"49426" : 3,	
+		"49427" : 4,	
+		"49428" : 5,	
+		"49429" : 6,
+		"49430" : 7,		
+		"49431" : 8,		
+		"49432" : 9,
+		"49433" : 10,	
+		"49434" : 11,	
+		"49435" : 12,
+		"49436" : 13,	
+		"49437" : 14,	
+		"49438" : 15,	
+		"49439" : 16,	
+		"49440" : 17,		
+		"49441" : 18,
+		"49442" :19,		
+		"49443" : 20,
 		
 		// Nonsense values map to 0 for safety.
 		undefined: 0,
@@ -744,116 +693,30 @@ function calculateAgonyResist(equipment, character) {
     return agonyResist;
 }
 
-/* Updates the sidebar with information about the current account that is being viewed. */
-function setAccountData() {
+/* When the data is ready, calculate the total agony resist on the gear and store this in an object
+that can be visualized in a bar chart. */
+function onDataReady() {
+
+	var dataArray = [];  
+    for (character in account.characterDictionary) {
+
+		// Calculate the total agony resist on the gear.
+		var equipment = account.characterDictionary[character].equipmentRarity;
+		account.characterDictionary[character].agonyResist = calculateAgonyResist(equipment, character);
+		
+		// Create a new data array for the bar chart, using the character name and total agony resist.
+		var dataObject = {
+			characterName: character,
+			agonyResist: account.characterDictionary[character].agonyResist.total
+		}
+		
+		dataArray.push(dataObject);
+    }
 	
-	// Account name
-	// total age
-	// amount of characters
-	
-	
-	var dataString = "wasasfsa";
-	
-	// Select account data paragraph and set the text.
-	 $('#account').text();
-	
+	// When calculating the AR is done, we can make the barchart.
+	makeBarChart(dataArray);
 }
 
-/* Draws the bar chart that shows each character and their level of agony resist. The maximum 
-amount is infinite in theory but more than 150 makes no sense, so the max of the chart is set at 150. */
-function makeBarChart(data) {
-	
-	
-	// Set the dimensions of the canvas.
-	var margin = {top: 20, right: 20, bottom: 150, left: 50},
-		width = 800 - margin.left - margin.right,
-		height = 480 - margin.top - margin.bottom;
-
-	// Set the domain and range.
-	var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
-	var y = d3.scale.linear().range([height, 0]);
-	x.domain(data.map(function(d) { return d.characterName; }));
-	y.domain([0, 150]);
-	
-	// Define the axes.
-	var xAxis = d3.svg.axis()
-		.scale(x)
-		.orient("bottom")
-
-	var yAxis = d3.svg.axis()
-		.scale(y)
-		.orient("left")
-		.ticks(15);
-
-	// Add the SVG element.
-	var svg = d3.select("#barchartpart").append("svg")
-		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom)
-	  .append("g")
-		.attr("transform", 
-			  "translate(" + margin.left + "," + margin.top + ")");
-			  
-	// Add tooltip.
-	var tip = d3.tip()
-		.attr('class', 'd3-tip')
-		.offset([-2, 0])
-		.html(function(d) {
-			return "<span>" + d.agonyResist + "</span>";
-		});	
-	svg.call(tip);
-
-	// Add the Y axis.
-	svg.append("g")
-		.attr("class", "y axis")
-		.call(yAxis)
-	.append("text")
-		.attr("transform", "rotate(-90)")
-		.attr("y", -43)
-		.attr("dy", ".71em")
-		.style("text-anchor", "end")
-		.attr("fill", "#666666")
-		.text("Total AR");
-
-	// Add bar chart.
-	svg.selectAll("bar")
-		.data(data)
-			.enter().append("rect")
-				.attr("class", "bar")
-				.attr("x", function(d) { return x(d.characterName); })
-				.attr("width", x.rangeBand())
-				.attr("y", function(d) { return y(d.agonyResist); })
-				.attr("height", function(d) { return height - y(d.agonyResist); })
-				.style("fill", "#7aa4e8")
-				.on('mouseover', tip.show)
-				.on('mouseout', tip.hide)
-				.on("click", function(d) {
-					console.log("test" + d.characterName);
-					transformDataForSunBurst(d.characterName);
-				});
-
-	// Add X axis, done after bar chart so text is over it instead of under it.
-	svg.append("g")
-		  .attr("class", "x axis")
-		  .attr("transform", "translate(0," + height + ")")
-		  .call(xAxis)
-	.selectAll("text")
-		.style("text-anchor", "start")
-		.attr("dx", "1em")
-		.attr("dy", "-.55em")
-		.attr("transform", "rotate(-90)" );
-	
-				
-	// Make bar chart x axis ticks clickable.
-	svg.selectAll(".y.axis .tick")
-		.on("click", function(d) {  
-			// Get character name, 
-			// go to sunburst of character name
-			console.log(d);
-		});
-	
-}
-
-/* ACHIEVEMENTS AND SUCH */
 function getFractalAchievements(callback) {
 	
 	// Get the array of API 
@@ -905,6 +768,130 @@ function getFractalAchievements(callback) {
 	});
 }
 
+/* This function writes the data that has been retrieved from the API to a text file in JSON format. 
+This ensures that even if the API is down the visualization can be run with this data. */
+function makeBackUp() {
+	// WHY DID I NOT IMPLEMENT THIS WHEN IC OULD
+}
+
+
+
+/***** VISUALIZATIONS **************************************************************************************************/
+
+/* Updates the sidebar with information about the current account that is being viewed.*/
+function setAccountData() {
+	
+	// Account name
+	// total age
+	// amount of characters
+	
+	
+	var dataString = "wasasfsa";
+	
+	// Select account data paragraph and set the text.
+	 $('#account').text();
+	
+}
+
+/* Displays small pie charts in the sidebar with class and race distribution. */
+function makePieCharts(){
+
+	// TODO TODO
+}
+
+/* Draws the bar chart that shows each character and their level of agony resist. The maximum 
+amount is infinite in theory but more than 150 makes no sense, so the max of the chart is set at 150. */
+function makeBarChart(data) {
+	
+	// Set the dimensions of the canvas.
+	var margin = {top: 20, right: 20, bottom: 50, left: 50},
+		width = 800 - margin.left - margin.right,
+		height = 400 - margin.top - margin.bottom;
+
+	// Set the domain and range.
+	var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+	var y = d3.scale.linear().range([height, 0]);
+	x.domain(data.map(function(d) { return d.characterName; }));
+	y.domain([0, 150]);
+	
+	// Define the axes.
+	var xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom")
+
+	var yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left")
+		.ticks(15);
+
+	// Add the SVG element.
+	var svg = d3.select("#barchartpart").append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+	  .append("g")
+		.attr("transform", 
+			  "translate(" + margin.left + "," + margin.top + ")");
+			  
+	// Add tooltip.
+	var tip = d3.tip()
+		.attr('class', 'd3-tip')
+		.offset([-2, 0])
+		.html(function(d) {
+			return "<span>" + d.agonyResist + "</span>";
+		});	
+	svg.call(tip);
+
+	// Add the Y axis.
+	svg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis)
+	.append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", -43)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.attr("fill", "#666666")
+		.text("total Agony Resistance");
+
+	// Add bar chart.
+	svg.selectAll("bar")
+		.data(data)
+			.enter().append("rect")
+				.attr("class", "bar")
+				.attr("x", function(d) { return x(d.characterName); })
+				.attr("width", x.rangeBand())
+				.attr("y", function(d) { return y(d.agonyResist); })
+				.attr("height", function(d) { return height - y(d.agonyResist); })
+				.style("fill", "#7aa4e8")
+				.on('mouseover', tip.show)
+				.on('mouseout', tip.hide)
+				.on("click", function(d) {
+					console.log("test" + d.characterName);
+					transformDataForSunBurst(d.characterName);
+				});
+
+	// Add X axis, done after bar chart so text is over it instead of under it.
+	svg.append("g")
+		  .attr("class", "x axis")
+		  .attr("transform", "translate(0," + height + ")")
+		  .call(xAxis)
+	.selectAll("text")
+		.style("text-anchor", "start")
+		.attr("dx", "1em")
+		.attr("dy", "-.55em")
+		.attr("transform", "rotate(-90)" );
+	
+				
+	// Make bar chart x axis ticks clickable.
+	svg.selectAll(".y.axis .tick")
+		.on("click", function(d) {  
+			// Get character name, 
+			// go to sunburst of character name
+			console.log(d);
+		});
+	
+}
+
 /* Makes the indices of the fractal achievement that have been completed into an array of booleans so
 that both incomplete and complete achievements can be shown accurately. */
 function displayFractalAchievements(dataArray) {
@@ -928,11 +915,65 @@ function displayFractalAchievements(dataArray) {
 	// Now I can do something with the data!
 }
 
+/* Function that transforms the obtained data about agony resist and armor pieces and combines them into a
+structure that is suitable for a sunburst visualization. This needs to be done after since the item object itself and
+the agony resist are not retrieved at the same time, so making this can only occur after calculating AR is done. 
+Request is done on a per characeter basis because sunburst is only made once a specific bar is clicked. However,
+the result is stored  after creating it once so it does not need to be remade every time after.  */
+function transformDataForSunBurst(character) {
+    
+    // Get the equipment array containing objects form the character dictionary.
+    var  equipment = account.characterDictionary[character].equipmentRarity;
+    var sunburstObject = {
+        
+        "name" : "Equipment",
+        "children" : [
+        
+            {"name" : "Armor",
+               "children" : []
+            },
+            {"name" : "Trinkets",
+               "children" : []
+            }, 
+            {"name" : "Weapons",
+               "children" : []
+            },
+            {"name" : "Aquatic",
+               "children" : []
+            },            
+        ]
+    };
+    
+	// Loop over the equipment pieces and construct data accordingly.
+    for (var piece in equipment)
+    {
+        var currentPiece  = equipment[piece];
+
+        // If it's an armor piece but not an underwater piece
+        if (currentPiece.type == "Armor" && currentPiece.slot != "HelmAquatic")
+            sunburstObject.children[0].children.push(currentPiece);
+        // If it's a trinket or backpiece
+        else if (currentPiece.type == "Trinket" || currentPiece.type == "Back")
+            sunburstObject.children[1].children.push(currentPiece);
+        // If it's a weapon but not an underwater weapon
+        else if (currentPiece.type == "Weapon" && !(currentPiece.slot == "WeaponAquaticA" || currentPiece.slot == "WeaponAquaticB"))
+            sunburstObject.children[2].children.push(currentPiece);
+        // If it's an underwater equipment piece
+        else if (currentPiece.slot == "HelmAquatic" || currentPiece.slot == "WeaponAquaticA" || currentPiece.slot == "WeaponAquaticB")
+            sunburstObject.children[3].children.push(currentPiece);
+    }
+
+	// Create the sunburst visualization with this data.
+    makeSunburst(sunburstObject);
+    
+}
+
 /* Function that creates a sunburst visualization with data about a character. The data contains
 information about all the gear that a character has on them, and the rarity and name of these
 items. */
 function makeSunburst(data) {
     
+	// Hide the information message.
 	$('#sunburstwait').hide();
 	
     // Dictionary containing the colors that should be used for the visualization. 
@@ -947,12 +988,11 @@ function makeSunburst(data) {
         "Ascended" : "#dd1a7f",
         "Legendary" : "#8119d1",
         
-        // Categories
+        // Categories.
         "Armor" : "#75645b",
         "Weapons" : "#4c4441",
         "Aquatic" : "#8e817c",
         "Trinkets" : "#99837b"
-        
     }
     
     // Set dimensions of the visualization.
@@ -966,8 +1006,6 @@ function makeSunburst(data) {
 
     var y = d3.scale.linear()
         .range([0, radius]);
-
-    var color = d3.scale.category20c();
 
     // Add svg to webpage.
     var svg = d3.select("#piechartpart").append("svg")
@@ -1014,47 +1052,70 @@ function makeSunburst(data) {
 
 	// Function that handles clicks on the sunburst so that it can zoom.
     function click(d) {
-        // fade out all text elements
+		
+        // Fade out text elements.
         text.transition().attr("opacity", 0);
-
+	
+		// Make a transition to the new view.
         path.transition()
-          .duration(750)
-          .attrTween("d", arcTween(d))
-          .each("end", function(e, i) {
-              // check if the animated element's data e lies within the visible angle span given in d
-              if (e.x >= d.x && e.x < (d.x + d.dx)) {
-                // get a selection of the associated text element
-                var arcText = d3.select(this.parentNode).select("text");
-                // fade in the text element and recalculate positions
-                arcText.transition().duration(750)
-                  .attr("opacity", 1)
-                  .attr("transform", function() { return "rotate(" + computeTextRotation(e) + ")" })
-                  .attr("x", function(d) { return y(d.y); });
-              }
-          });
-      }
+			.duration(750)
+			.attrTween("d", arcTween(d))
+			.each("end", function(e, i) {
+			
+			// Check if the animated element's data e lies within the visible angle span given in d
+			if (e.x >= d.x && e.x < (d.x + d.dx)) {
+				
+				// Get a selection of the associated text element.
+				var arcText = d3.select(this.parentNode).select("text");
+				
+				// Fade in the text element and recalculate positions.
+				arcText.transition().duration(500)
+					.attr("opacity", 1)
+					.attr("transform", function() { return "rotate(" + computeTextRotation(e) + ")" })
+					.attr("x", function(d) { return y(d.y); });
+            }
+		});
+	}
 
     d3.select(self.frameElement).style("height", height + "px");
 
-    // Interpolate the scales!
+    // Interpolate the scales. //TODO VRAAG WAT HIER GEBEURT
     function arcTween(d) {
-      var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-          yd = d3.interpolate(y.domain(), [d.y, 1]),
-          yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
-      return function(d, i) {
+	var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+		yd = d3.interpolate(y.domain(), [d.y, 1]),
+		yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+	return function(d, i) {
         return i
-            ? function(t) { return arc(d); }
-            : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
-      };
+			? function(t) { return arc(d); }
+			: function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+		};
     }
 
     function computeTextRotation(d) {
-      return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
+		return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
     }
 }
 
-/* This function writes the data that has been retrieved from the API to a text file in JSON format. 
-This ensures that even if the API is down the visualization can be run with this data. */
-function makeBackUp() {
+/* Renders the current status of all fractal tier achievements. */
+function makeAchievementGraph(data){
+
+	var data = [false, true, true, true, false];
+	// for every tier, append rectangles?? idk yet how to visualize this very well.
+
 	
+	
+	var legend = svg.selectAll(".legend")
+        .data(colors)
+        .enter().append("g")
+            .attr("transform", function(d, i) { return "translate(30," + i * 19 + ")"; });
+    
+    // Add color icons to the legend. The array is reversed so they line up with the graph. 
+    legend.append("rect")
+        .attr("x", width - 18)
+        .attr("y", function(d, i){return i * 20})
+        .attr("width", 25)
+        .attr("height", 25)
+        .style("opacity", "1")
+        .style("fill", function(d, i) {return colors.slice().reverse()[i];})
+        .attr("class", function(d, i) {return "C" + colors.slice().reverse()[i].substr(1);})
 }

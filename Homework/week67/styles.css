@@ -7,8 +7,8 @@ h2{
     font-family: "Trebuchet MS";
     margin-bottom: 10px;
 	margin-top: 0px;
-	font-size: 20px;
-	text-tranform: all-caps;
+	font-size: 19px;
+	text-transform: uppercase;
 }
 #wrapperdiv{
 	width: 1740px;
