@@ -40,7 +40,7 @@ var classColors = {
 }
 
 /* Wait until page is ready. */
-$('document').ready(function(){
+$('document').ready(function() {
 	console.log("page ready");
 	
 	// Manage DOM element visibilities.
@@ -50,14 +50,14 @@ $('document').ready(function(){
 });
 
 /* Small function that takes a string and shows it in the error span on top of the page. */
-function showError(errorMessage){
+function showError(errorMessage) {
 	$('#error').show();
     $('#error').text(errorMessage);
 }
 
 /* Check the given API and then start retrieving data if it has been verified. 
 This function is invoked by pressing the button on the webpage. */
-function getUserApi(){
+function getUserApi() {
 	
 	// Hide DOM element.
 	$('#error').hide();
@@ -69,13 +69,13 @@ function getUserApi(){
 	apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374";
 	//apiKey = "ikoh";
     
-    if(apiKey == "" || apiKey == undefined)
+    if (apiKey == "" || apiKey == undefined)
     {
     	showError("Please do not omit the field");
     }
     else{
         
-        if (/^[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{20}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$/.test(apiKey)){
+        if (/^[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{20}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$/.test(apiKey)) {
 
 			$.ajax({
 			type: "GET",
@@ -84,29 +84,29 @@ function getUserApi(){
 			cache: false,
 			dataType: 'text',
 			
-				success: function (){},
-				error: function(){
-                    showError("Could not retrieve data about API from the server.");
+				success: function () {},
+				error: function() {
+                    showError("The GW2 API seems to be down, please come back at a later time.");
 				},
 				// Check if it's a valid key even if it passed regex
-				complete: function(data){
+				complete: function(data) {
 
 					var apiResult = JSON.parse(data.responseText);
 					console.log(apiResult);
 					
 					// If the key matches the expected format but is still invalid
-					if(apiResult.text && (apiResult.text.equals("endpoint requires authentication") || apiResult.text.equals("invalid key")))
+					if (apiResult.text && (apiResult.text.equals("endpoint requires authentication") || apiResult.text.equals("invalid key")))
 						showError("Your API key is not valid or is missing permissions.");
 				
 					// If the permissions array exists in JSON
-					if(apiResult.permissions){
+					if (apiResult.permissions) {
 						
 						var permissionCount = 0;
-						for(var i = 0; i <apiResult.permissions.length; i++){
+						for (var i = 0; i <apiResult.permissions.length; i++) {
 							
 							// Check for the necessary permissions
 							// Possible permissions can be found at https://wiki.guildwars2.com/wiki/API:2/tokeninfo
-							switch(apiResult.permissions[i]){
+							switch(apiResult.permissions[i]) {
 								case "characters":
 									permissionCount++;
 									break;
@@ -123,7 +123,7 @@ function getUserApi(){
 						}
 
 						// Check if permission requirements were met, if so, invoke callback function.
-						if(permissionCount == 4)
+						if (permissionCount == 4)
 							apiCheckCallback(apiKey);
 						else
 							showError("Your API key is missing permissions.");
@@ -141,7 +141,7 @@ function getUserApi(){
 
 /* Called after the API key has been verified and handles the subsequent calls to other functions
 which retrieve more information from the API. */
-function apiCheckCallback(apiKey){
+function apiCheckCallback(apiKey) {
     
     // Make api global now that it has been verified.
     account.apiKey = apiKey;
@@ -155,7 +155,7 @@ function apiCheckCallback(apiKey){
 
 /* This function retrieves a list of the characters on the account from the API and then
 calls the callback which will retrieve additional info based on the character names. */
-function getCharacters(callback){
+function getCharacters(callback) {
  
     $.ajax({
 		type: "GET",
@@ -164,11 +164,11 @@ function getCharacters(callback){
 		cache: false,
 		dataType: 'text',
 		
-			success: function(){},
-			error: function(){
+			success: function() {},
+			error: function() {
                 showError("Something went wrong fetching the character info.");
             },
-			complete: function(data){
+			complete: function(data) {
 						
 				// Convert json array to javascript.
 				characterArray = JSON.parse(data.responseText);
@@ -187,13 +187,13 @@ function getCharacters(callback){
 /* Retrieves information about a character based on the name of the character and
 stores the information in a character object which will be globally accessible by the
 other functions in the script. */
-function getGeneralCharacterInfo(){
+function getGeneralCharacterInfo() {
   
     var characterArray = account.characters;
     var counter = 0;
     // account.characterAmount
     for (let i = 0; i < account.characterAmount; i++) { 
-        (function(i){
+        (function(i) {
         
             $.ajax({
                 type: "GET",
@@ -201,11 +201,11 @@ function getGeneralCharacterInfo(){
                 url: "https://api.guildwars2.com/v2/characters/" + characterArray[i] + "?access_token=" + account.apiKey,
                 cache: false,
                 dataType: 'text',               
-                success: function(){},
-                error: function(){
+                success: function() {},
+                error: function() {
 					showError("Something went wrong fetching the character info.");
 				},
-                complete: function(data){
+                complete: function(data) {
                             
                     // Convert json data to javascript object.
                     var characterObject = JSON.parse(data.responseText);
@@ -220,7 +220,7 @@ function getGeneralCharacterInfo(){
                     character.hoursPlayed = (characterObject.age / 3600).toFixed(0);
                     account.characterDictionary[characterObject.name] = character;
                     
-                    if(counter == characterArray.length){
+                    if (counter == characterArray.length) {
                         fetchEquipment();
                     }
                 }
@@ -238,11 +238,11 @@ present on a character (ie not all equipment slots are filled) so there are no f
 For every item we look up the rarity and the type and this is stored in an object which in turn is stored
 in the dictionary with the character name as a key. This dictionary is globally accessible and will, after
 the callback, be available for use by the visualizations. */
-function fetchEquipment(){
+function fetchEquipment() {
    
    // Iterate over the characters in the dictionary and access equipment array for each.
     for (let character in account.characterDictionary) {
-        (function(character){
+        (function(character) {
             if (account.characterDictionary.hasOwnProperty(character)) {
                 
                 var equipmentArray = account.characterDictionary[character].equipment;
@@ -250,8 +250,8 @@ function fetchEquipment(){
                 var gearCheckCounter = 0;
                 
                 // Loop over the equipment array and perform check on each piece that is present.
-                for(let i = 0; i < equipmentArray.length; i++){
-                    (function(i){
+                for (let i = 0; i < equipmentArray.length; i++) {
+                    (function(i) {
                          
                         // Request API for item rarity and type using the item id.
                         $.ajax({
@@ -261,15 +261,15 @@ function fetchEquipment(){
                             cache: false,
                             dataType: 'text',
                             
-                            success: function(){},
-                            error: function(){
+                            success: function() {},
+                            error: function() {
 								showError("Something went wrong fetching the equipment info.");
 							},
-                            complete: function(data){
+                            complete: function(data) {
                                 itemObject = JSON.parse(data.responseText);
                                 
                                 // Store item properties in object and store object in the array of items on the character
-                                if(itemObject.type == ("Armor") || itemObject.type == ("Trinket") || itemObject.type == ("Weapon") || itemObject.type == ("Back") ){
+                                if (itemObject.type == ("Armor") || itemObject.type == ("Trinket") || itemObject.type == ("Weapon") || itemObject.type == ("Back") ) {
                                     var itemObject = {
                                         name: itemObject.name,
                                         rarity: itemObject.rarity,
@@ -289,7 +289,7 @@ function fetchEquipment(){
                                 gearCheckCounter++;
 
                                 // If it's the last character and the last equipment piece of that character, then we can go on!    
-                                if(character == account.characters[account.characterAmount-1] && gearCheckCounter == (equipmentArray.length)-1){
+                                if (character == account.characters[account.characterAmount-1] && gearCheckCounter == (equipmentArray.length)-1) {
                                     onDataReady();
                                 }  
                             }
@@ -309,7 +309,7 @@ structure that is suitable for a sunburst visualization. This needs to be done a
 the agony resist are not retrieved at the same time, so making this can only occur after calculating AR is done. 
 Request is done on a per characeter basis because sunburst is only made once a specific bar is clicked. However,
 the result is stored  after creating it once so it does not need to be remade every time after.  */
-function transformDataForSunBurst(character){
+function transformDataForSunBurst(character) {
     
     // Get the equipment array containing objects form the character dictionary.
     var  equipment = account.characterDictionary[character].equipmentRarity;
@@ -334,21 +334,21 @@ function transformDataForSunBurst(character){
         
     };
     
-    for(var piece in equipment)
+    for (var piece in equipment)
     {
         var currentPiece  = equipment[piece];
 
         // If it's an armor piece but not an underwater piece
-        if(currentPiece.type == "Armor" && currentPiece.slot != "HelmAquatic")
+        if (currentPiece.type == "Armor" && currentPiece.slot != "HelmAquatic")
             sunburstObject.children[0].children.push(currentPiece);
         // If it's a trinket or backpiece
-        else if(currentPiece.type == "Trinket" || currentPiece.type == "Back")
+        else if (currentPiece.type == "Trinket" || currentPiece.type == "Back")
             sunburstObject.children[1].children.push(currentPiece);
         // If it's a weapon but not an underwater weapon
-        else if(currentPiece.type == "Weapon" && !(currentPiece.slot == "WeaponAquaticA" || currentPiece.slot == "WeaponAquaticB"))
+        else if (currentPiece.type == "Weapon" && !(currentPiece.slot == "WeaponAquaticA" || currentPiece.slot == "WeaponAquaticB"))
             sunburstObject.children[2].children.push(currentPiece);
         // If it's an underwater equipment piece
-        else if(currentPiece.slot == "HelmAquatic" || currentPiece.slot == "WeaponAquaticA" || currentPiece.slot == "WeaponAquaticB")
+        else if (currentPiece.slot == "HelmAquatic" || currentPiece.slot == "WeaponAquaticA" || currentPiece.slot == "WeaponAquaticB")
             sunburstObject.children[3].children.push(currentPiece);
     }
 
@@ -359,10 +359,10 @@ function transformDataForSunBurst(character){
 
 /* When the data is ready, calculate the total agony resist on the gear and store this in an object
 that can be visualized in a bar chart. */
-function onDataReady(){
+function onDataReady() {
 
 	var dataArray = [];  
-    for(character in account.characterDictionary){
+    for (character in account.characterDictionary) {
 
 		// Calculate the total agony resist on the gear.
 		var equipment = account.characterDictionary[character].equipmentRarity;
@@ -386,7 +386,7 @@ infusions return the total amount of agony resist present in the armor piece, tr
 There are many different infusions in this game due to ArenaNet's inconsistent additions and 
 revamps of the system, which makes a dictionary necessary to account for all possible types. 
 If no infusions are present the infusionsarray will not exist and the function will return 0. */
-function calculateAgonyResist(equipment, character){
+function calculateAgonyResist(equipment, character) {
     
 	// A dictionary containing key value pairs of item ids and agony resist.
     var infusionDictionary = {
@@ -465,13 +465,13 @@ function calculateAgonyResist(equipment, character){
 	}
 	
 	// Iterate over all the items.
-	for(item in equipment){
+	for (item in equipment) {
 	
 		// If the item has one or multiple infusions.
-		if(equipment[item].infusions != undefined){
+		if (equipment[item].infusions != undefined) {
 		
 			// Loop over all the infusions in the item.
-			for(var i = 0; i < equipment[item].infusions.length; i++){
+			for (var i = 0; i < equipment[item].infusions.length; i++) {
 			
 				var infusion = equipment[item].infusions[i];
 				
@@ -479,9 +479,9 @@ function calculateAgonyResist(equipment, character){
 				equipment[item].agonyResist += infusionDictionary[infusion];
 			
 				// If it's a weapon, check which one.
-				if(equipment[item].type == "Weapon"){
+				if (equipment[item].type == "Weapon") {
 					
-					switch(equipment[item].slot){
+					switch(equipment[item].slot) {
 					
 						case "WeaponA1":
 							agonyResist.weaponsA += infusionDictionary[infusion];
@@ -505,14 +505,14 @@ function calculateAgonyResist(equipment, character){
 				}
 				
 				// If it's a trinket or backpiece, add to total. Discard amulet since these infusions are not AR ones.
-				else if((equipment[item].type == "Trinket" && equipment[item].slot != "Amulet") || equipment[item].type == "Back"){
+				else if ((equipment[item].type == "Trinket" && equipment[item].slot != "Amulet") || equipment[item].type == "Back") {
 					agonyResist.trinkets += infusionDictionary[infusion];
 				}
 				
 				// If it's armor, check for aquabreather and else add to total.
-				else if(equipment[item].type == "Armor"){
+				else if (equipment[item].type == "Armor") {
 					
-					if(equipment[item].slot != "HelmAquatic")
+					if (equipment[item].slot != "HelmAquatic")
 						agonyResist.armor += infusionDictionary[infusion];
 					else				
 						agonyResist.aquatic += infusionDictionary[infusion];
@@ -527,18 +527,18 @@ function calculateAgonyResist(equipment, character){
 	agonyResist.total = agonyResist.armor + agonyResist.trinkets;
 	
 	// Take the weapon set with the higher agony resist.
-	if(agonyResist.weaponsA < agonyResist.weaponsB)
-		agonyResist.total += agonyResist.weaponsB
+	if (agonyResist.weaponsA < agonyResist.weaponsB)
+		agonyResist.total += agonyResist.weaponsB;
 	else if (agonyResist.weaponsA > agonyResist.weaponsB)
-		agonyResist.total += agonyResist.weaponsA
+		agonyResist.total += agonyResist.weaponsA;
 	else
-		agonyResist.total += agonyResist.weaponsA
+		agonyResist.total += agonyResist.weaponsA;
 	
     return agonyResist;
 }
 
 /* Updates the sidebar with information about the current account that is being viewed. */
-function setAccountData(){
+function setAccountData() {
 	
 	// Account name
 	// total age
@@ -554,7 +554,7 @@ function setAccountData(){
 
 /* Draws the bar chart that shows each character and their level of agony resist. The maximum 
 amount is infinite in theory but more than 150 makes no sense, so the max of the chart is set at 150. */
-function makeBarChart(data){
+function makeBarChart(data) {
 	
 	// Set the dimensions of the canvas.
 	var margin = {top: 20, right: 20, bottom: 150, left: 40},
@@ -643,7 +643,7 @@ function makeBarChart(data){
 }
 
 /* ACHIEVEMENTS AND SUCH */
-function getFractalAchievements(callback){
+function getFractalAchievements(callback) {
 	
 	// Get the array of API 
 	$.ajax({
@@ -653,19 +653,19 @@ function getFractalAchievements(callback){
 	cache: false,
 	dataType: 'text',
 	
-		success: function(){
+		success: function() {
 		},
-		error: function(){
+		error: function() {
 			showError("Could not retrieve information about achievements.");
 		},
-		complete: function(data){
+		complete: function(data) {
 			
 			var achievementArray = JSON.parse(data.responseText);
 			var fractalAchievementArray = new Array(4);
 			
 			// Find the fractal achievements in the array (they do not have a fixed index, unfortunately).
-			for(var i = 0, length = achievementArray.length; i < length; i++){
-				switch(achievementArray[i].id){
+			for (var i = 0, length = achievementArray.length; i < length; i++) {
+				switch(achievementArray[i].id) {
 					
 					// Initiate
 					case 2965:
@@ -694,18 +694,20 @@ function getFractalAchievements(callback){
 	});
 }
 
-function displayFractalAchievements(dataArray){
+/* Makes the indices of the fractal achievement that have been completed into an array of booleans so
+that both incomplete and complete achievements can be shown accurately. */
+function displayFractalAchievements(dataArray) {
 	
 	// Turn the array into a more useful/uniform data format.
-	for(var i = 0; i < dataArray.length; i++){
+	for (var i = 0; i < dataArray.length; i++) {
 	
 		// Initialize an array full of true. 
 		achievementBoolArray = new Array(25);
-		for(var j = 0; j < achievementBoolArray.length; j++)
+		for (var j = 0; j < achievementBoolArray.length; j++)
 			achievementBoolArray[j] = true;
 		
 		// Set incomplete achievements to false for indices in subarrays.
-		for (var k = 0; k < dataArray[i].length; k++){
+		for (var k = 0; k < dataArray[i].length; k++) {
 			achievementBoolArray[dataArray[i][k]] = false;
 		}
 		
@@ -718,7 +720,7 @@ function displayFractalAchievements(dataArray){
 /* Function that creates a sunburst visualization with data about a character. The data contains
 information about all the gear that a character has on them, and the rarity and name of these
 items. */
-function makeSunburst(data){
+function makeSunburst(data) {
     
     // Dictionary containing the colors that should be used for the visualization. 
     var colorDictionary = {
@@ -780,9 +782,9 @@ function makeSunburst(data){
         .style("fill", function(d) {
             
 			// Determine the color of the data point.
-            if(d.name == "Weapons" || d.name == "Armor" || d.name == "Aquatic" || d.name == "Trinkets")
+            if (d.name == "Weapons" || d.name == "Armor" || d.name == "Aquatic" || d.name == "Trinkets")
                 return colorDictionary[(d.children ? d : d.parent).name]; 
-            if(d.name == "Equipment")
+            if (d.name == "Equipment")
                 return "#FFFFFF"
             else
                 return colorDictionary[d.rarity];
@@ -840,6 +842,6 @@ function makeSunburst(data){
 
 /* This function writes the data that has been retrieved from the API to a text file in JSON format. 
 This ensures that even if the API is down the visualization can be run with this data. */
-function makeBackUp(){
+function makeBackUp() {
 	
 }
