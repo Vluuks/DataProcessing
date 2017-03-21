@@ -5,6 +5,44 @@
 	
 */
 
+var deBesteData = {
+	
+		initiate : [ false, true, true, true, false, false, false, true, true, true],
+		adept : [ false, true, true, true, false, false, false, true, true, true],
+		expert : [ false, true, true, true, false, false, false, true, true, true],
+		master : [ false, true, true, true, false, false, false, true, true, true]
+		
+}
+
+
+var echteArrayDataWow = [
+	{ 
+		"characterName" : "test test test",
+		"agonyResist" : 40
+	},
+	{ 
+		"characterName" : "test2",
+		"agonyResist" : 30
+	},
+	{ 
+		"characterName" : "test3 character with a long name",
+		"agonyResist" : 40
+	},
+	{ 
+		"characterName" : "teewgwgwst4",
+		"agonyResist" : 80
+	},
+	{ 
+		"characterName" : "testewewgw4",
+		"agonyResist" : 50
+	},
+	{ 
+		"characterName" : "tewegwgwgst4",
+		"agonyResist" : 150
+	}
+];
+
+
 var tempData = {
     "name": "Equipment",
     "children" : [
@@ -207,12 +245,15 @@ var classColors = {
 /* Wait until page is ready. */
 $('document').ready(function() {
 	console.log("page ready");
+	
+	// DIKKE ONZIN TODO
 	makeSunburst(tempData);
+	makeBarChart(echteArrayDataWow);
 	
 	// Manage DOM element visibilities.
 	$('#error').hide();
 	//$('#accountdiv').hide();
-	//$('#sunburstwait').hide();
+
 });
 
 /* Small function that takes a string and shows it in the error span on top of the page. */
@@ -722,10 +763,11 @@ function setAccountData() {
 amount is infinite in theory but more than 150 makes no sense, so the max of the chart is set at 150. */
 function makeBarChart(data) {
 	
+	
 	// Set the dimensions of the canvas.
-	var margin = {top: 20, right: 20, bottom: 150, left: 40},
+	var margin = {top: 20, right: 20, bottom: 150, left: 50},
 		width = 800 - margin.left - margin.right,
-		height = 600 - margin.top - margin.bottom;
+		height = 480 - margin.top - margin.bottom;
 
 	// Set the domain and range.
 	var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
@@ -744,7 +786,7 @@ function makeBarChart(data) {
 		.ticks(15);
 
 	// Add the SVG element.
-	var svg = d3.select(".barchartpart").append("svg")
+	var svg = d3.select("#barchartpart").append("svg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
 	  .append("g")
@@ -754,32 +796,23 @@ function makeBarChart(data) {
 	// Add tooltip.
 	var tip = d3.tip()
 		.attr('class', 'd3-tip')
-		.offset([-10, 0])
+		.offset([-2, 0])
 		.html(function(d) {
-		return "<span>" + d.agonyResist + "</span>";
+			return "<span>" + d.agonyResist + "</span>";
 		});	
 	svg.call(tip);
 
-	// Add axes.
-	svg.append("g")
-		  .attr("class", "x axis")
-		  .attr("transform", "translate(0," + height + ")")
-		  .call(xAxis)
-	.selectAll("text")
-		.style("text-anchor", "end")
-		.attr("dx", "-.8em")
-		.attr("dy", "-.55em")
-		.attr("transform", "rotate(-90)" );
-
+	// Add the Y axis.
 	svg.append("g")
 		.attr("class", "y axis")
 		.call(yAxis)
 	.append("text")
 		.attr("transform", "rotate(-90)")
-		.attr("y", -15)
+		.attr("y", -43)
 		.attr("dy", ".71em")
 		.style("text-anchor", "end")
-		.text("Agony Resist");
+		.attr("fill", "#666666")
+		.text("Total AR");
 
 	// Add bar chart.
 	svg.selectAll("bar")
@@ -798,6 +831,18 @@ function makeBarChart(data) {
 					transformDataForSunBurst(d.characterName);
 				});
 
+	// Add X axis, done after bar chart so text is over it instead of under it.
+	svg.append("g")
+		  .attr("class", "x axis")
+		  .attr("transform", "translate(0," + height + ")")
+		  .call(xAxis)
+	.selectAll("text")
+		.style("text-anchor", "start")
+		.attr("dx", "1em")
+		.attr("dy", "-.55em")
+		.attr("transform", "rotate(-90)" );
+	
+				
 	// Make bar chart x axis ticks clickable.
 	svg.selectAll(".y.axis .tick")
 		.on("click", function(d) {  

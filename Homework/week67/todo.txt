@@ -9,3 +9,28 @@ IMPORTANT
 AESTHETICS and OPTIONAL 
 - class color in bar, class icons for readability
 - tear  of alba in graph
+
+
+
+
+
+[
+	{ 
+		"characterName" : "test",
+		"agonyResist" : 40
+	}
+	{ 
+		"characterName" : "test",
+		"agonyResist" : 30
+	}
+	{ 
+		"characterName" : "test",
+		"agonyResist" : 40
+	}
+	{ 
+		"characterName" : "test",
+		"agonyResist" : 50
+	}
+]	
+
+

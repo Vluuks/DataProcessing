@@ -110,6 +110,10 @@ div ul li p
     display: inline-block;
     vertical-align: middle;
 }
+path {
+
+    stroke: #DDDDDD;
+}
 
 # Colors corresponding to professions.
 .necromancer{
