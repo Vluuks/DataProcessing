@@ -4,245 +4,17 @@
 	A complete clusterfuck
 	
 */
-var deDataDerData = [{
-        "label": "Engineer",
-        "value": "2"
-    },
-    {
-        "label": "Ranger",
-        "value": "2"
-    },
-    {
-        "label": "Thief",
-        "value": "2"
-    },
-    {
-        "label": "Elementalist",
-        "value": "2"
-    },
-    {
-        "label": "Mesmer",
-        "value": "2"
-    },
-    {
-        "label": "Necromancer",
-        "value": "2"
-    },
-    {
-        "label": "Revenant",
-        "value": "2"
-    },
-    {
-        "label": "Guardian",
-        "value": "2"
-    },
-    {
-        "label": "Warrior",
-        "value": "2"
-    }
-];
 
-var deBesteData = {
+var deBesteData = [
 
-    initiate: [false, true, true, true, false, false, false, true, true, true],
-    adept: [false, true, true, true, false, false, false, true, true, true],
-    expert: [false, true, true, true, false, false, false, true, true, true],
-    master: [false, true, true, true, false, false, false, true, true, true]
+    [false, true, true, true, false, false, false, true, true, true],
+    [false, true, true, true, false, false, false, true, true, true],
+    [false, true, true, true, false, false, false, true, true, true],
+    [false, false, true, true, false, false, false, true, true, true]
 
-}
-
-var echteArrayDataWow = [{
-        "characterName": "test test test",
-        "agonyResist": 40
-    },
-    {
-        "characterName": "test2",
-        "agonyResist": 30
-    },
-    {
-        "characterName": "test3 character with a long name",
-        "agonyResist": 40
-    },
-    {
-        "characterName": "teewgwgwst4",
-        "agonyResist": 80
-    },
-    {
-        "characterName": "testewewgw4",
-        "agonyResist": 50
-    },
-    {
-        "characterName": "tewegwgwgst4 fsaifhiasfh aisfhasifha",
-        "agonyResist": 150
-    }
 ];
 
 
-var tempData = {
-    "name": "Equipment",
-    "children": [
-
-        {
-            "name": "Armor",
-            "children": [
-
-                {
-                    name: "Woww heeee",
-                    rarity: "Rare",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                },
-                {
-                    name: "Wat leuk test 1234",
-                    rarity: "Fine",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                },
-                {
-                    name: "Sample",
-                    rarity: "Masterwork",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                },
-                {
-                    name: "ayyyyy",
-                    rarity: "Exotic",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                },
-                {
-                    name: "Sample TEXT TEST TEST LENGTE",
-                    rarity: "Ascended",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                }
-
-            ]
-
-        },
-        {
-            "name": "Weapons",
-            "children": [
-
-                {
-                    name: "Sample",
-                    rarity: "Ascended",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                },
-                {
-                    name: "Sample",
-                    rarity: "Basic",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                },
-                {
-                    name: "Sample",
-                    rarity: "Legendary",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                },
-                {
-                    name: "Sample",
-                    rarity: "Rare",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                },
-                {
-                    name: "Sample",
-                    rarity: "Rare",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                }
-
-            ]
-
-        },
-        {
-            "name": "Trinkets",
-            "children": [
-
-                {
-                    name: "Test test test test test testttttttttttttt",
-                    rarity: "Basic",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                },
-                {
-                    name: "Sample",
-                    rarity: "Ascended",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                },
-                {
-                    name: "Sample",
-                    rarity: "Legendary",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                },
-                {
-                    name: "Sample",
-                    rarity: "Exotic",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                },
-                {
-                    name: "Sample",
-                    rarity: "Basic",
-                    infusions: "N/A",
-                    type: "Armor",
-                    slot: "Head",
-                    agonyResist: 9,
-                    size: 1
-                }
-
-            ]
-
-        }
-    ]
-};
 
 /***** OBJECTS AND CONSTANTS  **************************************************************************************************/
 
@@ -313,7 +85,7 @@ var colorDictionary = {
 
 /* Wait until page is ready. */
 $('document').ready(function() {
-
+    
     // DIKKE ONZIN TODO
     // makeSunburst(tempData);
     // makeBarChart(echteArrayDataWow);
@@ -362,7 +134,7 @@ function getUserApi() {
     $('#barchartloading').show();
     $('#achievementloading').show();
 
-    // Check for basics
+    // Grab api key from field and check.
     var apiKey = $("#apiKey").val().trim();
 
     apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0";
@@ -576,6 +348,7 @@ function fetchEquipment() {
                 // Loop over the equipment array and demand API for item details in bulk.   
                 var baseUrl = "https://api.guildwars2.com/v2/items?ids=";
                 var infusionsPerPieceDict = {};
+                var slotInformationDict = {};
 
                 for (let i = 0; i < equipmentArray.length; i++) {
 
@@ -584,6 +357,7 @@ function fetchEquipment() {
 
                     // Create id indexed dictionary for infusions.
                     infusionsPerPieceDict[equipmentArray[i].id] = equipmentArray[i].infusions;
+                    slotInformationDict[equipmentArray[i].id] = equipmentArray[i].slot;
                 }
 
                 // Request all the item ids  from the API at once.
@@ -616,6 +390,7 @@ function fetchEquipment() {
                                     infusions: infusionsPerPieceDict[itemObject.id], // TODO, HEB DE INDEX NODIG VAN DE LOOP OM DE INFUSIONS UIT DE DATA TE KUNNEN HALEN
                                     type: itemObject.type,
                                     slot: itemObject.details["type"],
+                                    weaponSlot: slotInformationDict[itemObject.id],
                                     agonyResist: 0,
                                     size: 1
                                 }
@@ -760,7 +535,7 @@ function calculateAgonyResist(equipment, character) {
                 // If it's a weapon, check which one.
                 if (equipment[item].type == "Weapon") {
 
-                    switch (equipment[item].slot) {
+                    switch (equipment[item].weaponSlot) {
 
                         case "WeaponA1":
                             agonyResist.weaponsA += infusionDictionary[infusion];
@@ -803,8 +578,6 @@ function calculateAgonyResist(equipment, character) {
     // Calculate the effective total using the weapon set with the biggest amount and discarding underwater weapons.
     agonyResist.total = agonyResist.armor + agonyResist.trinkets;
     
-    console.log(agonyResist);
-
     // Take the weapon set with the higher agony resist. // TODO this no longer works fuck
     if (agonyResist.weaponsA < agonyResist.weaponsB)
         agonyResist.total += agonyResist.weaponsB;
@@ -1093,6 +866,8 @@ function displayFractalAchievements(dataArray) {
 
     // Now I can do something with the data! //TODO
     $('#achievementloading').hide();
+    
+    makeAchievementGraph(deBesteData);
 }
 
 /* Function that transforms the obtained data about agony resist and armor pieces and combines them into a
@@ -1329,7 +1104,7 @@ function makeAchievementGraph(data) {
         "false": "#5b5b5b",
         "true": "#ffcc00"
     };
-    var data = [false, true, true, true, false, true, true, true, false, false, false, true, false, true, true, true, false, false, true, false, false, true, true, false, true];
+    //var data = [false, true, true, true, false, true, true, true, false, false, false, true, false, true, true, true, false, false, true, false, false, true, true, false, true];
     // for every tier, append rectangles?? idk yet how to visualize this very well.
 
     var width = 800,
@@ -1340,31 +1115,35 @@ function makeAchievementGraph(data) {
         .attr("width", width)
         .attr("height", height)
 
-    var rects = svg.selectAll('g')
-        .data(data)
-        .enter()
-        .append("g")
+    // this does not seem to work as intended
+    for(var j = 0; j < 4; j++){
+        
+        var rects = svg.selectAll('g')
+            .data(data[j])
+            .enter()
+            .append("g")
 
-    rects.append('rect')
-        //.attr("transform", function(d, i){ return "translate("+ 10*i +", 0)"; })
-        .attr("y", 10)
-        .attr("x", function(d, i) {
-            return i * 32
-        })
-        .attr("width", 25)
-        .attr("height", 25)
-        .style("opacity", "1")
-        .style("fill", function(d) {
-            return color[d.toString()];
-        });
+        rects.append('rect')
+            //.attr("transform", function(d, i){ return "translate("+ 10*i +", 0)"; })
+            .attr("y", 10 + j * 15)
+            .attr("x", function(d, i) {
+                return i * 32
+            })
+            .attr("width", 25)
+            .attr("height", 25)
+            .style("opacity", "1")
+            .style("fill", function(d) {
+                return color[d.toString()];
+            });
 
-    rects.append('text')
-        .text(function(d, i) {
-            return i + 1;
-        })
-        .style("fill", "black")
-        .attr("y", 27)
-        .attr("x", function(d, i) {
-            return 5 + i * 32
-        });
+        rects.append('text')
+            .text(function(d, i) {
+                return i + 1;
+            })
+            .style("fill", "black")
+            .attr("y", 10 + j * 15)
+            .attr("x", function(d, i) {
+                return 5 + i * 32
+            });
+    }
 }
