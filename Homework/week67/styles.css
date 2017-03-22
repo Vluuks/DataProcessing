@@ -59,8 +59,8 @@ h2{
 	float: left;
 	float: top;
 }
-#sunburstextra{
-	width: 600px;
+#sunburstinnerwrapper{
+    width: 600px;
 	height: 155px;
 }
 #error{
@@ -117,7 +117,13 @@ path {
 
     stroke: #DDDDDD;
 }
-
+.charname{
+    font-size: 16px;
+}
+.charprofession{
+    font-size: 20px;
+    margin: 0;
+}
 # Colors corresponding to professions.
 .necromancer{
 }

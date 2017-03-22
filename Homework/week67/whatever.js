@@ -326,8 +326,14 @@ $('document').ready(function() {
 	
 	// Manage DOM element visibilities.
 	$('#error').hide();
-	//$('#accountdiv').hide();
-
+	$('#accountdiv').hide();
+    $('#accountloading').hide();
+    $('#sunburstextra').hide();
+    $('#sunburstwait').hide();
+    $('#barchartloading').hide();
+    $('#achievementloading').hide();
+    $('#sunburstloading').hide();
+   
 });
 
 /* Small function that takes a string and shows it in the error span on top of the page. */
@@ -342,9 +348,23 @@ function showError(errorMessage) {
 /* Check the given API and then start retrieving data if it has been verified. 
 This function is invoked by pressing the button on the webpage. */
 function getUserApi() {
-	
-	// Hide DOM element.
+    
+    // Check if svgs were already made, if so, delete.
+    var svgChart = $("#barchartsvg");
+	if (svgChart !== undefined)
+		svgChart.remove();
+    
+    var svgChart2 = $("#sunburstsvg");
+	if (svgChart2 !== undefined)
+		svgChart2.remove();
+
+	// Hide and show corresponding DOM elements.
 	$('#error').hide();
+    $('#accountdiv').hide();
+    $('#sunburstextra').hide();
+    $('#accountloading').show();
+    $('#barchartloading').show();
+    $('#achievementloading').show();
 
     // Check for basics
     var apiKey = $("#apiKey").val().trim();
@@ -621,7 +641,6 @@ function fetchEquipment() {
                         
                         // If it's the last character and the last equipment piece of that character, then we can go on!    
                         if (character == account.characters[account.characterAmount-1]) {
-                            console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH");
                             onDataReady();
                         }  
                     }
@@ -793,8 +812,6 @@ function calculateAgonyResist(equipment, character) {
 		}
 	}
     
-	console.log(agonyResist.armor, agonyResist.trinkets, agonyResist.weaponsA, agonyResist.weaponsB, agonyResist.aquatic);
-	
 	// Calculate the effective total using the weapon set with the biggest amount and discarding underwater weapons.
 	agonyResist.total = agonyResist.armor + agonyResist.trinkets;
 	
@@ -896,16 +913,20 @@ function makeBackUp() {
 
 /* Updates the sidebar with information about the current account that is being viewed.*/
 function showAccountInfo() {
-	
+    
+    // Hide loading spinner.
+    $('#accountloading').hide();
+    
 	// Select account data paragraph and set the text.
-	 $('#accname').text(account.name);
-     $('#chars').text(account.characterAmount + " characters");
-     $('#accage').text(account.hoursPlayed + " hours played");
-     $('#fraclevel').text("Fractal Level " + account.fractalLevel);
+    $('#accountdiv').show();
+    $('#accname').text(account.name);
+    $('#chars').text(account.characterAmount + " characters");
+    $('#accage').text(account.hoursPlayed + " hours played");
+    $('#fraclevel').text("Fractal Level " + account.fractalLevel);
 	
 }
 
-/* Displays small pie charts in the sidebar with class and race distribution. */
+/* Displays small pie charts in the sidebar with class and race distribution. TODO WERKT NOG NIET HEUJ */
 function makePieCharts(data){
 
 	// Set dimensions of the pie chart.
@@ -947,6 +968,10 @@ function makePieCharts(data){
 /* Draws the bar chart that shows each character and their level of agony resist. The maximum 
 amount is infinite in theory but more than 150 makes no sense, so the max of the chart is set at 150. */
 function makeBarChart(data) {
+    
+    // Hide and show dom elements.
+     $('#barchartloading').hide();
+     $('#sunburstwait').show();
 	
 	// Set the dimensions of the canvas.
 	var margin = {top: 20, right: 20, bottom: 50, left: 50},
@@ -971,6 +996,7 @@ function makeBarChart(data) {
 
 	// Add the SVG element.
 	var svg = d3.select("#barchartpart").append("svg")
+        .attr("id", "barchartsvg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
 	  .append("g")
@@ -1007,11 +1033,13 @@ function makeBarChart(data) {
 				.attr("width", x.rangeBand())
 				.attr("y", function(d) { return y(d.agonyResist); })
 				.attr("height", function(d) { return height - y(d.agonyResist); })
-				.style("fill", "#7aa4e8")
+				.style("fill", function(d){
+                    console.log(colorDictionary[account.characterDictionary[d.characterName].profession]);
+                    return colorDictionary[account.characterDictionary[d.characterName].profession];
+                })
 				.on('mouseover', tip.show)
 				.on('mouseout', tip.hide)
 				.on("click", function(d) {
-					console.log("test" + d.characterName);
 					transformDataForSunburst(d.characterName);
 				});
 
@@ -1051,6 +1079,7 @@ function displayFractalAchievements(dataArray) {
 	}
 	
 	// Now I can do something with the data!
+    $('#achievementloading').hide();
 }
 
 /* Function that transforms the obtained data about agony resist and armor pieces and combines them into a
@@ -1060,11 +1089,12 @@ Request is done on a per characeter basis because sunburst is only made once a s
 the result is stored  after creating it once so it does not need to be remade every time after.  */
 function transformDataForSunburst(character) {
     
+    // Set loading spinner.
+    $('#sunburstloading').show();
     
+    // Check if the data has been cached to avoid recreating the object for nothing.
     if(account.characterDictionary[character].sunburstDataCache == undefined){
         
-        console.log("new");
-          
         // Get the equipment array containing objects form the character dictionary.
         var  equipment = account.characterDictionary[character].equipmentRarity;
         var sunburstObject = {
@@ -1111,14 +1141,12 @@ function transformDataForSunburst(character) {
         
     }
     else{
-            
-            console.log("from cache");
             sunburstObject = account.characterDictionary[character].sunburstDataCache;
     }
         
-
     // Create the sunburst visualization with this data.
     makeSunburst(sunburstObject);
+    showCharacterData(character);
 
 }
 
@@ -1129,9 +1157,10 @@ function makeSunburst(data) {
     
 	// Hide the information message.
 	$('#sunburstwait').hide();
+    $('#sunburstloading').hide();
     
     // Check if there was already a sunburst, if so then remove it.
-    var svgChart = $(".sunburstsvg");
+    var svgChart = $("#sunburstsvg");
 	if (svgChart !== undefined)
 		svgChart.remove();
 	
@@ -1151,7 +1180,7 @@ function makeSunburst(data) {
     var svg = d3.select("#piechartpart").append("svg")
         .attr("width", width)
         .attr("height", height + 20)
-        .attr("class", "sunburstsvg")
+        .attr("id", "sunburstsvg")
 		.append("g")
 			.attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
 
@@ -1184,7 +1213,7 @@ function makeSunburst(data) {
         .on("click", click);
 
 	// Append text to  each block of the sunburst. 
-      var text = g.append("text")
+    var text = g.append("text")
         .attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; })
         .attr("x", function(d) { return y(d.y); })
         .attr("dx", "6") // margin
@@ -1235,6 +1264,21 @@ function makeSunburst(data) {
     function computeTextRotation(d) {
 		return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
     }
+}
+
+/* Show data about the character to accompany the sunburst. */
+function showCharacterData(character){
+    
+    // Select the div and append html.
+    $('#sunburstextra').html(
+    
+        '<p class=\"charname\">' + character + '</p>' +
+        '<p class =\"charprofession\" style=\"color:' + colorDictionary[account.characterDictionary[character].profession] + ' \">' + account.characterDictionary[character].profession + '</p>' +
+        '<p> Played for ' + account.characterDictionary[character].hoursPlayed + ' hours </p>'
+
+    );
+    $('#sunburstextra').show();
+    
 }
 
 /* Renders the current status of all fractal tier achievements. */
