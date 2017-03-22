@@ -118,29 +118,16 @@ path {
     stroke: #DDDDDD;
 }
 .charname{
-    font-size: 16px;
+    font-size: 20px;
+    margin: 0;
 }
 .charprofession{
     font-size: 20px;
     margin: 0;
 }
-# Colors corresponding to professions.
-.necromancer{
+.charage{
+    margin: 0;
 }
-.elementalist{
+.accinfo{
+    font-size: 16px;
 }
-.mesmer{
-}
-.engineer{
-}
-.ranger{
-}
-.thief{
-}
-.guardian{
-}
-.warrior{
-}
-.revenant{
-}
-

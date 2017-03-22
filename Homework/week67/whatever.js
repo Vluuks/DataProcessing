@@ -1089,8 +1089,9 @@ function showCharacterData(character) {
     $('#sunburstextra').html(
 
         '<p class=\"charname\">' + character + '</p>' +
+        '<p class=\"charage"> Level ' + account.characterDictionary[character].level  + '</p>' +
         '<p class =\"charprofession\" style=\"color:' + colorDictionary[account.characterDictionary[character].profession] + ' \">' + account.characterDictionary[character].profession + '</p>' +
-        '<p> Played for ' + account.characterDictionary[character].hoursPlayed + ' hours </p>'
+        '<p class =\"charage\"> Played for ' + account.characterDictionary[character].hoursPlayed + ' hours </p>'
 
     );
     $('#sunburstextra').show();
