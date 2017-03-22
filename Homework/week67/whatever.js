@@ -265,7 +265,7 @@ function Character() {
 /* A global object used to store all the information pertaining to the account
 that is currently using the visualization. */
 var account = {
-	accountName: "",
+	name: "",
     apiKey: "",
     hoursPlayed: -1,
     characters: [],
@@ -319,10 +319,10 @@ $('document').ready(function() {
 	console.log("page ready");
 	
 	// DIKKE ONZIN TODO
-	makeSunburst(tempData);
-	makeBarChart(echteArrayDataWow);
-	makePieCharts(deDataDerData);
-	makeAchievementGraph(deBesteData);
+	//makeSunburst(tempData);
+	//makeBarChart(echteArrayDataWow);
+	//makePieCharts(deDataDerData);
+	//makeAchievementGraph(deBesteData);
 	
 	// Manage DOM element visibilities.
 	$('#error').hide();
@@ -433,8 +433,39 @@ function apiCheckCallback(apiKey) {
 	// Get characters and in turn character equipment.
     getCharacters(getGeneralCharacterInfo);
     
+    // Get general account info such as name, amount of chars, age etc.
+    getGeneralAccountInfo(showAccountInfo);
+    
 	// Retrieve the fractal achievements and perform display cb.
 	getFractalAchievements(displayFractalAchievements);
+}
+
+function getGeneralAccountInfo(callback){
+    
+    $.ajax({
+		type: "GET",
+		async: true,
+		url: "https://api.guildwars2.com/v2/account?access_token=" + account.apiKey,
+		cache: false,
+		dataType: 'text',
+		
+			success: function() {},
+			error: function() {
+                showError("Something went wrong fetching the account info.");
+            },
+			complete: function(data) {
+						
+				// Convert json array to javascript.
+				accountInfo = JSON.parse(data.responseText);
+                
+                account.name = accountInfo.name;
+                account.hoursPlayed = (accountInfo.age / 3600).toFixed(0);
+                account.fractalLevel = accountInfo.fractal_level;
+				
+                callback();
+			}    
+	});     
+    
 }
 
 /* This function retrieves a list of the characters on the account from the API and then
@@ -533,7 +564,7 @@ function fetchEquipment() {
                 var agonyResistCounter = 0;
                 var gearCheckCounter = 0;
                 
-                // Loop over the equipment array and perform check on each piece that is present.
+                // Loop over the equipment array and perform check on each piece that is present. // TODO MAKE BULK REQUEST INSTEAD OF 1 REQUEST FOR EVERY ITEM
                 for (let i = 0; i < equipmentArray.length; i++) {
                     (function(i) {
                          
@@ -852,17 +883,13 @@ function makeBackUp() {
 /***** VISUALIZATIONS **************************************************************************************************/
 
 /* Updates the sidebar with information about the current account that is being viewed.*/
-function setAccountData() {
-	
-	// Account name
-	// total age
-	// amount of characters
-	
-	
-	var dataString = "wasasfsa";
+function showAccountInfo() {
 	
 	// Select account data paragraph and set the text.
-	 $('#account').text();
+	 $('#accname').text(account.name);
+     $('#chars').text(account.characterAmount + " characters");
+     $('#accage').text(account.hoursPlayed + " hours played");
+     $('#fraclevel').text("Fractal Level " + account.fractalLevel);
 	
 }
 
@@ -1081,6 +1108,11 @@ function makeSunburst(data) {
     
 	// Hide the information message.
 	$('#sunburstwait').hide();
+    
+    // Check if there was already a sunburst, if so then remove it.
+    var svgChart = $(".sunburstsvg");
+	if (svgChart !== undefined)
+		svgChart.remove();
 	
     // Set dimensions of the visualization.
     var width = 600,
@@ -1098,6 +1130,7 @@ function makeSunburst(data) {
     var svg = d3.select("#piechartpart").append("svg")
         .attr("width", width)
         .attr("height", height + 20)
+        .attr("class", "sunburstsvg")
 		.append("g")
 			.attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
 
