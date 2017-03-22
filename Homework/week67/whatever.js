@@ -322,6 +322,7 @@ $('document').ready(function() {
 	makeSunburst(tempData);
 	makeBarChart(echteArrayDataWow);
 	makePieCharts(deDataDerData);
+	makeAchievementGraph(deBesteData);
 	
 	// Manage DOM element visibilities.
 	$('#error').hide();
@@ -1097,8 +1098,8 @@ function makeSunburst(data) {
     var svg = d3.select("#piechartpart").append("svg")
         .attr("width", width)
         .attr("height", height + 20)
-      .append("g")
-        .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
+		.append("g")
+			.attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
 
     var partition = d3.layout.partition()
         .value(function(d) { return d.size; });
@@ -1185,21 +1186,37 @@ function makeSunburst(data) {
 /* Renders the current status of all fractal tier achievements. */
 function makeAchievementGraph(data){
 
-	var data = [false, true, true, true, false];
+	var color = { "false" : "#5b5b5b", "true" : "#ffcc00" };
+	var data = [false, true, true, true, false, true, true, true, false, false, false, true, false, true, true, true, false, false, true, false, false, true, true, false, true ];
 	// for every tier, append rectangles?? idk yet how to visualize this very well.
 	
-	var legend = svg.selectAll(".legend")
-        .data(colors)
-        .enter().append("g")
-            .attr("transform", function(d, i) { return "translate(30," + i * 19 + ")"; });
+	var width = 800,
+		height = 320;
+	
+	// Add svg to webpage.
+    var svg = d3.select("#achievementpart").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+	
+	console.log(svg);
+	
+	var rects = svg.selectAll('g')
+        .data(data)
+        .enter()
+		.append("g")
+		
+	rects.append('rect')	
+            //.attr("transform", function(d, i){ return "translate("+ 10*i +", 0)"; })
+			.attr("y", 10)
+			.attr("x", function(d, i){return i * 32})
+			.attr("width", 25)
+			.attr("height", 25)
+			.style("opacity", "1")
+			.style("fill", function(d){ return color[d.toString()]; });
     
-    // Add color icons to the legend. The array is reversed so they line up with the graph. 
-    legend.append("rect")
-        .attr("x", width - 18)
-        .attr("y", function(d, i){return i * 20})
-        .attr("width", 25)
-        .attr("height", 25)
-        .style("opacity", "1")
-        .style("fill", function(d, i) {return colors.slice().reverse()[i];})
-        .attr("class", function(d, i) {return "C" + colors.slice().reverse()[i].substr(1);})
+	rects.append('text')
+				.text(function(d, i){ return i+1; })
+				.style("fill", "black")
+				.attr("y", 27)
+				.attr("x", function(d, i){return 5+ i * 32});
 }
