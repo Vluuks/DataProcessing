@@ -259,7 +259,7 @@ function Character() {
       this.level = -1;
       this.equipment = [];
       this.equipmentRarity = [];
-      this.equipmentSunburst = undefined;
+      this.sunburstDataCache = undefined;
 }
 
 /* A global object used to store all the information pertaining to the account
@@ -319,10 +319,10 @@ $('document').ready(function() {
 	console.log("page ready");
 	
 	// DIKKE ONZIN TODO
-	//makeSunburst(tempData);
-	//makeBarChart(echteArrayDataWow);
-	//makePieCharts(deDataDerData);
-	//makeAchievementGraph(deBesteData);
+	// makeSunburst(tempData);
+	// makeBarChart(echteArrayDataWow);
+	// makePieCharts(deDataDerData);
+	// makeAchievementGraph(deBesteData);
 	
 	// Manage DOM element visibilities.
 	$('#error').hide();
@@ -349,8 +349,8 @@ function getUserApi() {
     // Check for basics
     var apiKey = $("#apiKey").val().trim();
 
-    //apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0";
-	apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374";
+    apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0";
+	//apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374";
 	//apiKey = "ikoh";
     
     if (apiKey == "" || apiKey == undefined)
@@ -561,59 +561,71 @@ function fetchEquipment() {
             if (account.characterDictionary.hasOwnProperty(character)) {
                 
                 var equipmentArray = account.characterDictionary[character].equipment;
-                var agonyResistCounter = 0;
-                var gearCheckCounter = 0;
                 
-                // Loop over the equipment array and perform check on each piece that is present. // TODO MAKE BULK REQUEST INSTEAD OF 1 REQUEST FOR EVERY ITEM
+                // Loop over the equipment array and demand API for item details in bulk.   
+                var baseUrl = "https://api.guildwars2.com/v2/items?ids=";
+                var infusionsPerPieceDict = {};
+                
                 for (let i = 0; i < equipmentArray.length; i++) {
-                    (function(i) {
                          
-                        // Request API for item rarity and type using the item id.
-                        $.ajax({
-                            type: "GET",
-                            url: "https://api.guildwars2.com/v2/items?id=" + equipmentArray[i].id,
-                            async: true,
-                            cache: false,
-                            dataType: 'text',
-                            
-                            success: function() {},
-                            error: function() {
-								showError("Something went wrong fetching the equipment info.");
-							},
-                            complete: function(data) {
-                                itemObject = JSON.parse(data.responseText);
+                         // Append ID to url.
+                         baseUrl += equipmentArray[i].id + ",";
+                         
+                         // Create id indexed dictionary for infusions.
+                         infusionsPerPieceDict[equipmentArray[i].id] = equipmentArray[i].infusions;
+                }
+                
+                // Request all the item ids  from the API at once.
+                $.ajax({
+                    type: "GET",
+                    url: baseUrl.slice(0, -1),
+                    async: true,
+                    cache: false,
+                    dataType: 'text',
+                    
+                    success: function() {},
+                    error: function() {
+                        showError("Something went wrong fetching the equipment info.");
+                    },
+                    complete: function(data) {
+                        multipleItemObject = JSON.parse(data.responseText);
+                        console.log(multipleItemObject);
+                        
+                            // Loop over the returned values and make separate item objects out of it.
+                            for (item in multipleItemObject){
+
+                                var itemObject = multipleItemObject[item];
+                                //console.log(itemObject)
                                 
                                 // Store item properties in object and store object in the array of items on the character
                                 if (itemObject.type == ("Armor") || itemObject.type == ("Trinket") || itemObject.type == ("Weapon") || itemObject.type == ("Back") ) {
-                                    var itemObject = {
+                                    
+                                    var newItemObject = {
+                                        id : itemObject.id,
                                         name: itemObject.name,
                                         rarity: itemObject.rarity,
-                                        infusions: equipmentArray[i].infusions,
+                                        infusions: infusionsPerPieceDict[itemObject.id], // TODO, HEB DE INDEX NODIG VAN DE LOOP OM DE INFUSIONS UIT DE DATA TE KUNNEN HALEN
                                         type: itemObject.type,
-                                        slot: equipmentArray[i].slot,
-										agonyResist: 0,
+                                        slot: itemObject.details["type"],
+                                        agonyResist: 0,
                                         size: 1
                                     }
-                                    
+                            
                                     // Push to equipment array. 
-                                    account.characterDictionary[character].equipmentRarity.push(itemObject);
-                                    
-                                }   
+                                    console.log(newItemObject);
+                                    account.characterDictionary[character].equipmentRarity.push(newItemObject);
                                 
-                                // Increase counter for callback
-                                gearCheckCounter++;
-
-                                // If it's the last character and the last equipment piece of that character, then we can go on!    
-                                if (character == account.characters[account.characterAmount-1] && gearCheckCounter == (equipmentArray.length)-1) {
-                                    onDataReady();
-                                }  
-                            }
-                        });              
-                    })(i);
-                }
-                
-                // Add total agony resist dictionary to data.
-                account.characterDictionary[character].agonyResist = agonyResistCounter;
+                                }   
+                            
+                        }   
+                        
+                        // If it's the last character and the last equipment piece of that character, then we can go on!    
+                        if (character == account.characters[account.characterAmount-1]) {
+                            console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH");
+                            onDataReady();
+                        }  
+                    }
+                }); 
             }
         }(character));
     }    
@@ -1000,7 +1012,7 @@ function makeBarChart(data) {
 				.on('mouseout', tip.hide)
 				.on("click", function(d) {
 					console.log("test" + d.characterName);
-					transformDataForSunBurst(d.characterName);
+					transformDataForSunburst(d.characterName);
 				});
 
 	// Add X axis, done after bar chart so text is over it instead of under it.
@@ -1012,17 +1024,10 @@ function makeBarChart(data) {
 		.style("text-anchor", "start")
 		.attr("dx", "1em")
 		.attr("dy", "-.55em")
-		.attr("transform", "rotate(-90)" );
-	
-				
-	// Make bar chart x axis ticks clickable.
-	svg.selectAll(".y.axis .tick")
-		.on("click", function(d) {  
-			// Get character name, 
-			// go to sunburst of character name
-			console.log(d);
+		.attr("transform", "rotate(-90)" )
+        .on("click", function(d) {  
+            transformDataForSunburst(d);
 		});
-	
 }
 
 /* Makes the indices of the fractal achievement that have been completed into an array of booleans so
@@ -1053,52 +1058,68 @@ structure that is suitable for a sunburst visualization. This needs to be done a
 the agony resist are not retrieved at the same time, so making this can only occur after calculating AR is done. 
 Request is done on a per characeter basis because sunburst is only made once a specific bar is clicked. However,
 the result is stored  after creating it once so it does not need to be remade every time after.  */
-function transformDataForSunBurst(character) {
+function transformDataForSunburst(character) {
     
-    // Get the equipment array containing objects form the character dictionary.
-    var  equipment = account.characterDictionary[character].equipmentRarity;
-    var sunburstObject = {
-        
-        "name" : "Equipment",
-        "children" : [
-        
-            {"name" : "Armor",
-               "children" : []
-            },
-            {"name" : "Trinkets",
-               "children" : []
-            }, 
-            {"name" : "Weapons",
-               "children" : []
-            },
-            {"name" : "Aquatic",
-               "children" : []
-            },            
-        ]
-    };
     
-	// Loop over the equipment pieces and construct data accordingly.
-    for (var piece in equipment)
-    {
-        var currentPiece  = equipment[piece];
+    if(account.characterDictionary[character].sunburstDataCache == undefined){
+        
+        console.log("new");
+          
+        // Get the equipment array containing objects form the character dictionary.
+        var  equipment = account.characterDictionary[character].equipmentRarity;
+        var sunburstObject = {
+            
+            "name" : "Equipment",
+            "children" : [
+            
+                {"name" : "Armor",
+                   "children" : []
+                },
+                {"name" : "Trinkets",
+                   "children" : []
+                }, 
+                {"name" : "Weapons",
+                   "children" : []
+                },
+                {"name" : "Aquatic",
+                   "children" : []
+                },            
+            ]
+        };
+        
+        // Loop over the equipment pieces and construct data accordingly.
+        for (var piece in equipment)
+        {
+            var currentPiece  = equipment[piece];
 
-        // If it's an armor piece but not an underwater piece
-        if (currentPiece.type == "Armor" && currentPiece.slot != "HelmAquatic")
-            sunburstObject.children[0].children.push(currentPiece);
-        // If it's a trinket or backpiece
-        else if (currentPiece.type == "Trinket" || currentPiece.type == "Back")
-            sunburstObject.children[1].children.push(currentPiece);
-        // If it's a weapon but not an underwater weapon
-        else if (currentPiece.type == "Weapon" && !(currentPiece.slot == "WeaponAquaticA" || currentPiece.slot == "WeaponAquaticB"))
-            sunburstObject.children[2].children.push(currentPiece);
-        // If it's an underwater equipment piece
-        else if (currentPiece.slot == "HelmAquatic" || currentPiece.slot == "WeaponAquaticA" || currentPiece.slot == "WeaponAquaticB")
-            sunburstObject.children[3].children.push(currentPiece);
+            // If it's an armor piece but not an underwater piece
+            if (currentPiece.type == "Armor" && currentPiece.slot != "HelmAquatic")
+                sunburstObject.children[0].children.push(currentPiece);
+            // If it's a trinket or backpiece
+            else if (currentPiece.type == "Trinket" || currentPiece.type == "Back")
+                sunburstObject.children[1].children.push(currentPiece);
+            // If it's a weapon but not an underwater weapon
+            else if (currentPiece.type == "Weapon" && !(currentPiece.slot == "Trident" || currentPiece.slot == "Spear" || currentPiece.slot == "Speargun"))
+                sunburstObject.children[2].children.push(currentPiece);
+            // If it's an underwater equipment piece
+            else if (currentPiece.slot == "HelmAquatic" || currentPiece.slot == "Trident" || currentPiece.slot == "Spear" || currentPiece.slot == "Speargun")
+                sunburstObject.children[3].children.push(currentPiece);
+        }
+        
+        // Cache it so that it does not need to be remade if we reclick this character.
+        account.characterDictionary[character].sunburstDataCache = sunburstObject;
+        
     }
+    else{
+            
+            console.log("from cache");
+            sunburstObject = account.characterDictionary[character].sunburstDataCache;
+    }
+        
 
-	// Create the sunburst visualization with this data.
+    // Create the sunburst visualization with this data.
     makeSunburst(sunburstObject);
-    
+
 }
 
 /* Function that creates a sunburst visualization with data about a character. The data contains
