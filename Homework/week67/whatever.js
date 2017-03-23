@@ -15,7 +15,6 @@ var deBesteData = [
 ];
 
 
-
 /***** OBJECTS AND CONSTANTS  **************************************************************************************************/
 
 /* Model "class" used to store data about characters. Initializes with default
@@ -138,8 +137,8 @@ function getUserApi() {
     var apiKey = $("#apiKey").val().trim();
 
     apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0";
-    //apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374";
-    //apiKey = "ikoh";
+   //apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374";
+    //apiKey = "A1E2840E-BF5E-8747-9D5D-BAA2140590B2356E83AA-68BE-4391-9083-F0DCC3DA3950"
 
     if (apiKey == "" || apiKey == undefined) {
         showError("Please do not omit the field");
@@ -212,17 +211,17 @@ function getUserApi() {
 which retrieve more information from the API. */
 function apiCheckCallback(apiKey) {
 
-    // Make api global now that it has been verified.
-    account.apiKey = apiKey;
+	// Make api global now that it has been verified.
+	account.apiKey = apiKey;
 
-    // Get characters and in turn character equipment.
-    getCharacters(getGeneralCharacterInfo);
+	// Get characters and in turn character equipment.
+	getCharacters(getGeneralCharacterInfo);
 
-    // Get general account info such as name, amount of chars, age etc.
-    getGeneralAccountInfo(showAccountInfo);
+	// Get general account info such as name, amount of chars, age etc.
+	getGeneralAccountInfo(showAccountInfo);
 
-    // Retrieve the fractal achievements and perform display cb.
-    getFractalAchievements(displayFractalAchievements);
+	// Retrieve the fractal achievements and perform display cb.
+	getFractalAchievements(displayFractalAchievements);
 }
 
 function getGeneralAccountInfo(callback) {
@@ -864,10 +863,10 @@ function displayFractalAchievements(dataArray) {
         dataArray[i] = achievementBoolArray;
     }
 
-    // Now I can do something with the data! //TODO
+    // Now I can do something with the data!
     $('#achievementloading').hide();
     
-    makeAchievementGraph(deBesteData);
+    makeAchievementGraph(dataArray);
 }
 
 /* Function that transforms the obtained data about agony resist and armor pieces and combines them into a
@@ -1103,30 +1102,36 @@ function makeAchievementGraph(data) {
 
     var color = {
         "false": "#5b5b5b",
-        "true": "#ffcc00"
+        "true": "#6cc63b"
     };
-    //var data = [false, true, true, true, false, true, true, true, false, false, false, true, false, true, true, true, false, false, true, false, false, true, true, false, true];
-    // for every tier, append rectangles?? idk yet how to visualize this very well.
+	
+	var tiers = [ "Initiate", "Adept", "Expert", "Master"]; 
 
     var width = 800,
-        height = 320;
-
-    // Add svg to webpage.
-    var svg = d3.select("#achievementpart").append("svg")
-        .attr("width", width)
-        .attr("height", height)
+        height = 70;
 
     // this does not seem to work as intended
     for(var j = 0; j < 4; j++){
-        
+		
+		// Add svg to webpage.
+		var svg = d3.select("#achievementpart").append("svg")
+			.attr("width", width)
+			.attr("height", height)
+		
+		// Set achievement section title.
+		svg.append('text')
+			.text( tiers[j] )
+			.style("fill", "black")
+			.style("font-size", "14px")
+			.attr("y", 10);
+			
         var rects = svg.selectAll('g')
             .data(data[j])
             .enter()
             .append("g")
 
         rects.append('rect')
-            //.attr("transform", function(d, i){ return "translate("+ 10*i +", 0)"; })
-            .attr("y", 10 + j * 15)
+            .attr("y", 16)
             .attr("x", function(d, i) {
                 return i * 32
             })
@@ -1139,10 +1144,11 @@ function makeAchievementGraph(data) {
 
         rects.append('text')
             .text(function(d, i) {
-                return i + 1;
+                return i + 1 + (j * 25);
             })
             .style("fill", "black")
-            .attr("y", 10 + j * 15)
+			.style("font-size", "10px")
+            .attr("y", 26)
             .attr("x", function(d, i) {
                 return 5 + i * 32
             });
