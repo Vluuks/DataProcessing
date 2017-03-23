@@ -1,3 +1,4 @@
+- legenda!!
 - bootstrap
 - design pdf
 - validate html
