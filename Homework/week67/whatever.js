@@ -867,8 +867,7 @@ function displayFractalAchievements(dataArray) {
     }
 
     // Now I can do something with the data!
-    $('#achievementloading').hide();
-    
+    $('#achievementloading').hide();   
     makeAchievementGraph(dataArray);
 }
 
@@ -1059,9 +1058,7 @@ function makeSunburst(data) {
             });
     }
 
-    d3.select(self.frameElement).style("height", height + "px");
-
-    // Interpolate the scales. //TODO VRAAG WAT HIER GEBEURT
+    // Interpolate the scales. 
     function arcTween(d) {
         var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
             yd = d3.interpolate(y.domain(), [d.y, 1]),
