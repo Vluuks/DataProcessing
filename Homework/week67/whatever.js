@@ -85,12 +85,6 @@ var colorDictionary = {
 /* Wait until page is ready. */
 $('document').ready(function() {
     
-    // DIKKE ONZIN TODO
-    // makeSunburst(tempData);
-    // makeBarChart(echteArrayDataWow);
-    // makePieCharts(deDataDerData);
-    // makeAchievementGraph(deBesteData);
-
     // Manage DOM element visibilities.
     $('#error').hide();
     $('#accountdiv').hide();
@@ -162,18 +156,18 @@ function getUserApi() {
 
                     var apiResult = JSON.parse(data.responseText);
 
-                    // If the key matches the expected format but is still invalid
+                    // If the key matches the expected format but is still invalid.
                     if (apiResult.text && (apiResult.text.equals("endpoint requires authentication") || apiResult.text.equals("invalid key")))
                         showError("Your API key is not valid or is missing permissions.");
 
                     // If the permissions array exists in JSON
                     if (apiResult.permissions) {
-
+						
+						// Check for the necessary permissions.
                         var permissionCount = 0;
                         for (var i = 0; i < apiResult.permissions.length; i++) {
 
-                            // Check for the necessary permissions
-                            // Possible permissions can be found at https://wiki.guildwars2.com/wiki/API:2/tokeninfo
+							//Possible permissions can be found at https://wiki.guildwars2.com/wiki/API:2/tokeninfo
                             switch (apiResult.permissions[i]) {
                                 case "characters":
                                     permissionCount++;
@@ -191,11 +185,13 @@ function getUserApi() {
                         }
 
                         // Check if permission requirements were met, if so, invoke callback function.
-                        if (permissionCount == 4)
+                        if (permissionCount == 4) {
                             apiCheckCallback(apiKey);
-                        else
+						}
+                        else {
                             showError("Your API key is missing permissions.");
-                    }
+						}
+                    }	
                 }
             });
         }
@@ -239,13 +235,12 @@ function getGeneralAccountInfo(callback) {
         },
         complete: function(data) {
 
-            // Convert json array to javascript.
             accountInfo = JSON.parse(data.responseText);
-
             account.name = accountInfo.name;
             account.hoursPlayed = (accountInfo.age / 3600).toFixed(0);
             account.fractalLevel = accountInfo.fractal_level;
 
+			// Notify that the data has been retrieved and we can display it.
             callback();
         }
     });
@@ -269,9 +264,8 @@ function getCharacters(callback) {
         },
         complete: function(data) {
 
-            // Convert json array to javascript.
+            // Make characters into an array, sort it so it aligns with the dictionary.
             characterArray = JSON.parse(data.responseText);;
-
             account.characters = characterArray.sort();
             account.characterAmount = characterArray.length;
 
@@ -289,6 +283,7 @@ function getGeneralCharacterInfo() {
     var characterArray = account.characters;
     var counter = 0;
 
+	// Loop over all characters, using anonymous function for async closure.
     for (let i = 0; i < account.characterAmount; i++) {
         (function(i) {
 
@@ -317,6 +312,7 @@ function getGeneralCharacterInfo() {
                     character.hoursPlayed = (characterObject.age / 3600).toFixed(0);
                     account.characterDictionary[characterObject.name] = character;
 
+					// If we finished the last character, perform callback.
                     if (counter == characterArray.length) {
                         fetchEquipment();
                     }
@@ -341,7 +337,8 @@ function fetchEquipment() {
     for (let character in account.characterDictionary) {
         (function(character) {
             if (account.characterDictionary.hasOwnProperty(character)) {
-
+				
+				// Grab equipment.
                 var equipmentArray = account.characterDictionary[character].equipment;
 
                 // Loop over the equipment array and demand API for item details in bulk.   
@@ -396,12 +393,10 @@ function fetchEquipment() {
 
                                 // Push to equipment array. 
                                 account.characterDictionary[character].equipmentRarity.push(newItemObject);
-
                             }
-
                         }
 
-                        // If it's the last character and the last equipment piece of that character, then we can go on!    
+                        // If it's the last character, notify callback.
                         if (character == account.characters[account.characterAmount - 1]) {
                             onDataReady();
                         }
@@ -504,7 +499,6 @@ function calculateAgonyResist(equipment, character) {
         undefined: 0,
         "undefined": 0,
         NaN: 0
-
     };
 
     // Counters to track different sources of AR.
@@ -565,10 +559,12 @@ function calculateAgonyResist(equipment, character) {
                 // If it's armor, check for aquabreather and else add to total.
                 else if (equipment[item].type == "Armor") {
 
-                    if (equipment[item].slot != "HelmAquatic")
+                    if (equipment[item].slot != "HelmAquatic") {
                         agonyResist.armor += infusionDictionary[infusion];
-                    else
+					}
+                    else {
                         agonyResist.aquatic += infusionDictionary[infusion];
+					}
                 }
             }
         }
@@ -578,13 +574,16 @@ function calculateAgonyResist(equipment, character) {
     agonyResist.total = agonyResist.armor + agonyResist.trinkets;
     
     // Take the weapon set with the higher agony resist. // TODO this no longer works fuck
-    if (agonyResist.weaponsA < agonyResist.weaponsB)
+    if (agonyResist.weaponsA < agonyResist.weaponsB) {
         agonyResist.total += agonyResist.weaponsB;
-    else if (agonyResist.weaponsA > agonyResist.weaponsB)
+    }
+	else if (agonyResist.weaponsA > agonyResist.weaponsB) {
         agonyResist.total += agonyResist.weaponsA;
-    else
+    }
+	else {
         agonyResist.total += agonyResist.weaponsA;
-
+	}
+	
     return agonyResist;
 }
 
@@ -658,6 +657,7 @@ function getFractalAchievements(callback) {
                 }
             }
 
+			// When we're done, pass array on.
             callback(fractalAchievementArray);
         }
     });
@@ -673,6 +673,9 @@ function makeBackUp() {
     if (jsonString != undefined) {
         console.log(jsonString);
     }
+	else{
+		console.log("Could not transform to JSON.");
+	}
 }
 
 /***** VISUALIZATIONS **************************************************************************************************/
