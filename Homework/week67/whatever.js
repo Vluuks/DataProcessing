@@ -220,6 +220,7 @@ function apiCheckCallback(apiKey) {
 	getFractalAchievements(displayFractalAchievements);
 }
 
+/* Retrieves general information about the account, such as name, age, etc. */
 function getGeneralAccountInfo(callback) {
 
     $.ajax({
@@ -244,7 +245,6 @@ function getGeneralAccountInfo(callback) {
             callback();
         }
     });
-
 }
 
 /* This function retrieves a list of the characters on the account from the API and then
@@ -323,11 +323,7 @@ function getGeneralCharacterInfo() {
 }
 
 /* This function extracts the equipment array from the dictionary of characters and their info
-and checks for every piece what type it is and whether it is of ascended (best in slot) rarity. Because
-this information is nested within the API, multiple API calls are necessary, we need to retrieve information
-about the item using the item ID. This needs to be done with iterations because items are not always
-present on a character (ie not all equipment slots are filled) so there are no fixed indices to use.
-
+and checks for every piece what type it is and whether it is of ascended (best in slot) rarity. 
 For every item we look up the rarity and the type and this is stored in an object which in turn is stored
 in the dictionary with the character name as a key. This dictionary is globally accessible and will, after
 the callback, be available for use by the visualizations. */
@@ -931,7 +927,8 @@ function transformDataForSunburst(character) {
         // Cache it so that it does not need to be remade if we reclick this character.
         account.characterDictionary[character].sunburstDataCache = sunburstObject;
 
-    } else {
+    } 
+    else {
         sunburstObject = account.characterDictionary[character].sunburstDataCache;
     }
 
@@ -1099,6 +1096,13 @@ function showCharacterData(character) {
 
 /* Renders the current status of all fractal tier achievements. */
 function makeAchievementGraph(data) {
+    
+    console.log(data.length);
+    // Check if svgs already exist.
+    if($(".achievementsvg")){
+        $(".achievementsvg").remove();
+    }
+    
 
     var color = {
         "false": "#5b5b5b",
@@ -1110,11 +1114,11 @@ function makeAchievementGraph(data) {
     var width = 800,
         height = 70;
 
-    // this does not seem to work as intended
     for(var j = 0; j < 4; j++){
 		
 		// Add svg to webpage.
 		var svg = d3.select("#achievementpart").append("svg")
+            .attr("class", "achievementsvg")
 			.attr("width", width)
 			.attr("height", height)
 		
