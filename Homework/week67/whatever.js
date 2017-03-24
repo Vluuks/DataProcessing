@@ -103,7 +103,6 @@ function showError(errorMessage) {
     $('#error').text(errorMessage);
 }
 
-
 /***** DATA RETRIEVAL **************************************************************************************************/
 
 /* Check the given API and then start retrieving data if it has been verified. 
@@ -111,14 +110,16 @@ This function is invoked by pressing the button on the webpage. */
 function getUserApi() {
 
     // Check if svgs were already made, if so, delete.
-    var svgChart = $("#barchartsvg");
-    if (svgChart !== undefined)
-        svgChart.remove();
-
-    var svgChart2 = $("#sunburstsvg");
-    if (svgChart2 !== undefined)
-        svgChart2.remove();
-
+    if ($("#barchartsvg")){
+        $("#barchartsvg").remove();
+	}
+    if ($("#sunburstsvg")){
+        $("#sunburstsvg").remove();
+	}
+	if($(".achievementsvg")){
+        $(".achievementsvg").remove();
+    }
+    
     // Hide and show corresponding DOM elements.
     $('#error').hide();
     $('#accountdiv').hide();
@@ -136,7 +137,8 @@ function getUserApi() {
 
     if (apiKey == "" || apiKey == undefined) {
         showError("Please do not omit the field");
-    } else {
+    } 
+	else {
 
         if (/^[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{20}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$/.test(apiKey)) {
 
@@ -1012,14 +1014,15 @@ function makeSunburst(data) {
 
     // Append text to  each block of the sunburst. 
     var text = g.append("text")
+		.attr("class", "sunbursttext")
         .attr("transform", function(d) {
             return "rotate(" + computeTextRotation(d) + ")";
         })
         .attr("x", function(d) {
             return y(d.y);
         })
-        .attr("dx", "6") // margin
-        .attr("dy", ".35em") // vertical-align
+        .attr("dx", "6")
+        .attr("dy", ".35em")
         .text(function(d) {
             return d.name;
         });
@@ -1028,7 +1031,8 @@ function makeSunburst(data) {
     function click(d) {
 
         // Fade out text elements.
-        text.transition().attr("opacity", 0);
+        text.transition()
+			.attr("opacity", 0);
 
         // Make a transition to the new view.
         path.transition()
@@ -1083,12 +1087,10 @@ function showCharacterData(character) {
 
     // Select the div and append html.
     $('#sunburstextra').html(
-
         '<p class=\"charname\">' + character + '</p>' +
         '<p class=\"charage"> Level ' + account.characterDictionary[character].level  + '</p>' +
         '<p class =\"charprofession\" style=\"color:' + colorDictionary[account.characterDictionary[character].profession] + ' \">' + account.characterDictionary[character].profession + '</p>' +
         '<p class =\"charage\"> Played for ' + account.characterDictionary[character].hoursPlayed + ' hours </p>'
-
     );
     $('#sunburstextra').show();
 
@@ -1096,13 +1098,6 @@ function showCharacterData(character) {
 
 /* Renders the current status of all fractal tier achievements. */
 function makeAchievementGraph(data) {
-    
-    console.log(data.length);
-    // Check if svgs already exist.
-    if($(".achievementsvg")){
-        $(".achievementsvg").remove();
-    }
-    
 
     var color = {
         "false": "#5b5b5b",
@@ -1114,7 +1109,7 @@ function makeAchievementGraph(data) {
     var width = 800,
         height = 70;
 
-    for(var j = 0; j < 4; j++){
+    for(var j = 0; j < data.length; j++){
 		
 		// Add svg to webpage.
 		var svg = d3.select("#achievementpart").append("svg")
