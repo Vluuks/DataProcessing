@@ -12,12 +12,14 @@
     <head>
 	
 		<title>Week 6 and 7</title>
+		<meta charset="utf-8">
 		
 		<!-- External scripts and stylesheets. -->
+		<link rel="stylesheet" href="Libraries/bootstrap-3.3.7-dist/css/bootstrap.min.css">
 		<link rel="stylesheet" href="styles.css">
-		<link rel="stylesheet" href="Libraries\bootstrap-3.3.7-dist\css">
 		<script src="Libraries/d3.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="Libraries/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 		<script src="Libraries/legend.js"></script>
         <script src="Libraries/queue.v1.min.js"></script>
 		<script src="Libraries/d3.tip.v0.6.3.js"></script>
@@ -45,14 +47,51 @@
 				
 				<input type="text" id="apiKey" value="" id ="1" width="100">
 				<button onclick="getUserApi()">Go!</button> 
-				<div id="accountdiv">
-                    <img id="accountloading" src="Static/spinner.gif" alt="Loading...">
-					<ul id="account">
-						<li id="accountName"><img class="listimg" src="Static/accountname.png" alt="Account Name"><p class="accinfo" id="accname">account name</p></li>
-						<li id="characterAmount"><img class="listimg" src="Static/charactersamount.png" alt="Characters"><p class="accinfo" id="chars">characters</p></li>
-						<li id="characterAmount"><img class="listimg" src="Static/accountage.png" alt="Age"><p class="accinfo" id="accage">account age</p></li>
-						<li id="fractal level"><img class="listimg" src="Static/fractallevel.png" alt="Account Name"><p class="accinfo" id="fraclevel">frac level</p></li>
+	
+				<!-- Bootstrap part with 4 toggles. -->
+				<div class = "bootstrap">
+					<ul class="nav nav-tabs">
+						<li class="active"><a data-toggle="tab" href="#home">Account</a></li>
+						<li><a data-toggle="tab" href="#menu1">Legend</a></li>
+						<li><a data-toggle="tab" href="#menu2">Usage</a></li>
+						<li><a data-toggle="tab" href="#menu3">Story   </a></li>
 					</ul>
+					
+					<!-- Bootstrap tab contents. -->
+					<div class="tab-content">
+					
+					<!-- Account info. -->
+						<div id="home" class="tab-pane fade in active">
+							<h3>Account</h3>
+								<div id="accountdiv">
+									<img id="accountloading" src="Static/spinner.gif" alt="Loading...">
+									<ul id="account">
+										<li id="accountName"><img class="listimg" src="Static/accountname.png" alt="Account Name"><p class="accinfo" id="accname">account name</p></li>
+										<li id="characterAmount"><img class="listimg" src="Static/charactersamount.png" alt="Characters"><p class="accinfo" id="chars">characters</p></li>
+										<li id="characterAmount"><img class="listimg" src="Static/accountage.png" alt="Age"><p class="accinfo" id="accage">account age</p></li>
+										<li id="fractal level"><img class="listimg" src="Static/fractallevel.png" alt="Account Name"><p class="accinfo" id="fraclevel">frac level</p></li>
+									</ul>
+								</div>
+						</div>
+						
+						<!-- Legend. -->
+						<div id="menu1" class="tab-pane fade">
+							<h3>Legend</h3>
+							<p></p>
+						</div>
+						
+						<!-- Usage. -->
+						<div id="menu2" class="tab-pane fade">
+							<h3>Usage</h3>
+							<p>Once the API key is entered and all permissions are there, the visualisation will render a bar chart, this bar chart shows an overview of all characters and their respective agony resist. Below the barchart is a visualisation of all regular fractal achievements, showing the completed ones in green and the incomplete ones in grey. When a character in the barchart is clicked, a sunburst showing their gear will be rendered. The colors of the partitions indicate the rarity.</p>
+						</div>
+						
+						<!-- Story. -->
+						<div id="menu3" class="tab-pane fade">
+							<h3>Story</h3>
+							<p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+						</div>
+					</div>	
 				</div>
 			</div>
 			

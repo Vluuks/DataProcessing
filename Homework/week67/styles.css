@@ -11,7 +11,7 @@ h2{
 	text-transform: uppercase;
 }
 #wrapperdiv{
-	width: 1740px;
+	width: 1730px;
 	margin-top: 20px;
 	background-color: #EEEEEE;
 }
@@ -33,8 +33,8 @@ h2{
 	
 }
 #barchartpart{
-	width: 800px;
-	height: 400px;
+	width: 830px;
+	height: 450px;
 	display: inline-block;
 	float: left;
 	padding: 10px;
@@ -42,7 +42,7 @@ h2{
 	margin: 10px;
 }
 #piechartpart{
-	width: 600px;
+	width: 620px;
 	height: 800px;
 	margin: 10px;
 	display: inline-block;
@@ -50,8 +50,8 @@ h2{
 	background-color: #DDDDDD;
 }
 #achievementpart{
-	width: 800px;
-	height: 360px;
+	width: 830px;
+	height: 330px;
 	display: inline-block;
 	padding: 10px;
 	background-color: #DDDDDD;
@@ -61,7 +61,7 @@ h2{
 }
 #sunburstinnerwrapper{
     width: 600px;
-	height: 155px;
+	height: 120px;
 }
 #error{
 	margin-bottom: 20px;
@@ -129,7 +129,7 @@ path {
     margin: 0;
 }
 .accinfo{
-    font-size: 16px;
+    font-size: 14px;
 }
 .sunbursttext{
 	font-size: 12px;

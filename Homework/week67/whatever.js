@@ -1,19 +1,26 @@
 /* Renske Talsma
 	10896503
 	
-	A complete clusterfuck
+	This visualisation shows an overview of information about Fractals of the Mists in Guild Wars 2. Fractals are a series of mini-dungeons
+	with increasing difficulty (there are 100 total). To stay alive on higher levels, you need agony resistance, which can generally only be slotted in
+	ascended gear (pink quality or higher) with a few exceptions. The visualisation has 3 parts, the barchart gives an overview of each character
+	with their respective agony resist. The bar chart is clickable and upon clicking on a character a sunburst will be generated, showing an 
+	overview of the gear on that character, giving insight in how much of their gear is of what quality and where there could be improvements.
+	Especially for people with quite some characters, this can prove practical, as reviewing all of this in game separately by logging in each character
+	and inspecing their gear can be tedious, especially if one just wants to quickly remember which characters are equipped to deal with agony resist.
+	The third part does not actually visualize character data but rather account data and gives an overview of all fractals, indicating whether the user
+	has completed the fractal on this level or not. Thus the total visualisation gives a good overview of everything that is important regarding fractals.
+	
+	See pdf for more on design and story.
+	
+	Tutorials/credits:
+	> https://bl.ocks.org/mbostock/4348373
+	> http://tributary.io/inlet/4127332/
+	> https://www.jasondavies.com/coffee-wheel/
+	> https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_tabs_dynamic&stacked=h
+	
 	
 */
-
-var deBesteData = [
-
-    [false, true, true, true, false, false, false, true, true, true],
-    [false, true, true, true, false, false, false, true, true, true],
-    [false, true, true, true, false, false, false, true, true, true],
-    [false, false, true, true, false, false, false, true, true, true]
-
-];
-
 
 /***** OBJECTS AND CONSTANTS  **************************************************************************************************/
 
@@ -82,6 +89,9 @@ var colorDictionary = {
     "Reaper": "#3a916e"
 }
 
+
+/***** SCRIPT *********************************************************************************************************/
+
 /* Wait until page is ready. */
 $('document').ready(function() {
     
@@ -94,7 +104,6 @@ $('document').ready(function() {
     $('#barchartloading').hide();
     $('#achievementloading').hide();
     $('#sunburstloading').hide();
-
 });
 
 /* Small function that takes a string and shows it in the error span on top of the page. */
@@ -131,8 +140,8 @@ function getUserApi() {
     // Grab api key from field and check.
     var apiKey = $("#apiKey").val().trim();
 
-    //apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0";
-   //apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374";
+    apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0";
+    //apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374";
     //apiKey = "A1E2840E-BF5E-8747-9D5D-BAA2140590B2356E83AA-68BE-4391-9083-F0DCC3DA3950"
 
     if (apiKey == "" || apiKey == undefined) {
@@ -702,7 +711,7 @@ function makePieCharts(data) {
         radius = height / 2;
 
     // Append svg to div.
-    var pieChart = d3.select('#sidebar').append("svg:svg")
+    var pieChart = d3.select('#pie').append("svg:svg")
         .data([data])
         .attr("width", width)
         .attr("height", height)
@@ -1024,7 +1033,12 @@ function makeSunburst(data) {
         .attr("dx", "6")
         .attr("dy", ".35em")
         .text(function(d) {
-            return d.name;
+			if(d.name.length > 13){
+				return d.name.substring(0, 13) + "...";
+			}
+			else {
+				return d.name;
+			}
         });
 
     // Function that handles clicks on the sunburst so that it can zoom.
@@ -1039,10 +1053,9 @@ function makeSunburst(data) {
             .duration(750)
             .attrTween("d", arcTween(d))
             .each("end", function(e, i) {
-
-                // Check if the animated element's data e lies within the visible angle span given in d
+				// Check if it lies within the angle span.	
                 if (e.x >= d.x && e.x < (d.x + d.dx)) {
-
+				
                     // Get a selection of the associated text element.
                     var arcText = d3.select(this.parentNode).select("text");
 
@@ -1077,6 +1090,7 @@ function makeSunburst(data) {
         };
     }
 
+	// Calculate text rotation. 
     function computeTextRotation(d) {
         return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
     }
@@ -1093,7 +1107,6 @@ function showCharacterData(character) {
         '<p class =\"charage\"> Played for ' + account.characterDictionary[character].hoursPlayed + ' hours </p>'
     );
     $('#sunburstextra').show();
-
 }
 
 /* Renders the current status of all fractal tier achievements. */
@@ -1104,7 +1117,7 @@ function makeAchievementGraph(data) {
         "true": "#6cc63b"
     };
 	
-	var tiers = [ "Initiate", "Adept", "Expert", "Master"]; 
+	var tiers = ["Initiate", "Adept", "Expert", "Master"]; 
 
     var width = 800,
         height = 70;
@@ -1127,12 +1140,12 @@ function makeAchievementGraph(data) {
         var rects = svg.selectAll('g')
             .data(data[j])
             .enter()
-            .append("g")
+            .append("g");
 
         rects.append('rect')
             .attr("y", 16)
             .attr("x", function(d, i) {
-                return i * 32
+                return i * 32;
             })
             .attr("width", 25)
             .attr("height", 25)
@@ -1149,7 +1162,7 @@ function makeAchievementGraph(data) {
 			.style("font-size", "10px")
             .attr("y", 26)
             .attr("x", function(d, i) {
-                return 5 + i * 32
+                return 5 + i * 32;
             });
     }
 }
