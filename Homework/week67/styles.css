@@ -4,11 +4,12 @@ body{
 	font-family: "Arial";
 }
 h2{
-    font-family: "Trebuchet MS";
+    font-family: "Arial";
     margin-bottom: 10px;
 	margin-top: 0px;
 	font-size: 19px;
 	text-transform: uppercase;
+	color: #000000;
 }
 #wrapperdiv{
 	width: 1730px;

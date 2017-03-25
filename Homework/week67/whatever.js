@@ -18,6 +18,8 @@
 	> http://tributary.io/inlet/4127332/
 	> https://www.jasondavies.com/coffee-wheel/
 	> https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_tabs_dynamic&stacked=h
+	> https://jsfiddle.net/8sh069ns/
+	
 	
 	
 */
