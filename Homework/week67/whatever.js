@@ -103,7 +103,6 @@ $('document').ready(function() {
     $('#achievementloading').hide();
     $('#sunburstloading').hide();
 
-    makePieCharts("hoi");
 });
 
 /* Small function that takes a string and shows it in the error span on top of the page. */
@@ -992,6 +991,11 @@ function makeSunburst(data) {
         .attr("id", "sunburstsvg")
         .append("g")
         .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
+		
+	// Tooltip.
+	var tooltip = d3.select("#piechartpart").append("div")
+	  .attr("class", "tooltip")
+	  .style("opacity", 0);
 
     var partition = d3.layout.partition()
         .value(function(d) {
@@ -1027,11 +1031,24 @@ function makeSunburst(data) {
             }
             if (d.name == "Equipment") {
                 return "#DDDDDD";
-            } else {
+            } 
+			else {
                 return colorDictionary[d.rarity];
             }
         })
-        .on("click", click);
+        .on("click", click)
+		.on("mouseover", function(d){ 
+			tooltip
+				.text(d.name)
+				.style("opacity", 1)
+				.style("left", (d3.event.pageX) + 0 + "px")
+				.style("top", (d3.event.pageY) - 0 + "px");
+			
+		})
+		.on("mouseout", function(d) {
+			tooltip.style("opacity", 0);
+		});
+
 
     // Append text to  each block of the sunburst. 
     var text = g.append("text")
@@ -1064,6 +1081,7 @@ function makeSunburst(data) {
             .duration(750)
             .attrTween("d", arcTween(d))
             .each("end", function(e, i) {
+				
                 // Check if it lies within the angle span.	
                 if (e.x >= d.x && e.x < (d.x + d.dx)) {
 

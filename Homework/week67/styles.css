@@ -110,6 +110,19 @@ h2{
 .sunbursttext{
 	font-size: 12px;
 }
+.tooltip {
+  position: absolute;
+  text-align: left;
+  width: auto;
+  height: auto;
+  padding: 8px;
+  font: 12px Arial;
+  background: #555555;
+  border: #777777 1px solid;
+  border-radius: 0px;
+  pointer-events: none;
+  color: white;
+}
 ul
 {
     list-style-type: none;
