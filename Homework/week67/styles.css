@@ -93,6 +93,23 @@ h2{
 .accinfo{
     margin: 0;
 }
+.charname{
+    font-size: 20px;
+    margin: 0;
+}
+.charprofession{
+    font-size: 20px;
+    margin: 0;
+}
+.charage{
+    margin: 0;
+}
+.accinfo{
+    font-size: 14px;
+}
+.sunbursttext{
+	font-size: 12px;
+}
 ul
 {
     list-style-type: none;
@@ -116,21 +133,4 @@ div ul li p
 path {
 
     stroke: #DDDDDD;
-}
-.charname{
-    font-size: 20px;
-    margin: 0;
-}
-.charprofession{
-    font-size: 20px;
-    margin: 0;
-}
-.charage{
-    margin: 0;
-}
-.accinfo{
-    font-size: 14px;
-}
-.sunbursttext{
-	font-size: 12px;
 }

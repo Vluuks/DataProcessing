@@ -21,9 +21,7 @@
 	
 	
 */
-
 /***** OBJECTS AND CONSTANTS  **************************************************************************************************/
-
 /* Model "class" used to store data about characters. Initializes with default
 values and is further filled in as API requests are completed and data retrieved. */
 function Character() {
@@ -94,7 +92,7 @@ var colorDictionary = {
 
 /* Wait until page is ready. */
 $('document').ready(function() {
-    
+
     // Manage DOM element visibilities.
     $('#error').hide();
     $('#accountdiv').hide();
@@ -104,8 +102,8 @@ $('document').ready(function() {
     $('#barchartloading').hide();
     $('#achievementloading').hide();
     $('#sunburstloading').hide();
-	
-	makePieCharts("hoi");
+
+    makePieCharts("hoi");
 });
 
 /* Small function that takes a string and shows it in the error span on top of the page. */
@@ -121,16 +119,16 @@ This function is invoked by pressing the button on the webpage. */
 function getUserApi() {
 
     // Check if svgs were already made, if so, delete.
-    if ($("#barchartsvg")){
+    if ($("#barchartsvg")) {
         $("#barchartsvg").remove();
-	}
-    if ($("#sunburstsvg")){
+    }
+    if ($("#sunburstsvg")) {
         $("#sunburstsvg").remove();
-	}
-	if($(".achievementsvg")){
+    }
+    if ($(".achievementsvg")) {
         $(".achievementsvg").remove();
     }
-    
+
     // Hide and show corresponding DOM elements.
     $('#error').hide();
     $('#accountdiv').hide();
@@ -148,8 +146,7 @@ function getUserApi() {
 
     if (apiKey == "" || apiKey == undefined) {
         showError("Please do not omit the field");
-    } 
-	else {
+    } else {
 
         if (/^[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{20}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$/.test(apiKey)) {
 
@@ -175,12 +172,12 @@ function getUserApi() {
 
                     // If the permissions array exists in JSON
                     if (apiResult.permissions) {
-						
-						// Check for the necessary permissions.
+
+                        // Check for the necessary permissions.
                         var permissionCount = 0;
                         for (var i = 0; i < apiResult.permissions.length; i++) {
 
-							//Possible permissions can be found at https://wiki.guildwars2.com/wiki/API:2/tokeninfo
+                            //Possible permissions can be found at https://wiki.guildwars2.com/wiki/API:2/tokeninfo
                             switch (apiResult.permissions[i]) {
                                 case "characters":
                                     permissionCount++;
@@ -200,11 +197,10 @@ function getUserApi() {
                         // Check if permission requirements were met, if so, invoke callback function.
                         if (permissionCount == 4) {
                             apiCheckCallback(apiKey);
-						}
-                        else {
+                        } else {
                             showError("Your API key is missing permissions.");
-						}
-                    }	
+                        }
+                    }
                 }
             });
         }
@@ -220,17 +216,17 @@ function getUserApi() {
 which retrieve more information from the API. */
 function apiCheckCallback(apiKey) {
 
-	// Make api global now that it has been verified.
-	account.apiKey = apiKey;
+    // Make api global now that it has been verified.
+    account.apiKey = apiKey;
 
-	// Get characters and in turn character equipment.
-	getCharacters(getGeneralCharacterInfo);
+    // Get characters and in turn character equipment.
+    getCharacters(getGeneralCharacterInfo);
 
-	// Get general account info such as name, amount of chars, age etc.
-	getGeneralAccountInfo(showAccountInfo);
+    // Get general account info such as name, amount of chars, age etc.
+    getGeneralAccountInfo(showAccountInfo);
 
-	// Retrieve the fractal achievements and perform display cb.
-	getFractalAchievements(prepareFractalAchievements);
+    // Retrieve the fractal achievements and perform display cb.
+    getFractalAchievements(prepareFractalAchievements);
 }
 
 /* Retrieves general information about the account, such as name, age, etc. */
@@ -254,7 +250,7 @@ function getGeneralAccountInfo(callback) {
             account.hoursPlayed = (accountInfo.age / 3600).toFixed(0);
             account.fractalLevel = accountInfo.fractal_level;
 
-			// Notify that the data has been retrieved and we can display it.
+            // Notify that the data has been retrieved and we can display it.
             callback();
         }
     });
@@ -296,7 +292,7 @@ function getGeneralCharacterInfo() {
     var characterArray = account.characters;
     var counter = 0;
 
-	// Loop over all characters, using anonymous function for async closure.
+    // Loop over all characters, using anonymous function for async closure.
     for (let i = 0; i < account.characterAmount; i++) {
         (function(i) {
 
@@ -325,7 +321,7 @@ function getGeneralCharacterInfo() {
                     character.hoursPlayed = (characterObject.age / 3600).toFixed(0);
                     account.characterDictionary[characterObject.name] = character;
 
-					// If we finished the last character, perform callback.
+                    // If we finished the last character, perform callback.
                     if (counter == characterArray.length) {
                         fetchEquipment();
                     }
@@ -346,8 +342,8 @@ function fetchEquipment() {
     for (let character in account.characterDictionary) {
         (function(character) {
             if (account.characterDictionary.hasOwnProperty(character)) {
-				
-				// Grab equipment.
+
+                // Grab equipment.
                 var equipmentArray = account.characterDictionary[character].equipment;
 
                 // Loop over the equipment array and demand API for item details in bulk.   
@@ -570,10 +566,9 @@ function calculateAgonyResist(equipment, character) {
 
                     if (equipment[item].slot != "HelmAquatic") {
                         agonyResist.armor += infusionDictionary[infusion];
-					}
-                    else {
+                    } else {
                         agonyResist.aquatic += infusionDictionary[infusion];
-					}
+                    }
                 }
             }
         }
@@ -581,18 +576,16 @@ function calculateAgonyResist(equipment, character) {
 
     // Calculate the effective total using the weapon set with the biggest amount and discarding underwater weapons.
     agonyResist.total = agonyResist.armor + agonyResist.trinkets;
-    
+
     // Take the weapon set with the higher agony resist. // TODO this no longer works fuck
     if (agonyResist.weaponsA < agonyResist.weaponsB) {
         agonyResist.total += agonyResist.weaponsB;
-    }
-	else if (agonyResist.weaponsA > agonyResist.weaponsB) {
+    } else if (agonyResist.weaponsA > agonyResist.weaponsB) {
+        agonyResist.total += agonyResist.weaponsA;
+    } else {
         agonyResist.total += agonyResist.weaponsA;
     }
-	else {
-        agonyResist.total += agonyResist.weaponsA;
-	}
-	
+
     return agonyResist;
 }
 
@@ -666,7 +659,7 @@ function getFractalAchievements(callback) {
                 }
             }
 
-			// When we're done, pass array on.
+            // When we're done, pass array on.
             callback(fractalAchievementArray);
         }
     });
@@ -681,10 +674,9 @@ function makeBackUp() {
 
     if (jsonString != undefined) {
         console.log(jsonString);
+    } else {
+        console.log("Could not transform to JSON.");
     }
-	else{
-		console.log("Could not transform to JSON.");
-	}
 }
 
 /***** VISUALIZATIONS **************************************************************************************************/
@@ -818,8 +810,9 @@ function prepareFractalAchievements(dataArray) {
 
         // Initialize an array full of true. 
         achievementBoolArray = new Array(25);
-        for (var j = 0; j < achievementBoolArray.length; j++)
+        for (var j = 0; j < achievementBoolArray.length; j++) {
             achievementBoolArray[j] = true;
+        }
 
         // Set incomplete achievements to false for indices in subarrays.
         for (var k = 0; k < dataArray[i].length; k++) {
@@ -829,8 +822,8 @@ function prepareFractalAchievements(dataArray) {
         dataArray[i] = achievementBoolArray;
     }
 
-    // Now I can do something with the data!
-    $('#achievementloading').hide();   
+    // Now we can display the data.
+    $('#achievementloading').hide();
     makeAchievementGraph(dataArray);
 }
 
@@ -841,27 +834,27 @@ function makeAchievementGraph(data) {
         "false": "#5b5b5b",
         "true": "#6cc63b"
     };
-	
-	var tiers = ["Initiate", "Adept", "Expert", "Master"]; 
+
+    var tiers = ["Initiate", "Adept", "Expert", "Master"];
 
     var width = 800,
         height = 70;
 
-    for(var j = 0; j < data.length; j++){
-		
-		// Add svg to webpage.
-		var svg = d3.select("#achievementpart").append("svg")
+    for (var j = 0; j < data.length; j++) {
+
+        // Add svg to webpage.
+        var svg = d3.select("#achievementpart").append("svg")
             .attr("class", "achievementsvg")
-			.attr("width", width)
-			.attr("height", height)
-		
-		// Set achievement section title.
-		svg.append('text')
-			.text( tiers[j] )
-			.style("fill", "black")
-			.style("font-size", "14px")
-			.attr("y", 10);
-			
+            .attr("width", width)
+            .attr("height", height)
+
+        // Set achievement section title.
+        svg.append('text')
+            .text(tiers[j])
+            .style("fill", "black")
+            .style("font-size", "14px")
+            .attr("y", 10);
+
         var rects = svg.selectAll('g')
             .data(data[j])
             .enter()
@@ -884,7 +877,7 @@ function makeAchievementGraph(data) {
                 return i + 1 + (j * 25);
             })
             .style("fill", "black")
-			.style("font-size", "10px")
+            .style("font-size", "10px")
             .attr("y", 26)
             .attr("x", function(d, i) {
                 return 5 + i * 32;
@@ -936,24 +929,27 @@ function transformDataForSunburst(character) {
             var currentPiece = equipment[piece];
 
             // If it's an armor piece but not an underwater piece
-            if (currentPiece.type == "Armor" && currentPiece.slot != "HelmAquatic")
+            if (currentPiece.type == "Armor" && currentPiece.slot != "HelmAquatic") {
                 sunburstObject.children[0].children.push(currentPiece);
+            }
             // If it's a trinket or backpiece
-            else if (currentPiece.type == "Trinket" || currentPiece.type == "Back")
+            else if (currentPiece.type == "Trinket" || currentPiece.type == "Back") {
                 sunburstObject.children[1].children.push(currentPiece);
+            }
             // If it's a weapon but not an underwater weapon
-            else if (currentPiece.type == "Weapon" && !(currentPiece.slot == "Trident" || currentPiece.slot == "Harpoon" || currentPiece.slot == "Speargun"))
+            else if (currentPiece.type == "Weapon" && !(currentPiece.slot == "Trident" || currentPiece.slot == "Harpoon" || currentPiece.slot == "Speargun")) {
                 sunburstObject.children[2].children.push(currentPiece);
+            }
             // If it's an underwater equipment piece
-            else if (currentPiece.slot == "HelmAquatic" || currentPiece.slot == "Trident" || currentPiece.slot == "Harpoon" || currentPiece.slot == "Speargun")
+            else if (currentPiece.slot == "HelmAquatic" || currentPiece.slot == "Trident" || currentPiece.slot == "Harpoon" || currentPiece.slot == "Speargun") {
                 sunburstObject.children[3].children.push(currentPiece);
+            }
         }
 
         // Cache it so that it does not need to be remade if we reclick this character.
         account.characterDictionary[character].sunburstDataCache = sunburstObject;
 
-    } 
-    else {
+    } else {
         sunburstObject = account.characterDictionary[character].sunburstDataCache;
     }
 
@@ -1026,18 +1022,20 @@ function makeSunburst(data) {
         .style("fill", function(d) {
 
             // Determine the color of the data point.
-            if (d.name == "Weapons" || d.name == "Armor" || d.name == "Aquatic" || d.name == "Trinkets")
+            if (d.name == "Weapons" || d.name == "Armor" || d.name == "Aquatic" || d.name == "Trinkets") {
                 return colorDictionary[(d.children ? d : d.parent).name];
-            if (d.name == "Equipment")
+            }
+            if (d.name == "Equipment") {
                 return "#DDDDDD";
-            else
+            } else {
                 return colorDictionary[d.rarity];
+            }
         })
         .on("click", click);
 
     // Append text to  each block of the sunburst. 
     var text = g.append("text")
-		.attr("class", "sunbursttext")
+        .attr("class", "sunbursttext")
         .attr("transform", function(d) {
             return "rotate(" + computeTextRotation(d) + ")";
         })
@@ -1047,12 +1045,11 @@ function makeSunburst(data) {
         .attr("dx", "6")
         .attr("dy", ".35em")
         .text(function(d) {
-			if(d.name.length > 13){
-				return d.name.substring(0, 13) + "...";
-			}
-			else {
-				return d.name;
-			}
+            if (d.name.length > 13) {
+                return d.name.substring(0, 13) + "...";
+            } else {
+                return d.name;
+            }
         });
 
     // Function that handles clicks on the sunburst so that it can zoom.
@@ -1060,16 +1057,16 @@ function makeSunburst(data) {
 
         // Fade out text elements.
         text.transition()
-			.attr("opacity", 0);
+            .attr("opacity", 0);
 
         // Make a transition to the new view.
         path.transition()
             .duration(750)
             .attrTween("d", arcTween(d))
             .each("end", function(e, i) {
-				// Check if it lies within the angle span.	
+                // Check if it lies within the angle span.	
                 if (e.x >= d.x && e.x < (d.x + d.dx)) {
-				
+
                     // Get a selection of the associated text element.
                     var arcText = d3.select(this.parentNode).select("text");
 
@@ -1104,7 +1101,7 @@ function makeSunburst(data) {
         };
     }
 
-	// Calculate text rotation. 
+    // Calculate text rotation. 
     function computeTextRotation(d) {
         return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
     }
@@ -1116,7 +1113,7 @@ function showCharacterData(character) {
     // Select the div and append html.
     $('#sunburstextra').html(
         '<p class=\"charname\">' + character + '</p>' +
-        '<p class=\"charage"> Level ' + account.characterDictionary[character].level  + '</p>' +
+        '<p class=\"charage"> Level ' + account.characterDictionary[character].level + '</p>' +
         '<p class =\"charprofession\" style=\"color:' + colorDictionary[account.characterDictionary[character].profession] + ' \">' + account.characterDictionary[character].profession + '</p>' +
         '<p class =\"charage\"> Played for ' + account.characterDictionary[character].hoursPlayed + ' hours </p>'
     );
