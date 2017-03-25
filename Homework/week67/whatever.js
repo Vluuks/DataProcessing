@@ -104,6 +104,8 @@ $('document').ready(function() {
     $('#barchartloading').hide();
     $('#achievementloading').hide();
     $('#sunburstloading').hide();
+	
+	makePieCharts("hoi");
 });
 
 /* Small function that takes a string and shows it in the error span on top of the page. */
@@ -228,7 +230,7 @@ function apiCheckCallback(apiKey) {
 	getGeneralAccountInfo(showAccountInfo);
 
 	// Retrieve the fractal achievements and perform display cb.
-	getFractalAchievements(displayFractalAchievements);
+	getFractalAchievements(prepareFractalAchievements);
 }
 
 /* Retrieves general information about the account, such as name, age, etc. */
@@ -702,52 +704,6 @@ function showAccountInfo() {
 
 }
 
-/* Displays small pie charts in the sidebar with class and race distribution. TODO WERKT NOG NIET HEUJ */
-function makePieCharts(data) {
-
-    // Set dimensions of the pie chart.
-    var width = 150,
-        height = 150,
-        radius = height / 2;
-
-    // Append svg to div.
-    var pieChart = d3.select('#pie').append("svg:svg")
-        .data([data])
-        .attr("width", width)
-        .attr("height", height)
-        .append("svg:g")
-        .attr("transform", "translate(" + radius + "," + radius + ")");
-
-    var pie = d3.layout.pie()
-        .value(function(d) {
-            return d.value;
-        });
-
-    // Arc generator.
-    var arc = d3.svg.arc().outerRadius(radius);
-    var arcs = pieChart.selectAll("g.slice")
-        .data(pie)
-        .enter()
-        .append("svg:g")
-        .attr("class", "slice");
-
-    // Set colors of each slice.
-    arcs.append("svg:path")
-        .attr("fill", function(d, i) {
-            return colorDictionary[data[i].label];
-        })
-
-    // Add text labels.
-    arcs.append("svg:text").attr("transform", function(d) {
-            d.innerRadius = 0;
-            d.outerRadius = radius;
-            return "translate(" + arc.centroid(d) + ")";
-        })
-        .attr("text-anchor", "middle").text(function(d, i) {
-            return data[i].label;
-        });
-}
-
 /* Draws the bar chart that shows each character and their level of agony resist. The maximum 
 amount is infinite in theory but more than 150 makes no sense, so the max of the chart is set at 150. */
 function makeBarChart(data) {
@@ -855,7 +811,7 @@ function makeBarChart(data) {
 
 /* Makes the indices of the fractal achievement that have been completed into an array of booleans so
 that both incomplete and complete achievements can be shown accurately. */
-function displayFractalAchievements(dataArray) {
+function prepareFractalAchievements(dataArray) {
 
     // Turn the array into a more useful/uniform data format.
     for (var i = 0; i < dataArray.length; i++) {
@@ -876,6 +832,64 @@ function displayFractalAchievements(dataArray) {
     // Now I can do something with the data!
     $('#achievementloading').hide();   
     makeAchievementGraph(dataArray);
+}
+
+/* Renders the current status of all fractal tier achievements. */
+function makeAchievementGraph(data) {
+
+    var color = {
+        "false": "#5b5b5b",
+        "true": "#6cc63b"
+    };
+	
+	var tiers = ["Initiate", "Adept", "Expert", "Master"]; 
+
+    var width = 800,
+        height = 70;
+
+    for(var j = 0; j < data.length; j++){
+		
+		// Add svg to webpage.
+		var svg = d3.select("#achievementpart").append("svg")
+            .attr("class", "achievementsvg")
+			.attr("width", width)
+			.attr("height", height)
+		
+		// Set achievement section title.
+		svg.append('text')
+			.text( tiers[j] )
+			.style("fill", "black")
+			.style("font-size", "14px")
+			.attr("y", 10);
+			
+        var rects = svg.selectAll('g')
+            .data(data[j])
+            .enter()
+            .append("g");
+
+        rects.append('rect')
+            .attr("y", 16)
+            .attr("x", function(d, i) {
+                return i * 32;
+            })
+            .attr("width", 25)
+            .attr("height", 25)
+            .style("opacity", "1")
+            .style("fill", function(d) {
+                return color[d.toString()];
+            });
+
+        rects.append('text')
+            .text(function(d, i) {
+                return i + 1 + (j * 25);
+            })
+            .style("fill", "black")
+			.style("font-size", "10px")
+            .attr("y", 26)
+            .attr("x", function(d, i) {
+                return 5 + i * 32;
+            });
+    }
 }
 
 /* Function that transforms the obtained data about agony resist and armor pieces and combines them into a
@@ -1107,62 +1121,4 @@ function showCharacterData(character) {
         '<p class =\"charage\"> Played for ' + account.characterDictionary[character].hoursPlayed + ' hours </p>'
     );
     $('#sunburstextra').show();
-}
-
-/* Renders the current status of all fractal tier achievements. */
-function makeAchievementGraph(data) {
-
-    var color = {
-        "false": "#5b5b5b",
-        "true": "#6cc63b"
-    };
-	
-	var tiers = ["Initiate", "Adept", "Expert", "Master"]; 
-
-    var width = 800,
-        height = 70;
-
-    for(var j = 0; j < data.length; j++){
-		
-		// Add svg to webpage.
-		var svg = d3.select("#achievementpart").append("svg")
-            .attr("class", "achievementsvg")
-			.attr("width", width)
-			.attr("height", height)
-		
-		// Set achievement section title.
-		svg.append('text')
-			.text( tiers[j] )
-			.style("fill", "black")
-			.style("font-size", "14px")
-			.attr("y", 10);
-			
-        var rects = svg.selectAll('g')
-            .data(data[j])
-            .enter()
-            .append("g");
-
-        rects.append('rect')
-            .attr("y", 16)
-            .attr("x", function(d, i) {
-                return i * 32;
-            })
-            .attr("width", 25)
-            .attr("height", 25)
-            .style("opacity", "1")
-            .style("fill", function(d) {
-                return color[d.toString()];
-            });
-
-        rects.append('text')
-            .text(function(d, i) {
-                return i + 1 + (j * 25);
-            })
-            .style("fill", "black")
-			.style("font-size", "10px")
-            .attr("y", 26)
-            .attr("x", function(d, i) {
-                return 5 + i * 32;
-            });
-    }
 }
