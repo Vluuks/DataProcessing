@@ -1,6 +1,7 @@
 /* Renske Talsma
 	10896503
 	
+	STORY:
 	This visualisation shows an overview of information about Fractals of the Mists in Guild Wars 2. Fractals are a series of mini-dungeons
 	with increasing difficulty (there are 100 total). To stay alive on higher levels, you need agony resistance, which can generally only be slotted in
 	ascended gear (pink quality or higher) with a few exceptions. The visualisation has 3 parts, the barchart gives an overview of each character
@@ -11,7 +12,6 @@
 	The third part does not actually visualize character data but rather account data and gives an overview of all fractals, indicating whether the user
 	has completed the fractal on this level or not. Thus the total visualisation gives a good overview of everything that is important regarding fractals.
 	
-	See pdf for more on design and story.
 	
 	Tutorials/credits:
 	> https://bl.ocks.org/mbostock/4348373
@@ -19,8 +19,6 @@
 	> https://www.jasondavies.com/coffee-wheel/
 	> https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_tabs_dynamic&stacked=h
 	> https://jsfiddle.net/8sh069ns/
-	
-	
 	
 */
 /***** OBJECTS AND CONSTANTS  **************************************************************************************************/
@@ -147,7 +145,8 @@ function getUserApi() {
 
     if (apiKey == "" || apiKey == undefined) {
         showError("Please do not omit the field");
-    } else {
+    } 
+	else {
 
         if (/^[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{20}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$/.test(apiKey)) {
 
@@ -198,7 +197,8 @@ function getUserApi() {
                         // Check if permission requirements were met, if so, invoke callback function.
                         if (permissionCount == 4) {
                             apiCheckCallback(apiKey);
-                        } else {
+                        } 
+						else {
                             showError("Your API key is missing permissions.");
                         }
                     }

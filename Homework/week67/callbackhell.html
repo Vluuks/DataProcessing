@@ -53,8 +53,8 @@
 					<ul class="nav nav-tabs">
 						<li class="active"><a data-toggle="tab" href="#home">Account</a></li>
 						<li><a data-toggle="tab" href="#menu1">Legend</a></li>
-						<li><a data-toggle="tab" href="#menu2">Usage</a></li>
-						<li><a data-toggle="tab" href="#menu3">Story   </a></li>
+						<li><a data-toggle="tab" href="#menu2">Story</a></li>
+						<li><a data-toggle="tab" href="#menu3">Credits</a></li>
 					</ul>
 					
 					<!-- Bootstrap tab contents. -->
@@ -62,7 +62,7 @@
 					
 					<!-- Account info. -->
 						<div id="home" class="tab-pane fade in active">
-							<h3>Account</h3>
+							<h2>Account</h2>
 								<div id="accountdiv">
 									<img id="accountloading" src="Static/spinner.gif" alt="Loading...">
 									<ul id="account">
@@ -76,25 +76,30 @@
 						
 						<!-- Legend. -->
 						<div id="menu1" class="tab-pane fade">
-							<h3>Legend</h3>
+							<h2>Legend</h2>
 							<img src="Static/legend.png">
 						</div>
 						
 						<!-- Usage. -->
 						<div id="menu2" class="tab-pane fade">
-							<h3>Usage</h3>
+							<h2>Story and Usage</h2>
 							<p>
+								USAGE:
 								Once the API key is entered and all permissions are there, the visualisation will render a bar chart, this bar chart shows an overview of all characters and their respective agony resist. Below the barchart is a visualisation of all regular fractal achievements, showing the completed ones in green and the incomplete ones in grey. When a character in the barchart is clicked, a sunburst showing their gear will be rendered. The colors of the partitions indicate the rarity.
-								<br> <br>
 								Be careful not to refresh too often per minute, as some things are cached but not all of them due to the live nature of the API. The API allows a maximum of 600 requests per minute, so normal usage should be fine. =) 
+								<br> <br>
+								STORY:
+								This visualisation shows an overview of information about Fractals of the Mists in Guild Wars 2. Fractals are a series of mini-dungeons with increasing difficulty (there are 100 total). To stay alive on higher levels, you need agony resistance, which can generally only be slotted in ascended gear (pink quality or higher) with a few exceptions. The visualisation has 3 parts, the barchart gives an overview of each character with their respective agony resist. The bar chart is clickable and upon clicking on a character a sunburst will be generated, showing an overview of the gear on that character, giving insight in how much of their gear is of what quality and where there could be improvements. Especially for people with quite some characters, this can prove practical, as reviewing all of this in game separately by logging in each character and inspecing their gear can be tedious, especially if one just wants to quickly remember which characters are equipped to deal with agony resist. The third part does not actually visualize character data but rather account data and gives an overview of all fractals, indicating whether the user has completed the fractal on this level or not. Thus the total visualisation gives a good overview of everything that is important regarding fractals.
 							</p>
 						</div>
 						
 						<!-- Story. -->
 						<div id="menu3" class="tab-pane fade">
-							<h3>Story</h3>
-							<div id="pie"></div>
-							<p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+							<h2>Credits</h2>
+							<div id="pie">
+								<p>Veel dank aan stackoverflow. Zie js file voor uitgebreide credits. Dit is een monchou taart!</p>
+								<img src="Static/monchou.png">
+							</div>
 						</div>
 					</div>	
 				</div>
