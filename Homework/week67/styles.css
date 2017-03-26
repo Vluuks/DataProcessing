@@ -142,10 +142,10 @@ h2{
 }
 .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
     color: black;
-    background-color:#999999;
+    background-color: #999999;
 }
 a{
-	color:black;
+	color: black;
 }
 ul{
     list-style-type: none;
