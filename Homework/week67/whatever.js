@@ -29,7 +29,7 @@
 	
 */
 
-/* OBJECTS AND CONSTANTS  **************************************************************************************************/
+/* OBJECTS AND CONSTANTS  ********************************************************************************/
 
 /* Model "class" used to store data about characters. Initializes with default
 values and is further filled in as API requests are completed and data retrieved. */
@@ -120,7 +120,7 @@ function showError(errorMessage) {
     $('#error').text(errorMessage);
 }
 
-/* DATA RETRIEVAL **************************************************************************************************/
+/* DATA RETRIEVAL **********************************************************************************************/
 
 /* Check the given API and then start retrieving data if it has been verified. 
 This function is invoked by pressing the button on the webpage. */
