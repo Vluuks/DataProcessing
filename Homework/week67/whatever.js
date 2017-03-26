@@ -1,5 +1,10 @@
-/* Renske Talsma
+/* 
+	Data Processing final project
+	Renske Talsma
 	10896503
+	
+	DATA: Official GW2 API
+	https://wiki.guildwars2.com/wiki/API:Main
 	
 	STORY:
 	This visualisation shows an overview of information about Fractals of the Mists in Guild Wars 2. Fractals are a series of mini-dungeons
@@ -12,15 +17,16 @@
 	The third part does not actually visualize character data but rather account data and gives an overview of all fractals, indicating whether the user
 	has completed the fractal on this level or not. Thus the total visualisation gives a good overview of everything that is important regarding fractals.
 	
-	Strategies/concepts.
+	STRATEGIES AND CONCEPTS: 
 	With the sunburst, the visualization makes use of the details-on-demand strategy, providing extra information about a character should the user wish
 	to have it. Also there is a consistent layout of the page, even though there can be different kinds of data visualized, the general layout of the page 
 	does not change. The order is slightly dictated in the sense that the bar graph will always render first, thus there is no fully free exploration. After
 	wards though the user is free to select the character they want to browse the data, or to swap between the tabs on the left. This way of presenting
 	data slightly matches the martini glass structure. In this sense the visualisation would fit the genre of the "partitioned poster" most, probably.
 	
+	CREDITS:
+	Things that I really used a lot to get things right:
 	
-	Tutorials/credits:
 	> https://bl.ocks.org/mbostock/4348373
 	> http://tributary.io/inlet/4127332/
 	> https://www.jasondavies.com/coffee-wheel/
