@@ -521,7 +521,7 @@ function calculateAgonyResist(equipment, character) {
         weaponsA: 0,
         weaponsB: 0,
         aquatic: 0
-    }
+    };
 
     // Iterate over all the items.
     for (item in equipment) {
@@ -683,7 +683,8 @@ function makeBackUp() {
 
     if (jsonString != undefined) {
         console.log(jsonString);
-    } else {
+    } 
+	else {
         console.log("Could not transform to JSON.");
     }
 }
@@ -724,12 +725,15 @@ function makeBarChart(data) {
         height = 400 - margin.top - margin.bottom;
 
     // Set the domain and range.
-    var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
-    var y = d3.scale.linear().range([height, 0]);
-    x.domain(data.map(function(d) {
-        return d.characterName;
-    }));
-    y.domain([0, 150]);
+    var x = d3.scale.ordinal()
+		.rangeRoundBands([0, width], .05)
+		.domain(data.map(function(d) {
+			return d.characterName;
+		}));
+		
+    var y = d3.scale.linear()
+		.range([height, 0])
+		.domain([0, 150]);
 
     // Define the axes.
     var xAxis = d3.svg.axis()
@@ -958,7 +962,8 @@ function transformDataForSunburst(character) {
         // Cache it so that it does not need to be remade if we reclick this character.
         account.characterDictionary[character].sunburstDataCache = sunburstObject;
 
-    } else {
+    } 
+	else {
         sunburstObject = account.characterDictionary[character].sunburstDataCache;
     }
 
