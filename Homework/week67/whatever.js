@@ -12,6 +12,13 @@
 	The third part does not actually visualize character data but rather account data and gives an overview of all fractals, indicating whether the user
 	has completed the fractal on this level or not. Thus the total visualisation gives a good overview of everything that is important regarding fractals.
 	
+	Strategies/concepts.
+	With the sunburst, the visualization makes use of the details-on-demand strategy, providing extra information about a character should the user wish
+	to have it. Also there is a consistent layout of the page, even though there can be different kinds of data visualized, the general layout of the page 
+	does not change. The order is slightly dictated in the sense that the bar graph will always render first, thus there is no fully free exploration. After
+	wards though the user is free to select the character they want to browse the data, or to swap between the tabs on the left. This way of presenting
+	data slightly matches the martini glass structure. In this sense the visualisation would fit the genre of the "partitioned poster" most, probably.
+	
 	
 	Tutorials/credits:
 	> https://bl.ocks.org/mbostock/4348373
@@ -21,7 +28,11 @@
 	> https://jsfiddle.net/8sh069ns/
 	
 */
-/***** OBJECTS AND CONSTANTS  **************************************************************************************************/
+
+/* OBJECTS AND CONSTANTS  **************************************************************************************************/
+
+"use strict";  
+
 /* Model "class" used to store data about characters. Initializes with default
 values and is further filled in as API requests are completed and data retrieved. */
 function Character() {
@@ -88,7 +99,7 @@ var colorDictionary = {
 }
 
 
-/***** SCRIPT *********************************************************************************************************/
+/* SCRIPT *********************************************************************************************************/
 
 /* Wait until page is ready. */
 $('document').ready(function() {
@@ -111,7 +122,7 @@ function showError(errorMessage) {
     $('#error').text(errorMessage);
 }
 
-/***** DATA RETRIEVAL **************************************************************************************************/
+/* DATA RETRIEVAL **************************************************************************************************/
 
 /* Check the given API and then start retrieving data if it has been verified. 
 This function is invoked by pressing the button on the webpage. */
@@ -139,15 +150,12 @@ function getUserApi() {
     // Grab api key from field and check.
     var apiKey = $("#apiKey").val().trim();
 
-    apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0";
-    //apiKey = "8517F046-B25D-BF4B-AC3A-1F001F87E5902EAC6607-483A-434F-AB8B-DB65718FF374";
-    //apiKey = "A1E2840E-BF5E-8747-9D5D-BAA2140590B2356E83AA-68BE-4391-9083-F0DCC3DA3950"
-
     if (apiKey == "" || apiKey == undefined) {
         showError("Please do not omit the field");
     } 
 	else {
 
+		// Check if API is valid using regex. 
         if (/^[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{20}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$/.test(apiKey)) {
 
             $.ajax({
@@ -161,7 +169,7 @@ function getUserApi() {
                 error: function() {
                     showError("The GW2 API seems to be down, please come back at a later time.");
                 },
-                // Check if it's a valid key even if it passed regex
+                // Further check if it's a valid key even if it passed regex.
                 complete: function(data) {
 
                     var apiResult = JSON.parse(data.responseText);
@@ -170,7 +178,7 @@ function getUserApi() {
                     if (apiResult.text && (apiResult.text.equals("endpoint requires authentication") || apiResult.text.equals("invalid key")))
                         showError("Your API key is not valid or is missing permissions.");
 
-                    // If the permissions array exists in JSON
+                    // If the permissions array exists in JSON.
                     if (apiResult.permissions) {
 
                         // Check for the necessary permissions.
@@ -382,14 +390,14 @@ function fetchEquipment() {
 
                             var itemObject = multipleItemObject[item];
 
-                            // Store item properties in object and store object in the array of items on the character
+                            // Store item properties in object and store object in the array of items on the character.
                             if (itemObject.type == ("Armor") || itemObject.type == ("Trinket") || itemObject.type == ("Weapon") || itemObject.type == ("Back")) {
 
                                 var newItemObject = {
                                     id: itemObject.id,
                                     name: itemObject.name,
                                     rarity: itemObject.rarity,
-                                    infusions: infusionsPerPieceDict[itemObject.id], // TODO, HEB DE INDEX NODIG VAN DE LOOP OM DE INFUSIONS UIT DE DATA TE KUNNEN HALEN
+                                    infusions: infusionsPerPieceDict[itemObject.id], 
                                     type: itemObject.type,
                                     slot: itemObject.details["type"],
                                     weaponSlot: slotInformationDict[itemObject.id],
@@ -578,12 +586,14 @@ function calculateAgonyResist(equipment, character) {
     // Calculate the effective total using the weapon set with the biggest amount and discarding underwater weapons.
     agonyResist.total = agonyResist.armor + agonyResist.trinkets;
 
-    // Take the weapon set with the higher agony resist. // TODO this no longer works fuck
+    // Take the weapon set with the higher agony resist.
     if (agonyResist.weaponsA < agonyResist.weaponsB) {
         agonyResist.total += agonyResist.weaponsB;
-    } else if (agonyResist.weaponsA > agonyResist.weaponsB) {
+    } 
+	else if (agonyResist.weaponsA > agonyResist.weaponsB) {
         agonyResist.total += agonyResist.weaponsA;
-    } else {
+    } 
+	else {
         agonyResist.total += agonyResist.weaponsA;
     }
 

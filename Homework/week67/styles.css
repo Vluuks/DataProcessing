@@ -1,6 +1,6 @@
 body{
-    padding-top:10px;
-    padding-left:20px;
+    padding-top: 10px;
+    padding-left: 20px;
 	font-family: "Arial";
 }
 h2{
@@ -10,6 +10,9 @@ h2{
 	font-size: 19px;
 	text-transform: uppercase;
 	color: #000000;
+}
+#apiKey{
+	width: 120px !important;
 }
 #wrapperdiv{
 	width: 1730px;
@@ -127,6 +130,15 @@ h2{
   pointer-events: none;
   color: white;
 }
+.menulist{
+	list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.nav{
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
 ul{
     list-style-type: none;
 }
@@ -142,6 +154,5 @@ div ul li p{
     vertical-align: middle;
 }
 path{
-
     stroke: #DDDDDD;
 }
