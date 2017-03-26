@@ -52,18 +52,9 @@ function Character() {
 
 /* A global object used to store all the information pertaining to the account
 that is currently using the visualization. */
-var account = {
-    name: "",
-    apiKey: "",
-    hoursPlayed: -1,
-    characters: [],
-    characterAmount: -1,
-    fractalLevel: -1,
-    fractalRelics: -1,
-    fractalPristine: -1,
-    characterDictionary: {}
-}
+var account = {};
 
+/* Dictionary containing color info. */
 var colorDictionary = {
 
     // Rarities.
@@ -131,6 +122,19 @@ function showError(errorMessage) {
 /* Check the given API and then start retrieving data if it has been verified. 
 This function is invoked by pressing the button on the webpage. */
 function getUserApi() {
+	
+	// Initialize account variable.
+	account = {
+		name: "",
+		apiKey: "",
+		hoursPlayed: -1,
+		characters: [],
+		characterAmount: -1,
+		fractalLevel: -1,
+		fractalRelics: -1,
+		fractalPristine: -1,
+		characterDictionary: {}
+	}
 
     // Check if svgs were already made, if so, delete.
     if ($("#barchartsvg")) {
