@@ -12,7 +12,8 @@ h2{
 	color: #000000;
 }
 #apiKey{
-	width: 120px !important;
+	width: 130px !important;
+	margin-left: 5px;
 }
 #wrapperdiv{
 	width: 1730px;
@@ -75,7 +76,7 @@ h2{
 }
 #menu2{
 	overflow-y: scroll;
-	height: 550px;
+	height: 530px;
 }
 .axis text{
   font: 12px "Arial";
@@ -138,6 +139,13 @@ h2{
 .nav{
 	padding-top: 10px;
 	padding-bottom: 10px;
+}
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+    color: black;
+    background-color:#999999;
+}
+a{
+	color:black;
 }
 ul{
     list-style-type: none;

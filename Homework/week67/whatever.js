@@ -31,8 +31,6 @@
 
 /* OBJECTS AND CONSTANTS  **************************************************************************************************/
 
-"use strict";  
-
 /* Model "class" used to store data about characters. Initializes with default
 values and is further filled in as API requests are completed and data retrieved. */
 function Character() {
