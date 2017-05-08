@@ -32,6 +32,9 @@
 	> https://www.jasondavies.com/coffee-wheel/
 	> https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_tabs_dynamic&stacked=h
 	> https://jsfiddle.net/8sh069ns/
+    > http://plnkr.co/edit/tct95toQ2IjyUkQJQPB9?p=preview
+    
+    TIM IS LIEF
 	
 */
 
@@ -157,6 +160,8 @@ function getUserApi() {
 
     // Grab api key from field and check.
     var apiKey = $("#apiKey").val().trim();
+    
+    apiKey = "F42B9440-82CB-0D4A-AA45-1594E292B1FB08137C88-69C5-4779-8740-43FA4C501EE0";
 
     if (apiKey == "" || apiKey == undefined) {
         showError("Please do not omit the field");
@@ -1078,14 +1083,10 @@ function makeSunburst(data) {
     // Append text to  each block of the sunburst. 
     var text = g.append("text")
         .attr("class", "sunbursttext")
-        .attr("transform", function(d) {
-            return "rotate(" + computeTextRotation(d) + ")";
-        })
-        .attr("x", function(d) {
-            return y(d.y);
-        })
-        .attr("dx", "6")
-        .attr("dy", ".35em")
+        .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+        .attr('text-anchor', function (d) { return computeTextRotation(d) > 180 ? "end" : "start"; })
+        .attr("dx", "6") // margin
+        .attr("dy", ".35em") // vertical-align
         .text(function(d) {
             if (d.name.length > 13) {
                 return d.name.substring(0, 13) + "...";
@@ -1116,12 +1117,8 @@ function makeSunburst(data) {
                     // Fade in the text element and recalculate positions.
                     arcText.transition().duration(500)
                         .attr("opacity", 1)
-                        .attr("transform", function() {
-                            return "rotate(" + computeTextRotation(e) + ")"
-                        })
-                        .attr("x", function(d) {
-                            return y(d.y);
-                        });
+                        .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+                        .attr('text-anchor', function (d) { return computeTextRotation(d) > 180 ? "end" : "start"; })
                 }
             });
     }
@@ -1144,10 +1141,10 @@ function makeSunburst(data) {
         };
     }
 
-    // Calculate text rotation. 
     function computeTextRotation(d) {
-        return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
-    }
+        var ang = (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
+        return (ang > 90) ? 180 + ang : ang;
+    } 
 }
 
 /* Show data about the character to accompany the sunburst. */
