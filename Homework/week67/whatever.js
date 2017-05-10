@@ -588,7 +588,8 @@ function calculateAgonyResist(equipment, character) {
 
                     if (equipment[item].slot != "HelmAquatic") {
                         agonyResist.armor += infusionDictionary[infusion];
-                    } else {
+                    } 
+                    else {
                         agonyResist.aquatic += infusionDictionary[infusion];
                     }
                 }
@@ -1085,7 +1086,8 @@ function makeSunburst(data) {
         .attr("class", "sunbursttext")
         .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
         .attr('text-anchor', function (d) { return computeTextRotation(d) > 180 ? "end" : "start"; })
-        .attr("dx", "6") // margin
+        .attr('dx', function (d) { return computeTextRotation(d) > 180 ? "40" : "-40"; })
+        //.attr("dx", "30") // left side margin somehow only applies to left half of sunburst because thats where the anchor is at the end and not the start? or vice versa
         .attr("dy", ".35em") // vertical-align
         .text(function(d) {
             if (d.name.length > 13) {
@@ -1119,6 +1121,7 @@ function makeSunburst(data) {
                         .attr("opacity", 1)
                         .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
                         .attr('text-anchor', function (d) { return computeTextRotation(d) > 180 ? "end" : "start"; })
+                        .attr('dx', function (d) { return computeTextRotation(d) > 180 ? "40" : "-40"; })
                 }
             });
     }
