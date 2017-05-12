@@ -917,7 +917,7 @@ function makeAchievementGraph(data) {
 /* Function that transforms the obtained data about agony resist and armor pieces and combines them into a
 structure that is suitable for a sunburst visualization. This needs to be done after since the item object itself and
 the agony resist are not retrieved at the same time, so making this can only occur after calculating AR is done. 
-Request is done on a per characeter basis because sunburst is only made once a specific bar is clicked. However,
+Request is done on a per character basis because sunburst is only made once a specific bar is clicked. However,
 the result is stored  after creating it once so it does not need to be remade every time after.  */
 function transformDataForSunburst(character) {
 
@@ -1087,12 +1087,15 @@ function makeSunburst(data) {
         .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
         .attr('text-anchor', function (d) { return computeTextRotation(d) > 180 ? "end" : "start"; })
         .attr('dx', function (d) { return computeTextRotation(d) > 180 ? "40" : "-40"; })
-        //.attr("dx", "30") // left side margin somehow only applies to left half of sunburst because thats where the anchor is at the end and not the start? or vice versa
-        .attr("dy", ".35em") // vertical-align
+        .attr("dy", ".35em")
         .text(function(d) {
-            if (d.name.length > 13) {
+            if (d.name == "Equipment") {
+                return "";
+            }
+            else if (d.name.length > 13) {
                 return d.name.substring(0, 13) + "...";
-            } else {
+            } 
+            else {
                 return d.name;
             }
         });
