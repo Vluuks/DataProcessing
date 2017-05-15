@@ -1120,7 +1120,7 @@ function makeSunburst(data) {
                     var arcText = d3.select(this.parentNode).select("text");
 
                     // Fade in the text element and recalculate positions.
-                    arcText.transition().duration(500)
+                    arcText.transition().duration(300)
                         .attr("opacity", 1)
                         .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
                         .attr('text-anchor', function (d) { return computeTextRotation(d) > 180 ? "end" : "start"; })
